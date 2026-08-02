@@ -111,7 +111,10 @@
   <div class="brand">
     <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title">Şantiye Defteri</span></div>
     <div style="display:flex; gap:8px;">
-      <button class="gear-btn" id="roleBadgeHeader" style="display:none; background:var(--asphalt); color:#fff; font-weight:800; font-family:'Manrope';" aria-label="Yönetim Paneli"></button>
+      <button class="gear-btn" id="roleBadgeHeader" style="display:none; position:relative; background:var(--asphalt); color:#fff; font-weight:800; font-family:'Manrope';" aria-label="Yönetim Paneli">
+        <span id="roleBadgeLetter"></span>
+        <span id="roleBadgePendingCount" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
+      </button>
       <button class="gear-btn" id="btnSearch" aria-label="Ara">🔍</button>
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
@@ -165,6 +168,9 @@
 
     <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
     <div id="recentList"></div>
+
+    <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
+    <div id="activeMembersList"></div>
 
     <div class="section-title">Uygulama</div>
     <div class="card">
@@ -1982,21 +1988,62 @@ function updateAdminModButtons(){
   const hasAnyModPerm = Object.values(modPerms).some(v=>v===true);
   const btn = document.getElementById('btnGoToAdmin');
   const badge = document.getElementById('roleBadgeHeader');
+  const letterEl = document.getElementById('roleBadgeLetter');
   if(isAdmin){
     btn.style.display = 'block'; btn.textContent = '🛠️ Admin Paneli';
-    badge.style.display = 'flex'; badge.textContent = 'A'; badge.title = 'Admin Paneli';
+    badge.style.display = 'flex'; letterEl.textContent = 'A'; badge.title = 'Admin Paneli';
+    startPendingAdminCountListener();
   } else if(hasAnyModPerm){
     btn.style.display = 'block'; btn.textContent = '🛡️ Moderatör Paneli';
-    badge.style.display = 'flex'; badge.textContent = 'M'; badge.title = 'Moderatör Paneli';
+    badge.style.display = 'flex'; letterEl.textContent = 'M'; badge.title = 'Moderatör Paneli';
+    startPendingAdminCountListener();
   } else {
     btn.style.display = 'none';
     badge.style.display = 'none';
+    stopPendingAdminCountListener();
   }
   if(document.getElementById('screen-admin').classList.contains('active') && typeof applyAdminPermVisibility === 'function'){
     applyAdminPermVisibility();
   }
 }
 document.getElementById('roleBadgeHeader').addEventListener('click', openAdminPanel);
+
+// ---------- ROZET ÜZERİNDE BEKLEYEN SAYISI ----------
+let pendingAppealsUnsub = null, pendingReportsUnsub = null, pendingSuggestionsUnsub = null;
+let pendingCounts = {appeals:0, reports:0, suggestions:0};
+function updatePendingBadgeDisplay(){
+  const total = pendingCounts.appeals + pendingCounts.reports + pendingCounts.suggestions;
+  const el = document.getElementById('roleBadgePendingCount');
+  if(total > 0){ el.style.display = 'block'; el.textContent = total > 9 ? '9+' : total; }
+  else { el.style.display = 'none'; }
+}
+function startPendingAdminCountListener(){
+  stopPendingAdminCountListener();
+  if(canViewAppeals()){
+    pendingAppealsUnsub = db.collection('appeals').where('status','==','pending').onSnapshot(snap=>{
+      pendingCounts.appeals = snap.size; updatePendingBadgeDisplay();
+    }, ()=>{});
+  }
+  if(canViewReports()){
+    pendingReportsUnsub = db.collection('reports').where('status','==','pending').onSnapshot(snap=>{
+      pendingCounts.reports = snap.size; updatePendingBadgeDisplay();
+    }, ()=>{});
+  }
+  if(canViewSuggestions()){
+    pendingSuggestionsUnsub = db.collection('suggestions').onSnapshot(snap=>{
+      pendingCounts.suggestions = snap.docs.filter(d=>d.data().status!=='responded').length;
+      updatePendingBadgeDisplay();
+    }, ()=>{});
+  }
+}
+function stopPendingAdminCountListener(){
+  if(pendingAppealsUnsub){ pendingAppealsUnsub(); pendingAppealsUnsub = null; }
+  if(pendingReportsUnsub){ pendingReportsUnsub(); pendingReportsUnsub = null; }
+  if(pendingSuggestionsUnsub){ pendingSuggestionsUnsub(); pendingSuggestionsUnsub = null; }
+  pendingCounts = {appeals:0, reports:0, suggestions:0};
+  const el = document.getElementById('roleBadgePendingCount');
+  if(el) el.style.display = 'none';
+}
 function checkIsAdmin(){
   if(!currentUser){ isAdmin = false; modPerms = {}; return; }
   if(adminStatusUnsub) adminStatusUnsub();
@@ -3352,6 +3399,50 @@ function renderAvansCard(){
 document.getElementById('btnAddAvans').addEventListener('click', ()=>{
   openEntryModal(null, todayStr(), 'avans');
 });
+function activeMemberRowHtml(u){
+  const isOnline = u.lastActive && (Date.now() - new Date(u.lastActive).getTime()) < 120000;
+  return `<div class="entry" data-view-member="${escapeHtml(u.uid)}">
+      <div style="position:relative; flex-shrink:0;">
+        <div style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px;">${escapeHtml(getInitials(u.fullName))}</div>
+        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--bg);"></span>':''}
+      </div>
+      <div class="info">
+        <div class="ttype" style="color:var(--ink);">${escapeHtml(u.fullName||'İsimsiz')} ${u.username?('· '+escapeHtml(u.username)):''}</div>
+        <div class="note">${escapeHtml(formatLastActive(u.lastActive))}</div>
+      </div>
+    </div>`;
+}
+function wireActiveMemberRows(box){
+  box.querySelectorAll('[data-view-member]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      document.getElementById('adminListOverlay').classList.remove('show');
+      openViewProfile(row.dataset.viewMember);
+    });
+  });
+}
+function renderActiveMembers(){
+  const box = document.getElementById('activeMembersList');
+  if(!box) return;
+  const active = allPublicProfiles
+    .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused && u.lastActive)
+    .sort((a,b)=> new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime());
+  if(active.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">👷</div><div class="msg">Henüz aktif üye yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = active.slice(0,6).map(activeMemberRowHtml).join('');
+  wireActiveMemberRows(box);
+  const seeAllBtn = document.getElementById('btnSeeAllActiveMembers');
+  if(seeAllBtn){
+    seeAllBtn.onclick = ()=>{
+      openAdminList('Aktif Üyeler', active, {
+        searchFn: (u,q)=> (u.fullName||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q),
+        renderRowFn: activeMemberRowHtml,
+        wireRows: wireActiveMemberRows
+      });
+    };
+  }
+}
 function renderHomeBanner(){
   const el = document.getElementById('homeBannerBox');
   if(!el) return;
@@ -4415,6 +4506,7 @@ async function loadPublicProfiles(){
     const snap = await db.collection('public_profiles').get();
     allPublicProfiles = snap.docs.map(d=>({uid:d.id, ...d.data()}));
   }catch(e){ console.error('public_profiles okunamadi', e); allPublicProfiles = []; }
+  if(document.getElementById('screen-ana').classList.contains('active')) renderActiveMembers();
 }
 
 function randomSuffix(len){
@@ -4675,6 +4767,7 @@ function renderHome(){
   document.getElementById('homeStats').innerHTML = statGridHtml(all, {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'});
   renderReceivableReminder(all);
   renderAvansCard();
+  renderActiveMembers();
 
   const curMonth = monthKey(todayStr());
   const prevEntries = entries.filter(e=>monthKey(e.date) < curMonth);
