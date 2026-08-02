@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Santiye Defteri">
+<link rel="apple-touch-icon" id="appleTouchIconLink">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" id="faviconLink">
+<title>Santiye Defteri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stil.css">
+
+</head>
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="deactivatedScreen" style="display:none; position:fixed; inset:0; z-index:110; background:linear-gradient(150deg,#B3261E,#7A1913); align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
+  <div style="max-width:360px; width:100%; text-align:center; color:#fff;" id="deactivatedMainView">
+    <div style="font-size:44px; margin-bottom:16px;">🚫</div>
+    <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:20px; margin-bottom:10px;">Hesabın Askıya Alındı</div>
+    <div style="font-size:14px; opacity:0.9; margin-bottom:6px;">Sebep: <strong id="deactivatedReasonText">-</strong></div>
+    <div style="font-size:13px; opacity:0.8; margin-bottom:22px;" id="deactivatedNoteText"></div>
+    <button id="btnOpenAppeal" style="width:100%; padding:14px; border:1.5px solid #fff; border-radius:14px; background:transparent; color:#fff; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer; margin-bottom:12px;">✉️ İtiraz Et</button>
+    <button id="btnDeactivatedSignOut" style="width:100%; padding:14px; border:none; border-radius:14px; background:#fff; color:#B3261E; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Çıkış Yap</button>
+  </div>
+  <div style="max-width:360px; width:100%; text-align:center; color:#fff; display:none;" id="deactivatedAppealView">
+    <div style="font-size:44px; margin-bottom:16px;">✉️</div>
+    <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:20px; margin-bottom:14px;">İtiraz Formu</div>
+    <div id="appealAlreadySent" style="display:none; font-size:14px; opacity:0.9; margin-bottom:20px;">İtirazın alındı, incelenmeyi bekliyor. Yöneticiler değerlendirdikten sonra sana dönüş yapılacak.</div>
+    <div id="appealFormWrap">
+      <textarea id="appealText" placeholder="Neden hesabının haksız yere askıya alındığını düşünüyorsun? Kısaca açıkla..." style="width:100%; min-height:120px; border-radius:14px; border:1.5px solid rgba(255,255,255,0.4); background:rgba(255,255,255,0.08); color:#fff; padding:14px; font-size:14px; margin-bottom:14px;"></textarea>
+      <button id="btnSubmitAppeal" style="width:100%; padding:14px; border:none; border-radius:14px; background:#fff; color:#B3261E; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer; margin-bottom:12px;">Gönder</button>
+    </div>
+    <button id="btnBackFromAppeal" style="width:100%; padding:14px; border:1.5px solid #fff; border-radius:14px; background:transparent; color:#fff; font-family:'Manrope',sans-serif; font-weight:700; font-size:14px; cursor:pointer;">‹ Geri</button>
+  </div>
+</div>
+
+<div id="ipBannedScreen" style="display:none; position:fixed; inset:0; z-index:110; background:linear-gradient(150deg,#B3261E,#7A1913); align-items:center; justify-content:center; padding:24px;">
+  <div style="max-width:360px; width:100%; text-align:center; color:#fff;">
+    <div style="font-size:44px; margin-bottom:16px;">🌐🚫</div>
+    <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:20px; margin-bottom:10px;">Erişimin Engellendi</div>
+    <div style="font-size:13px; opacity:0.85; margin-bottom:22px;">Bağlandığın IP adresi yönetici tarafından engellenmiş.</div>
+    <button id="btnIpBannedSignOut" style="width:100%; padding:14px; border:none; border-radius:14px; background:#fff; color:#B3261E; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Çıkış Yap</button>
+  </div>
+</div>
+
+<div id="authScreen" style="position:fixed; inset:0; z-index:100; background:linear-gradient(150deg,#4F46E5,#4338CA); display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
+  <div id="authSplashLoading" style="text-align:center; color:#fff;">
+    <div style="width:64px;height:64px;border-radius:18px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15); font-size:28px;">🏗️</div>
+    <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:18px;">Şantiye Defteri</div>
+    <div style="font-size:13px; opacity:0.75; margin-top:10px;">Yükleniyor...</div>
+  </div>
+  <div id="authFormWrap" style="display:none; max-width:360px; width:100%; text-align:center; color:#fff; padding:20px 0;">
+    <img id="authLogoImg" style="width:64px;height:64px;border-radius:18px; margin:0 auto 20px; display:block; object-fit:cover;">
+    <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px; margin-bottom:8px;">Şantiye Defteri</div>
+    <div id="authSubtitle" style="font-size:14px; opacity:0.85; margin-bottom:24px; line-height:1.5;">Kayıtların hesabınla senkronize kalsın — hangi telefondan girersen gir verilerin seninle gelir.</div>
+
+    <div style="display:flex; background:rgba(255,255,255,0.15); border-radius:12px; padding:4px; margin-bottom:18px;">
+      <button id="authTabLogin" style="flex:1; padding:10px; border:none; border-radius:9px; background:#fff; color:#4338CA; font-weight:700; font-size:13px; cursor:pointer;">Giriş Yap</button>
+      <button id="authTabSignup" style="flex:1; padding:10px; border:none; border-radius:9px; background:transparent; color:#fff; font-weight:700; font-size:13px; cursor:pointer;">Kayıt Ol</button>
+    </div>
+
+    <div style="text-align:left;">
+      <input type="email" id="authEmail" placeholder="E-posta adresin" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:10px; background:rgba(255,255,255,0.95); color:#111827;">
+      <input type="password" id="authPassword" placeholder="Şifre (en az 6 karakter)" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:14px; background:rgba(255,255,255,0.95); color:#111827;">
+    </div>
+    <button id="btnEmailAuth" style="width:100%; padding:15px; border:none; border-radius:14px; background:#fff; color:#4338CA; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Giriş Yap</button>
+    <button id="btnForgotPassword" style="width:100%; background:none; border:none; color:#fff; font-size:12.5px; font-weight:600; opacity:0.85; padding:12px 4px 0; cursor:pointer; text-decoration:underline;">Şifremi Unuttum</button>
+
+    <div style="display:flex; align-items:center; gap:10px; margin:16px 0; opacity:0.6;">
+      <div style="flex:1; height:1px; background:rgba(255,255,255,0.4);"></div>
+      <span style="font-size:11px; font-weight:700;">VEYA</span>
+      <div style="flex:1; height:1px; background:rgba(255,255,255,0.4);"></div>
+    </div>
+
+    <button id="btnGoogleSignIn" style="display:flex; width:100%; padding:15px; border:none; border-radius:14px; background:#fff; color:#1F2937; font-family:'Manrope',sans-serif; font-weight:700; font-size:15px; cursor:pointer; align-items:center; justify-content:center; gap:10px;">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.5-2.1 14.3-5.6l-6.6-5.6C29.6 34.7 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.3-4.1 5.7l6.6 5.6C41.5 36 44 30.5 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      Google ile Giriş Yap
+    </button>
+    <div id="authError" style="font-size:12px; margin-top:14px; color:#FCA5A5;"></div>
+    <div id="authLoading" style="font-size:13px; margin-top:16px; opacity:0.8; display:none;">Giriş yapılıyor...</div>
+  </div>
+</div>
+
+<div id="appRoot" style="display:none;">
+<div id="roleBadgeFixed" style="display:none; position:fixed; top:130px; right:14px; z-index:140; width:46px;height:46px;border-radius:14px; background:var(--asphalt); color:#fff; box-shadow:var(--shadow-md); align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:22px; cursor:pointer;"></div>
+<div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
+
+<!-- İLK KAYIT (ONBOARDING) -->
+<div id="onboardOverlay" style="position:fixed; inset:0; z-index:90; background:rgba(17,24,39,0.55); display:none; align-items:flex-end; justify-content:center;">
+  <div class="modal-sheet" style="max-height:92vh;">
+    <div class="modal-title"><span>Profilini Oluştur</span></div>
+    <div class="hint" style="margin-top:-8px; margin-bottom:16px;">Devam etmeden önce birkaç bilgi alalım — mesleğini seçmen özellikle önemli.</div>
+    <div class="field"><label>Ad Soyad</label><input type="text" id="obFullName"></div>
+    <div class="field">
+      <label>Meslek</label>
+      <select id="obProfession"></select>
+    </div>
+    <div class="field"><label>Şehir (opsiyonel)</label><input type="text" id="obCity" placeholder="Örn: İstanbul"></div>
+    <div class="field"><label>Günlük Yevmiyen Ne Kadar? (₺)</label><input type="number" id="obDefaultWage" min="0" step="50" placeholder="Örn: 1200"></div>
+    <button class="submit-btn" id="obSave">Başla</button>
+  </div>
+</div>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title">Şantiye Defteri</span></div>
+    <div style="display:flex; gap:8px;">
+      <button class="gear-btn" id="btnSearch" aria-label="Ara">🔍</button>
+      <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+      <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
+    </div>
+  </div>
+</header>
+<div class="hazard"></div>
+
+<main>
+
+  <!-- ANA SAYFA -->
+  <section class="screen active" id="screen-ana">
+    <div id="homeBannerBox" style="display:none; background:var(--tint-brass); color:var(--text-brass); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; font-weight:600; line-height:1.5;"></div>
+    <div id="receivableReminderBox" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; font-weight:600; line-height:1.5; cursor:pointer;"></div>
+
+    <div class="quote-card">
+      <div class="qhead"><span class="qlabel">Günün Ayeti</span><button class="refresh" id="btnQuoteRefresh">⟳</button></div>
+      <div class="qtext" id="quoteText"></div>
+    </div>
+
+    <div class="stat-grid3" id="homeStats"></div>
+
+    <div class="carry-card" id="carryCard" style="display:none;">
+      <div class="icon">⇄</div>
+      <div><div class="lbl">Önceki Aylardan Kalan</div><div class="val" id="carryVal">₺0</div></div>
+    </div>
+
+    <div class="section-title">Takvim</div>
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <span class="cal-title" id="calTitle"></span>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-legend">
+      <span><i style="background:var(--green); border-radius:4px;"></i>Tam Gün</span>
+      <span><i style="background:var(--orange); border-radius:4px;"></i>Yarım Gün</span>
+      <span><i style="background:var(--blue)"></i>Alacak</span>
+      <span><i style="background:var(--green)"></i>Ödeme</span>
+    </div>
+    <div class="hint" style="margin:-8px 0 12px;">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
+    <div class="stat-grid3" id="calMonthStats"></div>
+
+    <div class="section-title">Notlarım <button class="mini-btn" id="btnAddNote">Ekle</button></div>
+    <div class="card" id="notesCard"></div>
+
+    <div class="section-title">Avanslarım <button class="mini-btn" id="btnAddAvans">Ekle</button></div>
+    <div class="card" id="avansCard"></div>
+
+    <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
+    <div id="recentList"></div>
+
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="footerHelpAna" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="footerStaffAna" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="footerPrivacyAna" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="footerTermsAna" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="footerSuggestAna" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- NOTLARIM -->
+  <section class="screen" id="screen-notlarim">
+    <div class="section-title" style="margin-top:0;">Notlarım <button class="mini-btn" id="btnAddNoteStandalone">Ekle</button></div>
+    <div class="card" id="notesCardStandalone"></div>
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="footerHelpNotlar" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="footerStaffNotlar" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="footerPrivacyNotlar" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="footerTermsNotlar" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="footerSuggestNotlar" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- MESAJLAR -->
+  <section class="screen" id="screen-mesajlar">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px;">Mesajlar</div>
+      <div style="display:flex; gap:8px;">
+        <button id="btnNewGroup" style="width:40px;height:40px;border-radius:50%; background:var(--paper); border:1.5px solid var(--line); color:var(--ink); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">👥</button>
+        <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center;">✎</button>
+      </div>
+    </div>
+    <div style="position:relative; margin-bottom:16px;">
+      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
+      <input type="text" id="msgSearchInput" placeholder="Kişi ara veya mesajlarda ara..." style="width:100%; padding:12px 14px 12px 38px; border-radius:24px; background:var(--concrete); border:none; font-size:14px;">
+    </div>
+    <div id="msgSearchResults" style="display:none;"></div>
+    <div id="conversationListWrap">
+      <div id="conversationList"></div>
+    </div>
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="footerHelpMsg" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="footerStaffMsg" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="footerPrivacyMsg" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="footerTermsMsg" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="footerSuggestMsg" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- SOHBET -->
+  <section class="screen" id="screen-chat" style="flex-direction:column;">
+    <div style="display:flex; align-items:center; gap:10px; padding:8px 4px; flex-shrink:0; border-bottom:1px solid var(--line); background:var(--paper);">
+      <button id="btnBackFromChat" style="width:38px;height:38px;border-radius:50%; border:none; background:none; font-size:22px; cursor:pointer; color:var(--ink); flex-shrink:0;">‹</button>
+      <div id="chatHeaderAvatar" style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0; cursor:pointer;">-</div>
+      <div style="flex:1; min-width:0;">
+        <div id="chatHeaderName" style="font-weight:800; font-size:15px; font-family:'Manrope'; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;">-</div>
+        <div id="chatHeaderSub" style="font-size:11.5px; color:var(--ink-soft);">@kullanici</div>
+      </div>
+      <div style="position:relative; flex-shrink:0;">
+        <button id="btnChatMenu" style="width:38px;height:38px;border-radius:50%; border:none; background:none; font-size:19px; cursor:pointer; color:var(--ink);">⋮</button>
+        <div id="chatHeaderMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:190px;">
+          <button id="btnChatReportUser" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">🚩 Kullanıcıyı Şikayet Et</button>
+          <button id="btnChatGroupMembers" style="display:none; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">👥 Grup Üyeleri</button>
+          <button id="btnChatPin" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">📌 Sohbeti Sabitle</button>
+          <button id="btnChatBlock" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--danger);">🚫 Engelle</button>
+          <button id="btnChatDelete" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--danger);">🗑️ Sohbeti Sil</button>
+        </div>
+      </div>
+    </div>
+    <div id="chatBlockedNote" style="display:none; text-align:center; font-size:12px; color:var(--danger); background:var(--tint-rust); padding:8px; flex-shrink:0;"></div>
+    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #E9E0D2);"></div>
+    <div style="display:flex; gap:8px; align-items:center; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--paper); border-top:1px solid var(--line);">
+      <button id="chatAttachBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:22px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
+      <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+      <input type="text" id="chatInput" placeholder="Mesaj yaz" style="flex:1; border-radius:24px; padding:11px 18px; background:var(--concrete); border:none; font-size:15px;">
+      <div id="chatRecordingBar" style="display:none; flex:1; align-items:center; gap:10px; padding:0 14px; height:44px; border-radius:24px; background:var(--tint-rust);">
+        <span style="width:9px;height:9px;border-radius:50%; background:var(--danger); animation:recBlink 1s infinite;"></span>
+        <span id="chatRecordTimer" style="font-weight:700; font-size:13px; color:var(--danger);">0:00</span>
+        <span style="flex:1; font-size:12px; color:var(--ink-soft);">Kaydediliyor...</span>
+        <button id="chatRecordCancel" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft);">✕</button>
+      </div>
+      <button id="chatMicBtn" style="width:42px;height:42px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">🎤</button>
+      <button id="chatSendBtn" style="width:42px;height:42px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm);">➤</button>
+    </div>
+  </section>
+  <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}</style>
+
+  <!-- GEÇMİŞ -->
+  <section class="screen" id="screen-kayitlar">
+    <div class="stat-grid3" id="historyStats"></div>
+
+    <div class="subtabs">
+      <button class="active" data-sub="calisma">Çalışma Günleri</button>
+      <button data-sub="avans">Avanslar</button>
+      <button data-sub="ozet">Aylık Özet</button>
+    </div>
+
+    <div id="sub-calisma">
+      <div class="search-box"><input type="text" id="searchBoxWork" placeholder="Not veya işveren adında ara..."></div>
+      <div class="month-select" id="monthSelectWork"></div>
+      <div id="listWork"></div>
+    </div>
+
+    <div id="sub-avans" style="display:none;">
+      <div class="search-box"><input type="text" id="searchBoxAvans" placeholder="Not veya işveren adında ara..."></div>
+      <div class="month-select" id="monthSelectAvans"></div>
+      <div id="listAvans"></div>
+    </div>
+
+    <div id="sub-ozet" style="display:none;">
+      <div class="year-nav">
+        <button id="yearPrev">‹</button>
+        <span class="yt" id="yearTitle">Yıllık İstatistikler</span>
+        <button id="yearNext">›</button>
+      </div>
+      <div class="ychart" id="yearChart"></div>
+      <div class="section-title">Aylık Detaylar</div>
+      <div id="monthDetails"></div>
+      <div class="section-title" id="siteBreakdownTitle" style="display:none;">İşverene Göre Kazanç</div>
+      <div id="siteBreakdown"></div>
+    </div>
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="footerHelpKayitlar" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="footerStaffKayitlar" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="footerPrivacyKayitlar" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="footerTermsKayitlar" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="footerSuggestKayitlar" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- İSTATİSTİK (tüm zamanlar) -->
+  <section class="screen" id="screen-istatistik">
+    <div class="section-title" style="margin-top:0;">📅 Zaman Filtresi</div>
+    <div class="month-select" id="statTimeFilter">
+      <button class="month-chip" data-range="today">Bugün</button>
+      <button class="month-chip" data-range="week">Bu Hafta</button>
+      <button class="month-chip active" data-range="month">Bu Ay</button>
+      <button class="month-chip" data-range="year">Bu Yıl</button>
+      <button class="month-chip" data-range="all">Tüm Zamanlar</button>
+    </div>
+
+    <div class="section-title">💰 Kazanç Özeti</div>
+    <div class="card">
+      <div class="toggle-row"><div class="tlbl">Toplam Kazanç</div><div class="tsub" id="stKazanc">₺0</div></div>
+      <div class="toggle-row"><div class="tlbl">Toplam Alacak</div><div class="tsub" id="stAlacak">₺0</div></div>
+      <div class="toggle-row"><div class="tlbl">Toplam Avans</div><div class="tsub" id="stAvans">₺0</div></div>
+      <div class="toggle-row"><div class="tlbl">Toplam Tahsil Edilen</div><div class="tsub" id="stTahsil">₺0</div></div>
+      <div class="toggle-row" style="margin-bottom:0;"><div class="tlbl">Kalan Alacak</div><div class="tsub" id="stKalan" style="font-weight:800;">₺0</div></div>
+    </div>
+
+    <div class="section-title">👷 Çalışma İstatistikleri</div>
+    <div class="stat-grid3" id="stWorkStats"></div>
+
+    <div class="section-title">📈 Rekorlar <span style="font-size:10px; font-weight:600; color:var(--ink-soft); text-transform:none;">(tüm zamanlar)</span></div>
+    <div class="card">
+      <div class="toggle-row"><div class="tlbl">En Yüksek Yevmiye</div><div class="tsub" id="recMaxYevmiye">-</div></div>
+      <div class="toggle-row"><div class="tlbl">En Düşük Yevmiye</div><div class="tsub" id="recMinYevmiye">-</div></div>
+      <div class="toggle-row"><div class="tlbl">En Yüksek Avans</div><div class="tsub" id="recMaxAvans">-</div></div>
+      <div class="toggle-row"><div class="tlbl">En Fazla Kazanılan Ay</div><div class="tsub" id="recBestMonth">-</div></div>
+      <div class="toggle-row" style="margin-bottom:0;"><div class="tlbl">En Çok Çalışılan Ay</div><div class="tsub" id="recBestWorkMonth">-</div></div>
+    </div>
+
+    <div class="section-title">📄 Rapor</div>
+    <div class="card">
+      <div class="hint" style="margin-top:0;">Seçili zaman aralığındaki (üstteki filtre) kayıtların düzenli, yazdırılabilir PDF raporunu indir.</div>
+      <button class="submit-btn secondary" id="btnDownloadPdfReport">📄 PDF Rapor İndir</button>
+    </div>
+
+    <div class="section-title">📊 Aylık Kazanç Grafiği</div>
+    <div class="ychart" id="chartMonthly"></div>
+
+    <div class="section-title">📊 Haftalık Çalışma Grafiği</div>
+    <div class="ychart" id="chartWeekly"></div>
+
+    <div class="section-title">📊 Günlük Yevmiye Değişimi</div>
+    <div class="ychart" id="chartDaily"></div>
+
+    <div class="section-title">⏳ Kullanım Özeti</div>
+    <div class="card">
+      <div class="toggle-row"><div class="tlbl">Hesap Oluşturulalı Geçen Gün</div><div class="tsub" id="useAccountDays">-</div></div>
+      <div class="toggle-row"><div class="tlbl">Bu Ay Çalışılan Gün</div><div class="tsub" id="useThisMonthDays">-</div></div>
+      <div class="toggle-row"><div class="tlbl">Bu Yıl Çalışılan Gün</div><div class="tsub" id="useThisYearDays">-</div></div>
+      <div class="toggle-row" style="margin-bottom:0;"><div class="tlbl">Toplam Kayıt Sayısı</div><div class="tsub" id="useTotalRecords">-</div></div>
+    </div>
+
+    <div class="section-title">🎯 Hedef Takibi</div>
+    <div class="card">
+      <div id="goalEmptyState" class="empty" style="display:none;">
+        <div class="icon">🎯</div>
+        <div class="msg">Henüz aylık hedef belirlemedin.<br>Ayarlar → Profil Düzenle üzerinden ekleyebilirsin.</div>
+      </div>
+      <div id="goalProgressWrap" style="display:none;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+          <span>Hedef: <strong id="goalTargetVal">₺0</strong></span>
+          <span>Gerçekleşen: <strong id="goalActualVal">₺0</strong></span>
+        </div>
+        <div class="b-track" style="height:14px;"><div class="b-fill yevmiye" id="goalBar" style="width:0%; height:100%;"></div></div>
+        <div style="text-align:center; margin-top:8px; font-family:'Manrope'; font-weight:800; font-size:18px;" id="goalPercentVal">%0</div>
+      </div>
+    </div>
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="footerHelpIstatistik" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="footerStaffIstatistik" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="footerPrivacyIstatistik" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="footerTermsIstatistik" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="footerSuggestIstatistik" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- PROFİL -->
+  <section class="screen" id="screen-profil">
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:13px;">
+        <div id="profileAvatarWrap" style="width:66px;height:66px;border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:22px; flex-shrink:0;">
+          <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover; display:none;">
+          <span id="profileAvatarInitials">-</span>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="profileDisplayName">-</div>
+          <div style="font-size:12px; color:var(--ink-soft);" id="profileUsername">-</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">👷 <span id="profileProfession">-</span></div>
+          <div id="ownRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
+          <span id="ownTenureBadge" style="margin-top:6px; display:inline-block;"></span>
+        </div>
+        <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:19px;" id="ownFollowerCount">0</div>
+          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">Takipçi</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Takipçilerim <button class="see-all-btn" id="ownSeeAllFollowers">Tüm Takipçiler</button></div>
+    <div class="card">
+      <div id="ownFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="section-title">Kişisel Bilgiler</div>
+    <div class="card">
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🆔</div>
+          <div><div class="tlbl">Kullanıcı ID</div><div class="tsub" id="viewUserId">-</div></div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-forest); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">✉️</div>
+          <div><div class="tlbl">E-posta</div><div class="tsub" id="viewEmail">-</div></div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">📍</div>
+          <div><div class="tlbl">Şehir</div><div class="tsub" id="viewCity">-</div></div>
+        </div>
+      </div>
+      <div class="toggle-row" style="margin-bottom:0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-rust); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">📆</div>
+          <div><div class="tlbl">Hesap Oluşturma Tarihi</div><div class="tsub" id="viewCreatedAt">-</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Hesap Bilgileri</div>
+    <div class="stat-grid3" id="profileStats"></div>
+
+    <div class="section-title">Rozetler</div>
+    <div class="card" id="profileBadges" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+
+    <div class="section-title">Notlarım <button class="mini-btn" id="btnAddNoteProfile">Ekle</button></div>
+    <div class="card" id="notesCardProfile"></div>
+
+    <div class="section-title">Güvenlik</div>
+    <div class="card">
+      <div class="hint" style="margin-top:0; margin-bottom:14px;">Hesabına e-posta/şifre ile bağlandın.</div>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="pfSignOut" style="flex:1;">Çıkış Yap</button>
+      </div>
+      <button class="submit-btn danger" id="pfDeleteAccount">Hesabı Sil</button>
+    </div>
+
+    <div class="section-title">Uygulama</div>
+    <div class="card">
+      <button class="submit-btn secondary" id="btnGoToHelp" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
+      <button class="submit-btn secondary" id="btnGoToStaff" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <button class="submit-btn secondary" id="pfPrivacy" style="flex:1; font-size:12px; padding:15px 6px;">Gizlilik Politikası</button>
+        <button class="submit-btn secondary" id="pfTerms" style="flex:1; font-size:12px; padding:15px 6px;">Kullanım Koşulları</button>
+      </div>
+      <button class="submit-btn secondary" id="pfSuggest" style="width:100%; margin-bottom:10px;">💡 Öneri Gönder</button>
+      <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 27 Temmuz 2026 · Yardım & Şifre Güncellemesi</div>
+    </div>
+  </section>
+
+  <!-- PROFİLİ DÜZENLE -->
+  <section class="screen" id="screen-profil-duzenle">
+    <div class="cal-nav">
+      <button id="btnBackFromEdit">‹</button>
+      <span class="cal-title">Profili Düzenle</span>
+      <span style="width:36px;"></span>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div id="editAvatarWrap" style="width:96px;height:96px;border-radius:50%; margin:0 auto 12px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:32px; position:relative;">
+        <img id="editAvatarImg" src="" style="width:100%;height:100%;object-fit:cover; display:none;">
+        <span id="editAvatarInitials">-</span>
+      </div>
+      <label class="file-input-label" for="editPhotoInput" style="display:inline-block; width:auto; padding:10px 18px;">📷 Fotoğrafı Değiştir</label>
+      <input type="file" id="editPhotoInput" accept="image/*">
+    </div>
+
+    <div class="card">
+      <div class="field"><label>Ad Soyad</label><input type="text" id="pfFullName"></div>
+      <div class="field">
+        <label>Kullanıcı Adı</label>
+        <input type="text" id="pfUsername">
+        <div class="hint" id="pfUsernameHint"></div>
+      </div>
+      <div class="field"><label>Kullanıcı ID</label><input type="text" id="pfUserId" disabled></div>
+      <div class="field"><label>E-posta</label><input type="text" id="pfEmail" disabled></div>
+      <div class="field">
+        <label>Meslek</label>
+        <select id="pfProfession"></select>
+      </div>
+      <div class="field"><label>Şehir</label><input type="text" id="pfCity" placeholder="Örn: İstanbul"></div>
+      <div class="field"><label>Hesap Oluşturma Tarihi</label><input type="text" id="pfCreatedAt" disabled></div>
+      <button class="submit-btn" id="pfSave">Bilgileri Kaydet</button>
+    </div>
+
+    <div class="section-title">Gizlilik</div>
+    <div class="card">
+      <div class="field">
+        <label>Takipçilerimi Kim Görebilir?</label>
+        <select id="selFollowersVisibility">
+          <option value="everyone">Herkes — herkes takip edebilir, listem görünür</option>
+          <option value="onlyme">Sadece Ben — takip edilebilirim ama liste/sayı gizli</option>
+          <option value="nobody">Hiç Kimse — takip özelliği tamamen kapalı</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Bana Kimler Mesaj Atabilir?</label>
+        <select id="selMessagePermission">
+          <option value="everyone">Herkes</option>
+          <option value="followers">Sadece Takipçilerim</option>
+        </select>
+        <div class="hint">Yöneticiler ve moderatörler bu ayardan bağımsız her zaman mesaj atabilir.</div>
+      </div>
+      <button class="submit-btn secondary" id="pmBlockedBtn">🚫 Engellediğim Kullanıcılar</button>
+    </div>
+
+    <div class="section-title">Hesabımı Duraklat</div>
+    <div class="card">
+      <div class="toggle-row">
+        <div><div class="tlbl">🌙 Geçici Olarak Duraklat</div><div class="tsub">Açıkken aramada çıkmazsın, kimse yeni mesaj başlatamaz. İstediğin an kapatabilirsin.</div></div>
+        <label class="switch"><input type="checkbox" id="toggleSelfPause"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="section-title">Şifre</div>
+    <div class="card" id="pwChangeCard">
+      <div class="hint" style="margin-top:0; margin-bottom:14px;" id="pwChangeHint">Şifreni değiştirmek için mailine bir sıfırlama linki gönderelim.</div>
+      <div id="pwChangeForm">
+        <button class="submit-btn secondary" id="pwSave">📧 Şifremi Sıfırlama Linki Gönder</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- YÖNETİM EKİBİ -->
+  <section class="screen" id="screen-staff">
+    <div class="cal-nav">
+      <button id="btnBackFromStaff">‹</button>
+      <span class="cal-title">Yönetim Ekibi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin:0 0 16px;">Uygulamayı yöneten ve destek sağlayan hesaplar.</div>
+    <div id="staffList"></div>
+  </section>
+
+  <!-- NASIL KULLANILIR (YARDIM) -->
+  <section class="screen" id="screen-yardim">
+    <div class="cal-nav">
+      <button id="btnBackFromHelp">‹</button>
+      <span class="cal-title">Nasıl Kullanılır?</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin:0 0 16px;">Aşağıdaki başlıklara dokunarak açıp kapatabilirsin.</div>
+
+    <div class="card">
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Bu uygulama ne işe yarıyor?</summary>
+        <p class="hint">Şantiye Defteri; günlük yevmiyeni, alacaklarını, avanslarını ve tahsil ettiğin ödemeleri kaydetmeni, ay ay ve yıl yıl takip etmeni sağlayan kişisel bir defterdir. Verilerin hesabınla bulutta saklanır, hangi telefondan girersen gir seninle gelir.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Nasıl kayıt olurum / giriş yaparım?</summary>
+        <p class="hint">Giriş ekranında "Kayıt Ol" sekmesinden e-posta ve şifre belirleyerek hesap oluşturabilir, ya da "Google ile Giriş Yap" ile tek dokunuşla giriş yapabilirsin. Şifreni unutursan giriş ekranındaki "Şifremi Unuttum" linkine dokunman yeterli.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takvimde bir günü nasıl işaretlerim?</summary>
+        <p class="hint">Ana Sayfa'daki takvimde boş bir güne dokun: 1. dokunuş tam gün (yeşil), 2. dokunuş yarım gün (turuncu, tutar otomatik yarıya iner), 3. dokunuş kaydı tamamen kaldırır. Tam gün için önce Ayarlar'dan varsayılan yevmiye tutarını belirlemen gerekir.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Avans, alacak veya ödeme nasıl eklerim?</summary>
+        <p class="hint">Sağ alttaki ＋ butonuna dokun, kayıt türünü (Yevmiye/Alacak/Avans/Ödeme Alındı) seç, tarih ve tutarı gir, istersen işveren/şantiye adı ve not ekle, "Kaydet" de. Var olan bir kaydı düzenlemek için o kayda dokunman yeterli.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Notlar nasıl çalışır?</summary>
+        <p class="hint">Ana Sayfa ve Profil sayfasının altındaki "Notlarım" bölümünden serbest metin notlar ekleyebilirsin. Bu notlar para hesaplarına dahil edilmez, sadece hatırlatma amaçlıdır.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Geçmiş sayfasında ne var?</summary>
+        <p class="hint">Üstte genel özet kartları, altında üç sekme: Çalışma Günleri (tüm yevmiye kayıtların), Avanslar (avans/alacak/ödeme kayıtların) ve Aylık Özet (yıl bazlı grafik, ay ay detay ve işverene göre kazanç dağılımı).</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">İstatistik sayfası ne gösteriyor?</summary>
+        <p class="hint">Bugün/Bu Hafta/Bu Ay/Bu Yıl/Tüm Zamanlar filtreleriyle kazanç özetini, çalışma oranını, rekorlarını (en yüksek/düşük yevmiye vb.), üç farklı grafiği ve aylık hedef takibini görebilirsin. Hedefini "Hedef Takibi" kartından belirleyip kaydedebilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Profilimi nasıl düzenlerim?</summary>
+        <p class="hint">Profil sayfasındaki "✏️ Profili Düzenle" butonuna dokun. Orada fotoğrafını, adını, kullanıcı adını (1 kez değiştirme hakkın var), mesleğini ve şehrini güncelleyebilir, ayrıca şifreni değiştirebilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Arama nasıl çalışır?</summary>
+        <p class="hint">Üstteki 🔍 ikonuna dokunup tarih, not, işveren adı veya tutar yazarak kendi kayıtların içinde arama yapabilirsin. Aynı kutuya bir meslek adı (örn. "elektrikçi") ya da şehir (örn. "istanbul") yazarsan, o bilgilere sahip diğer kullanıcılar da listelenir — bu arama sadece isim/kullanıcı adı/meslek/şehir bilgisiyle sınırlıdır, kimsenin para bilgisi asla görünmez.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Ayarlar'da neler var?</summary>
+        <p class="hint">⚙️ simgesinden: koyu mod, günlük "çalıştın mı?" hatırlatması, varsayılan yevmiye tutarı, para birimi, verilerini yedekleme/geri yükleme (.json dosyası olarak) ve tüm verileri silme.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Verilerim güvende mi, kim görebilir?</summary>
+        <p class="hint">Kayıtların (yevmiye, avans, alacak, notlar) sadece senin hesabınla ilişkilendirilir ve yalnızca sen görebilirsin. Diğer kullanıcılar arama yaptığında sadece adını, kullanıcı adını, mesleğini ve şehrini görebilir — asla kazancını, kayıtlarını ya da e-postanı göremezler. Bu kuralın tek istisnası, teknik ve hesap desteği sağlayan yöneticiler/moderatörlerdir.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takip sistemi nasıl çalışır?</summary>
+        <p class="hint">Bir kullanıcının profilinde 🤍 "Takip Et" butonuna dokunarak onu takip edebilirsin, takip edilen kişiye bildirim gider. Ayarlar'dan takipçi listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Mesajlaşma nasıl çalışır?</summary>
+        <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilirsin. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece takipçilerine açabilirsin. Tüm mesajların "Mesajlar" sekmesinde listelenir.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Bildirimler ne zaman gelir?</summary>
+        <p class="hint">Biri seni takip ettiğinde, sana mesaj yazdığında veya yöneticiden bir duyuru geldiğinde 🔔 zil ikonuna bildirim düşer. İzin verirsen bunlar telefonuna sistem bildirimi olarak da gelir.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Yönetici ve moderatör rozetleri ne anlama gelir?</summary>
+        <p class="hint">Bazı profillerde "👑 Yönetici" ya da "🛡️ Moderatör" rozetleri görebilirsin — bunlar uygulamayı yöneten, destek sağlayan yetkili hesaplardır.</p>
+      </details>
+      <details style="margin-bottom:0;"><summary style="font-weight:700; cursor:pointer;">Hesabımı nasıl silerim?</summary>
+        <p class="hint">Profil sayfası → Güvenlik bölümü → "Hesabı Sil" butonuna dokun. Hesabın hemen silinmez — 30 gün "silinmeyi bekliyor" durumunda kalır, bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur.</p>
+      </details>
+      <details style="margin-bottom:0;"><summary style="font-weight:700; cursor:pointer;">Hesabımı nasıl duraklatırım?</summary>
+        <p class="hint">Profil → Profili Düzenle → "Hesabımı Duraklat" anahtarını aç. Aramalarda görünmezsin, kimse sana yeni mesaj başlatamaz, çıkış yapılır. Tekrar giriş yapınca otomatik aktif olursun. 30 gün giriş yapmazsan hesabın kalıcı silinir.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- GİZLİLİK POLİTİKASI -->
+  <section class="screen" id="screen-privacy">
+    <div class="cal-nav">
+      <button id="btnBackFromPrivacy">‹</button>
+      <span class="cal-title">Gizlilik Politikası</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <p class="hint" style="margin-top:0;">Son güncelleme: Ağustos 2026</p>
+      <p><strong>1. Topladığımız Veriler</strong><br>Hesabını oluştururken e-posta adresin, ad-soyadın, kullanıcı adın, mesleğin ve şehrin alınır. Uygulamayı kullanırken girdiğin yevmiye, avans, alacak, ödeme kayıtları ve notlar hesabınla ilişkilendirilerek saklanır.</p>
+      <p><strong>2. Verilerin Saklanması</strong><br>Tüm veriler Firebase (Google Cloud) sunucularında, endüstri standardı güvenlik önlemleriyle saklanır. Verilerine yalnızca kendi hesabınla giriş yaptığında erişebilirsin; başka kullanıcılar göremez. Uygulama yöneticileri ve yetkili moderatörler, hesap güvenliği ve topluluk kurallarının uygulanması amacıyla sınırlı bilgilere erişebilir.</p>
+      <p><strong>3. Mesajlaşma ve Medya</strong><br>Gönderdiğin fotoğraf ve sesli mesajlar sadece ilgili sohbetin tarafları arasında görünür ve 5 gün sonra otomatik olarak silinir.</p>
+      <p><strong>4. Veri Paylaşımı</strong><br>Verilerin hiçbir şekilde üçüncü taraflarla paylaşılmaz, satılmaz veya reklam amacıyla kullanılmaz.</p>
+      <p><strong>5. Haklarının</strong><br>Hesabını Profil sayfasından silme talebinde bulunabilirsin — hesabın hemen silinmez, 30 gün "silinmeyi bekliyor" durumunda kalır; bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur. Aynı şekilde hesabını geçici olarak duraklatabilir, istediğin an tekrar giriş yaparak aktif hale getirebilirsin.</p>
+      <p><strong>6. Yönetici Erişimi</strong><br>Yetkili adminler/moderatörler, hesap güvenliği amacıyla IP adresin ve giriş geçmişin gibi bazı teknik bilgilere erişebilir — bu erişim ayrı, sınırlı yetkilerle kontrol edilir ve sadece kötüye kullanım/güvenlik araştırması amacıyla kullanılır.</p>
+      <p><strong>7. İletişim</strong><br>Gizlilikle ilgili sorularını uygulama içindeki Yardım sayfasından veya "Öneri Gönder" ile iletebilirsin.</p>
+    </div>
+  </section>
+
+  <!-- KULLANIM KOŞULLARI -->
+  <section class="screen" id="screen-terms">
+    <div class="cal-nav">
+      <button id="btnBackFromTerms">‹</button>
+      <span class="cal-title">Kullanım Koşulları</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <p class="hint" style="margin-top:0;">Son güncelleme: Ağustos 2026</p>
+      <p><strong>1. Uygulamanın Amacı</strong><br>Şantiye Defteri, kişisel yevmiye, avans, alacak ve ödeme takibi yapmana yardımcı olan bir araçtır. Resmi bir muhasebe veya hukuki belge niteliği taşımaz.</p>
+      <p><strong>2. Kullanıcı Sorumluluğu</strong><br>Girdiğin bilgilerin doğruluğundan sen sorumlusun. Uygulama, kayıtlarının doğruluğunu garanti etmez.</p>
+      <p><strong>3. Hesap Güvenliği</strong><br>Şifreni kimseyle paylaşmamalısın. Hesabından yapılan tüm işlemlerden sen sorumlusun.</p>
+      <p><strong>4. Topluluk Kuralları</strong><br>Mesajlaşma özelliğini kullanırken diğer kullanıcılara karşı saygılı olman beklenir. Taciz, hakaret veya sahte hesap oluşturma gibi davranışlar hesabının devre dışı bırakılmasına veya kalıcı olarak silinmesine yol açabilir. Şikayetler yetkili ekip tarafından incelenir ve sonucu sana bildirim olarak iletilir.</p>
+      <p><strong>5. Hesap Silme ve Duraklatma</strong><br>Hesabını silmek istediğinde, hesabın hemen değil 30 günlük bir bekleme süresinin ardından silinir; bu süre içinde giriş yaparsan işlem iptal olur. Hesabını geçici olarak duraklatabilir, istediğin an geri getirebilirsin.</p>
+      <p><strong>6. Garanti Reddi</strong><br>Uygulama herhangi bir garanti vermeksizin "olduğu gibi" sunulur. Veri kaybı, kesinti veya teknik sorunlardan doğabilecek zararlardan sorumluluk kabul edilmez.</p>
+      <p><strong>7. Değişiklikler</strong><br>Bu koşullar zaman zaman güncellenebilir. Önemli değişiklikler uygulama içinde duyurulur.</p>
+    </div>
+  </section>
+
+  <!-- RÜTBELER -->
+  <section class="screen" id="screen-ranks-info">
+    <div class="cal-nav">
+      <button id="btnBackFromRanksInfo">‹</button>
+      <span class="cal-title">Rütbeler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-top:0; margin-bottom:16px;">Uygulamayı ne kadar süredir kullandığına göre otomatik olarak bir rütbe kazanırsın. Profilinde ve mesajlarda görünür.</div>
+    <div id="ranksInfoList"></div>
+  </section>
+
+  <!-- ÖNERİ GÖNDER -->
+  <section class="screen" id="screen-suggestions">
+    <div class="cal-nav">
+      <button id="btnBackFromSuggestions">‹</button>
+      <span class="cal-title">Öneri Gönder</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div class="hint" style="margin-top:0;">Uygulamayı nasıl daha iyi yapabiliriz? Fikrini yaz, ekibimiz okuyup sana geri dönüş yapacak.</div>
+      <div class="field"><label>Önerin</label><textarea id="suggestionText" placeholder="Örn: Kayıt eklerken şantiye seçimi daha hızlı olabilir..." style="min-height:110px;"></textarea></div>
+      <button class="submit-btn" id="suggestionSend">Gönder</button>
+    </div>
+    <div class="section-title">Geçmiş Önerilerim</div>
+    <div id="mySuggestionsList"></div>
+  </section>
+
+  <!-- BAŞKA KULLANICI PROFİLİ -->
+  <section class="screen" id="screen-view-profile">
+    <div class="cal-nav">
+      <button id="btnBackFromViewProfile">‹</button>
+      <span class="cal-title">Profil</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div id="vpAvatar" style="width:62px;height:62px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:20px; flex-shrink:0;">-</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpName">-</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;" id="vpLastActive"></div>
+          <div style="font-size:12px; color:var(--ink-soft);" id="vpUsername">-</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;" id="vpMeta">-</div>
+          <div id="vpRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
+          <span id="vpTenureBadge" style="margin-top:6px; display:inline-block;"></span>
+          <span id="vpSameIpBadge" style="display:none; margin-top:6px; margin-left:6px; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-rust); color:var(--danger); cursor:pointer;"></span>
+          <div id="vpIpAddressRow" style="display:none; margin-top:6px; font-size:11.5px; color:var(--ink-soft);">🌐 Son IP: <span id="vpIpAddressVal" style="font-weight:700; color:var(--ink);">-</span></div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:16px;" id="vpFollowRow">
+        <button id="vpFollowBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:none; background:var(--asphalt); color:#fff; font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease; box-shadow:var(--shadow-sm);">🤍 Takip Et</button>
+        <button id="vpMessageBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease;">💬 Mesaj</button>
+        <button id="vpBlockBtn" style="flex:0 0 44px; padding:11px 0; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--danger); font-size:15px; cursor:pointer; transition:transform .12s ease;">🚫</button>
+      </div>
+      <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);" id="vpFollowerCount">0 takipçi</div>
+      <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
+    </div>
+
+    <div id="vpAdminToolsSection" style="display:none; margin-top:8px; padding-top:18px; border-top:2px dashed var(--line);">
+      <div class="section-title" style="border-left-color:var(--danger); color:var(--danger);">🛠️ Yönetici Araçları</div>
+
+      <details class="card" id="vpToolEdit" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">✏️ Kullanıcı Bilgilerini Düzenle</summary>
+        <div style="margin-top:14px;">
+          <div class="field"><label>Ad Soyad</label><input type="text" id="vpEditFullName"></div>
+          <div class="field"><label>Kullanıcı Adı</label><input type="text" id="vpEditUsername"></div>
+          <div class="field"><label>Meslek</label><select id="vpEditProfession"></select></div>
+          <div class="field"><label>Şehir</label><input type="text" id="vpEditCity"></div>
+          <button class="submit-btn secondary" id="vpEditSave">Bilgileri Kaydet</button>
+        </div>
+      </details>
+
+      <details class="card" id="vpToolAssignAdmin" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">👑 Admin Yetkisi</summary>
+        <div style="margin-top:14px;">
+          <div class="hint" style="margin-top:0;" id="vpAssignAdminHint"></div>
+          <button class="submit-btn" id="vpAssignAdminBtn"></button>
+        </div>
+      </details>
+
+      <details class="card" id="vpToolUserNotifs" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🔔 Bu Kullanıcının Bildirimleri</summary>
+        <div style="margin-top:14px;" id="vpUserNotifsList"></div>
+      </details>
+
+      <details class="card" id="vpToolLoginHistory" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🔑 Giriş Geçmişi</summary>
+        <div style="margin-top:14px;" id="vpLoginHistoryList"></div>
+      </details>
+
+      <details class="card" id="vpToolPhoto" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🖼️ Profil Fotoğrafı</summary>
+        <div id="vpPhotoDeletedInfo" style="display:none; font-size:12px; color:var(--ink-soft); margin-top:12px;">Son silme: <span id="vpPhotoDeletedBy" style="color:var(--asphalt); font-weight:700; cursor:pointer; text-decoration:underline;"></span> — <span id="vpPhotoDeletedAt"></span></div>
+        <button class="submit-btn danger" id="vpDeletePhoto" style="margin-top:14px;">Fotoğrafı Sil</button>
+      </details>
+
+      <details class="card" id="vpToolReset" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🔄 Hesabı Sıfırla</summary>
+        <div class="hint" style="margin-top:0;">Kayıtları (yevmiye/avans/alacak) ve notları tamamen temizler, hesap ve profil kalır.</div>
+        <button class="submit-btn danger" id="vpResetAccount" style="margin-top:10px;">Kayıtları Sıfırla</button>
+      </details>
+
+      <details class="card" id="vpToolIp" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🌐 IP Adresi</summary>
+        <div class="hint" style="margin-top:0; margin-bottom:10px;">Son bilinen IP: <strong id="vpKnownIp">-</strong><br>Not: IP engelleme tek başına güçlü bir güvenlik önlemi değildir, değişebilir/gizlenebilir.</div>
+        <div id="vpSameIpWarning" style="display:none; background:var(--tint-rust); border-radius:10px; padding:10px; margin-bottom:12px; font-size:12px;">
+          ⚠️ <strong>Aynı IP'den başka hesaplar bulundu:</strong>
+          <div id="vpSameIpList" style="margin-top:8px;"></div>
+        </div>
+        <button class="submit-btn danger" id="vpBanIp">Bu IP'yi Engelle</button>
+      </details>
+
+      <details class="card" id="vpToolDeactivate" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer; color:var(--danger);">🚫 Hesabı Devre Dışı Bırak</summary>
+        <button class="submit-btn danger" id="vpDeactivateBtn" style="margin-top:14px;">Devre Dışı Bırak</button>
+      </details>
+
+      <details class="card" id="vpToolPermanentDelete" style="display:none; border-color:var(--danger);">
+        <summary style="font-weight:700; cursor:pointer; color:var(--danger);">🗑️ Hesabı Kalıcı Olarak Sil</summary>
+        <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlem GERİ ALINAMAZ. Kullanıcının tüm verileri (profil, kayıtlar, takip ilişkileri, moderatörlük) kalıcı olarak silinir. Not: Giriş hesabı (e-posta/şifre) bu panelden silinemez, sadece verileri temizlenir.</div>
+        <button class="submit-btn danger" id="vpPermanentDeleteBtn" style="margin-top:12px;">Kalıcı Olarak Sil</button>
+      </details>
+
+      <details class="card" id="vpToolReactivate" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer; color:var(--green);">🔁 Hesabı Yeniden Aktifleştir</summary>
+        <div class="hint" style="margin-top:0;">Sebep: <strong id="vpDeactivatedReasonShow">-</strong></div>
+        <div class="hint" style="margin-top:2px;">Kim: <span id="vpDeactivatedByShow" style="color:var(--asphalt); font-weight:700; cursor:pointer; text-decoration:underline;">-</span> — <span id="vpDeactivatedAtShow"></span></div>
+        <button class="submit-btn" id="vpReactivateBtn" style="margin-top:10px;">Yeniden Aktifleştir</button>
+      </details>
+
+      <details class="card" id="vpToolModerator" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">🛡️ Moderatörlük</summary>
+        <div style="margin-top:14px;">
+          <div class="field">
+            <label>Rütbe</label>
+            <select id="vpModRankSelect"></select>
+          </div>
+          <div class="hint" style="margin-top:0; margin-bottom:10px;">Aşağıdan yetkilerini seç:</div>
+          <div class="toggle-row"><div class="tlbl">✏️ Profil Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfile"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🚫 Hesap Devre Dışı Bırakma</div><label class="switch"><input type="checkbox" id="vpModDeleteAccount"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🔁 Hesap Aktifleştirme</div><label class="switch"><input type="checkbox" id="vpModReactivateAccount"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🖼️ Fotoğraf Silme</div><label class="switch"><input type="checkbox" id="vpModDeletePhoto"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🔄 Hesap Sıfırlama</div><label class="switch"><input type="checkbox" id="vpModResetAccount"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📢 Toplu Bildirim</div><label class="switch"><input type="checkbox" id="vpModBroadcast"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📢 Duyuru Bandı Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditAnnouncements"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📖 Günün Ayeti Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditQuotes"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📊 İstatistik Görme</div><label class="switch"><input type="checkbox" id="vpModViewStats"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">✉️ İtirazları Görme</div><label class="switch"><input type="checkbox" id="vpModViewAppeals"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📜 İşlem Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewModLog"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🗑️ Hesabı Kalıcı Silme</div><label class="switch"><input type="checkbox" id="vpModPermanentDelete"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🚩 Şikayetleri Görme</div><label class="switch"><input type="checkbox" id="vpModViewReports"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">💡 Önerileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewSuggestions"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📜 Öneriler Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewSuggestionHistory"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🌐 IP Adresi Görme</div><label class="switch"><input type="checkbox" id="vpModViewIp"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">✏️ Kullanıcı Adı Değiştirme (sınırsız)</div><label class="switch"><input type="checkbox" id="vpModChangeUsername"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🔔 Kullanıcı Bildirimlerini Görme</div><label class="switch"><input type="checkbox" id="vpModViewUserNotifications"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🔑 Giriş Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewLoginHistory"><span class="slider"></span></label></div>
+          <button class="submit-btn" id="vpModSave" style="margin-top:6px;">Moderatör Olarak Ata / Güncelle</button>
+          <button class="submit-btn danger" id="vpModRemove" style="margin-top:10px; display:none;">Moderatörlükten Çıkar</button>
+        </div>
+      </details>
+    </div>
+
+    <div class="section-title">Kişisel Bilgiler</div>
+    <div class="card">
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🆔</div>
+          <div><div class="tlbl">Kullanıcı ID</div><div class="tsub" id="vpUserId">-</div></div>
+        </div>
+      </div>
+      <div class="toggle-row" style="margin-bottom:0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-rust); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">📆</div>
+          <div><div class="tlbl">Hesap Oluşturma Tarihi</div><div class="tsub" id="vpCreatedAt">-</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Rozetler</div>
+    <div class="card" id="vpBadges" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+
+    <div class="section-title" id="vpFollowerSectionTitle">Takipçiler</div>
+    <div class="card" id="vpFollowerCard">
+      <div id="vpFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      <button class="see-all-btn" id="vpSeeAllFollowers" style="margin-top:10px;">Tüm Takipçiler</button>
+    </div>
+  </section>
+
+  <!-- ADMİN PANELİ -->
+  <section class="screen" id="screen-admin">
+    <div class="cal-nav">
+      <button id="btnBackFromAdmin">‹</button>
+      <span class="cal-title" id="adminPanelTitle">Admin Paneli</span>
+      <span style="width:36px;"></span>
+    </div>
+
+    <details class="card" id="permStats" open>
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📊 Genel İstatistikler</summary>
+      <div style="margin-top:14px;">
+        <div class="stat-grid3" id="adminStats"></div>
+        <button class="submit-btn secondary" id="adminCalcStats">🔄 Tüm Kullanıcı Verilerini Hesapla</button>
+      </div>
+    </details>
+
+    <details class="card" id="permManageUsers">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">👥 Kullanıcılar <span id="adminUserCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Bir kullanıcıya dokunarak profiline git — düzenleme, silme, sıfırlama gibi işlemler oradan yapılır.</div>
+        <div class="search-box"><input type="text" id="adminUserSearch" placeholder="İsim, kullanıcı adı, e-posta ara..."></div>
+        <div id="adminUserList"></div>
+      </div>
+    </details>
+
+    <details class="card" id="permDeactivated">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚫 Devre Dışı Bırakılan Hesaplar</summary>
+      <div style="margin-top:14px;" id="adminDeactivatedList"></div>
+    </details>
+
+    <details class="card" id="permAppeals">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">✉️ İtirazlar <span id="appealsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div style="margin-top:14px;" id="adminAppealsList"></div>
+    </details>
+
+    <details class="card" id="permReports">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚩 Mesaj Şikayetleri <span id="reportsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div style="margin-top:14px;" id="adminReportsList"></div>
+    </details>
+
+    <details class="card" id="permSuggestions">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">💡 Kullanıcı Önerileri <span id="suggestionsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div style="margin-top:14px;" id="adminSuggestionsList"></div>
+    </details>
+
+    <details class="card" id="permSuggestionHistory">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 Öneriler Geçmişi</summary>
+      <div style="margin-top:14px;" id="adminSuggestionHistoryList"></div>
+    </details>
+
+    <details class="card" id="permModLog">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 İşlem Geçmişi</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Son 4 işlem burada, aramak/filtrelemek için "Tümünü Gör"e bas.</div>
+        <div id="modLogList"></div>
+      </div>
+    </details>
+
+    <details class="card" id="permBroadcast">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Toplu Bildirim Gönder</summary>
+      <div style="margin-top:14px;">
+        <div class="field">
+          <label>Kime Gönderilsin?</label>
+          <select id="adminBroadcastTarget">
+            <option value="all">Herkese</option>
+            <option value="staff">Sadece Yönetim Ekibi (Admin + Moderatör)</option>
+            <option value="specific">Belirli Kullanıcı(lar)</option>
+          </select>
+        </div>
+        <div class="field" id="adminBroadcastSpecificWrap" style="display:none;">
+          <label>Kullanıcı Ara ve Ekle</label>
+          <input type="text" id="adminBroadcastSpecificSearch" placeholder="Kullanıcı adı yaz...">
+          <div id="adminBroadcastSpecificResults"></div>
+          <div id="adminBroadcastSpecificChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+        </div>
+        <div class="field"><label>Mesaj</label><textarea id="adminBroadcastText" placeholder="Gönderilecek duyuru..."></textarea></div>
+        <button class="submit-btn" id="adminBroadcastSend">📢 Gönder</button>
+      </div>
+    </details>
+
+    <details class="card" id="permAnnouncements">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Duyuru Bandı</summary>
+      <div style="margin-top:14px;">
+        <div class="field">
+          <label>Ana Sayfa Duyuru Bandı (boş bırakırsan görünmez)</label>
+          <textarea id="adminBannerText" placeholder="Örn: Uygulama bakımda, geçici aksaklıklar olabilir."></textarea>
+        </div>
+        <div class="field">
+          <label>Duyuru Süresi</label>
+          <select id="adminBannerDuration">
+            <option value="0">Süresiz</option>
+            <option value="1">1 Saat</option>
+            <option value="24">24 Saat</option>
+            <option value="48">2 Gün</option>
+            <option value="168">1 Hafta</option>
+          </select>
+        </div>
+        <button class="submit-btn secondary" id="adminBannerSave">Duyuru Bandını Kaydet</button>
+      </div>
+    </details>
+
+    <details class="card" id="permQuotes">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📖 Günün Ayeti</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Ana sayfada rastgele gösterilecek ayet/söz listesi.</div>
+        <div id="quoteListDisplay" style="margin:10px 0;"></div>
+        <div>
+          <input type="text" id="adminQuoteAddInput" placeholder="Yeni ayet/söz ekle..." style="margin-bottom:10px;">
+          <button class="submit-btn secondary" id="adminQuoteAddBtn">➕ Ekle</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" id="permProfessions">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">👷 Meslek Listesi</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Kayıt sırasında kullanıcılara gösterilecek meslekler.</div>
+        <div id="professionListDisplay" style="margin:10px 0;"></div>
+        <div>
+          <input type="text" id="adminProfessionAddInput" placeholder="Yeni meslek adı..." style="margin-bottom:10px;">
+          <button class="submit-btn secondary" id="adminProfessionAddBtn">➕ Ekle</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" id="permRanks">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🎖️ Moderatör Rütbeleri</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Moderatörlere atanabilecek rütbe isimleri, en düşükten en yükseğe.</div>
+        <div id="modRankDisplay" style="margin:12px 0;"></div>
+        <div>
+          <input type="text" id="adminRankAddInput" placeholder="Yeni rütbe adı..." style="margin-bottom:10px;">
+          <button class="submit-btn secondary" id="adminRankAddBtn">➕ Ekle</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" id="permTenureRanks">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌱 Üyelik Rütbeleri (Kıdem)</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Kullanıcıların hesap yaşına göre otomatik kazandığı rütbeler.</div>
+        <div id="tenureRankDisplay" style="margin:12px 0;"></div>
+        <div style="background:var(--concrete); border-radius:14px; padding:14px; margin-top:6px;">
+          <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--ink-soft);">YENİ RÜTBE EKLE</div>
+          <div class="btn-row" style="margin-bottom:8px;">
+            <input type="text" id="trIconInput" placeholder="🏅" style="flex:0 0 64px; text-align:center;">
+            <input type="text" id="trNameInput" placeholder="Rütbe adı" style="flex:1;">
+          </div>
+          <div class="btn-row" style="margin-bottom:8px;">
+            <input type="number" id="trMinInput" placeholder="Min gün" style="flex:1;">
+            <input type="number" id="trMaxInput" placeholder="Max gün (boş=sınırsız)" style="flex:1;">
+          </div>
+          <button class="submit-btn secondary" id="tenureRankAddRow">➕ Ekle</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" id="permIpBan">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌐 IP Engelleme</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">IP engelleme tek başına güçlü bir güvenlik önlemi değildir; IP değişebilir/gizlenebilir (VPN vb.). Ek bir katman olarak düşün.</div>
+        <div class="field" style="margin-top:10px;">
+          <label>Elle IP Ekle</label>
+          <input type="text" id="adminManualIp" placeholder="Örn: 85.34.12.10" style="margin-bottom:10px;">
+          <button class="submit-btn secondary" id="adminManualIpAdd">🚫 Engelle</button>
+        </div>
+        <div class="section-title" style="margin:16px 0 8px;">Engelli IP'ler</div>
+        <div id="adminBannedIpList"></div>
+      </div>
+    </details>
+
+    <details class="card" id="permModerators">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🛡️ Moderatörler</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Yeni moderatör atamak için ilgili kullanıcının profiline git → Yönetici Araçları → Moderatörlük.</div>
+        <div id="modList" style="margin-top:10px;"></div>
+      </div>
+    </details>
+
+    <details class="card" id="permBulk" style="border-color:var(--danger);">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlemler TÜM kullanıcıları etkiler ve dikkatli kullanılmalı. Onay için özel bir metin yazman istenecek.</div>
+        <button class="submit-btn danger" id="adminBulkDeactivate" style="margin-top:12px; margin-bottom:10px;">🚫 Tüm Kullanıcıları Devre Dışı Bırak</button>
+        <button class="submit-btn danger" id="adminBulkDeletePhotos" style="margin-bottom:10px;">🖼️ Tüm Profil Fotoğraflarını Sil</button>
+        <button class="submit-btn danger" id="adminBulkStripMods">🛑 Tüm Moderatörlerin Yetkilerini Acil Durdur</button>
+        <div class="hint" style="color:var(--danger); margin-top:16px;">⚠️ Aşağıdaki buton TÜM kullanıcıların yevmiye/avans/alacak/not kayıtlarını kalıcı olarak siler (hesaplar ve girişler kalır, sadece veriler silinir). GERİ ALINAMAZ.</div>
+        <button class="submit-btn danger" id="adminWipeAllData" style="margin-top:10px; background:#000;">☢️ Sistemdeki Tüm Verileri Temizle</button>
+      </div>
+    </details>
+
+    <div class="hint" style="text-align:center; margin:6px 0 20px;">Not: Kullanıcıların gerçek para kayıtlarını (yevmiye/avans vb.) değiştirme özelliği bilinçli olarak eklenmedi — sadece profil/hesap yönetimi mümkün.</div>
+  </section>
+
+  <!-- TAKİPÇİ LİSTESİ -->
+  <div class="modal-overlay" id="followerListOverlay">
+    <div class="modal-sheet">
+      <div class="modal-title"><span>Takipçiler</span><button class="close" id="followerListClose">✕</button></div>
+      <div id="followerListBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="blockedListOverlay">
+    <div class="modal-sheet">
+      <div class="modal-title"><span>Engellenen Kullanıcılar</span><button class="close" id="blockedListClose">✕</button></div>
+      <div id="blockedListBody"></div>
+    </div>
+  </div>
+
+</main>
+
+<button class="fab" id="fabAdd" aria-label="Kayıt Ekle">＋</button>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabs">
+  <button class="active" data-screen="ana"><span class="ic">🏠</span>Ana Sayfa</button>
+  <button data-screen="kayitlar"><span class="ic">📋</span>Geçmiş</button>
+  <button data-screen="istatistik"><span class="ic">📊</span>İstatistik</button>
+  <button id="navProfileMenuBtn" style="position:relative;"><span class="ic">👤</span>Profil<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:16px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+</nav>
+
+</div><!-- /appRoot -->
+
+<!-- PROFİL MENÜSÜ (küçük açılır pencere) -->
+<div class="modal-overlay" id="profileMenuOverlay">
+  <div class="modal-sheet" style="max-width:320px;">
+    <div class="modal-title"><span>Menü</span><button class="close" id="profileMenuClose">✕</button></div>
+    <button class="submit-btn secondary" id="pmNotifBtn" style="margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; position:relative;">
+      🔔 Bildirimler <span id="pmNotifBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 4px;">0</span>
+    </button>
+    <button class="submit-btn secondary" id="pmMessagesBtn" style="margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; position:relative;">
+      💬 Mesajlar <span id="pmMsgBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 4px;">0</span>
+    </button>
+    <button class="submit-btn" id="pmProfileBtn">👤 Profilime Git</button>
+  </div>
+</div>
+
+
+
+<div class="modal-overlay" id="dailyCheckOverlay">
+  <div class="modal-sheet">
+    <div class="daycheck-card">
+      <div class="dcicon">👷</div>
+      <div class="dctext">Bugün çalıştın mı?</div>
+      <div class="dcsub">Evet dersen bugünü varsayılan yevmiye tutarınla otomatik kaydederiz.</div>
+    </div>
+    <div style="background:var(--tint-forest); border-radius:12px; padding:14px; margin-bottom:16px; font-size:13px; line-height:1.6; color:var(--text-forest); font-style:italic;" id="dcVerseText"></div>
+    <div class="btn-row">
+      <button class="submit-btn secondary" id="dcNo" style="flex:1;">Hayır</button>
+      <button class="submit-btn" id="dcYes" style="flex:1;">Evet, çalıştım ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRY MODAL -->
+<div class="modal-overlay" id="entryOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span id="entryModalTitle">Kayıt Ekle</span><button class="close" id="entryClose">✕</button></div>
+    <div class="field">
+      <label>Kayıt Türü</label>
+      <div class="type-grid" id="entryTypeGrid">
+        <button class="type-btn active" data-type="yevmiye" type="button">Yevmiye</button>
+        <button class="type-btn" data-type="not" type="button">Not</button>
+        <button class="type-btn" data-type="avans" type="button">Avans</button>
+        <button class="type-btn" data-type="odeme" type="button">Ödeme Alındı</button>
+      </div>
+    </div>
+    <div class="field" id="entryDateWrap"><label>Tarih</label><input type="date" id="entryDate"></div>
+    <div class="field" id="entryAmountWrap"><label>Tutar (₺)</label><input type="number" id="entryAmount" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="field" id="entrySiteWrap"><label>İşveren / Şantiye (opsiyonel)</label><input type="text" id="entrySite" list="siteList"><datalist id="siteList"></datalist></div>
+    <div class="field"><label id="entryNoteLabel">Not (opsiyonel)</label><textarea id="entryNote"></textarea></div>
+    <div class="field" id="entryReceiptWrap">
+      <label>Makbuz / Fotoğraf (opsiyonel)</label>
+      <div id="entryReceiptPreviewWrap" style="display:none; position:relative; margin-bottom:10px;">
+        <img id="entryReceiptPreview" style="max-width:100%; border-radius:12px; display:block;">
+        <button id="entryReceiptRemove" style="position:absolute; top:8px; right:8px; width:28px;height:28px;border-radius:50%; background:rgba(0,0,0,0.6); color:#fff; border:none; font-size:14px; cursor:pointer;">✕</button>
+      </div>
+      <label class="file-input-label" for="entryReceiptInput" style="display:inline-block; width:auto; padding:10px 18px;">📎 Makbuz Ekle</label>
+      <input type="file" id="entryReceiptInput" accept="image/*" style="display:none;">
+    </div>
+    <div class="btn-row" id="entryBtnRow">
+      <button class="submit-btn" id="entrySave" style="flex:1;">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAKBUZ TAM EKRAN -->
+<!-- YENİ GRUP OLUŞTUR -->
+<div class="modal-overlay" id="newGroupOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Yeni Grup</span><button class="close" id="newGroupClose">✕</button></div>
+    <div class="field"><label>Grup Adı</label><input type="text" id="newGroupName" placeholder="Örn: Şantiye Ekibi"></div>
+    <div class="field">
+      <label>Üye Ekle</label>
+      <input type="text" id="newGroupSearch" placeholder="Kullanıcı adı yaz...">
+      <div id="newGroupSearchResults"></div>
+    </div>
+    <div id="newGroupChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;"></div>
+    <button class="submit-btn" id="newGroupCreate">Grubu Oluştur</button>
+  </div>
+</div>
+
+<!-- GRUP ÜYELERİ -->
+<div class="modal-overlay" id="groupMembersOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Grup Üyeleri</span><button class="close" id="groupMembersClose">✕</button></div>
+    <div id="groupMembersList"></div>
+    <div class="field" id="groupAddMemberWrap" style="margin-top:14px;">
+      <label>Üye Ekle</label>
+      <input type="text" id="groupAddMemberSearch" placeholder="Kullanıcı adı yaz...">
+      <div id="groupAddMemberResults"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ORTAK LİSTE (Tümünü Gör) -->
+<div class="modal-overlay" id="adminListOverlay">
+  <div class="modal-sheet" style="max-height:88vh; overflow-y:auto;">
+    <div class="modal-title"><span id="adminListTitle">Liste</span><button class="close" id="adminListClose">✕</button></div>
+    <div class="search-box"><input type="text" id="adminListSearch" placeholder="Ara..."></div>
+    <div id="adminListFilters" style="display:none; gap:6px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <div id="adminListBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="receiptViewOverlay">
+  <div style="max-width:100%; max-height:90vh; position:relative;">
+    <img id="receiptViewImg" style="max-width:100%; max-height:90vh; border-radius:10px; display:block;">
+    <button id="receiptViewClose" style="position:absolute; top:-14px; right:-14px; width:34px;height:34px;border-radius:50%; background:#fff; border:none; font-size:16px; cursor:pointer; box-shadow:var(--shadow-md);">✕</button>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Not Ekle</span><button class="close" id="noteClose">✕</button></div>
+    <div class="field"><label>Tarih</label><input type="date" id="noteDate"></div>
+    <div class="field"><label>Not</label><textarea id="noteText" placeholder="Örn: Haziran kalan 42.250"></textarea></div>
+    <button class="submit-btn" id="noteSave">Kaydet</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<!-- ARAMA -->
+<!-- BİLDİRİMLER -->
+<div class="modal-overlay" id="notifOverlay" style="align-items:flex-start;">
+  <div class="modal-sheet" style="border-radius:0 0 22px 22px; max-height:100vh; padding-top:calc(18px + env(safe-area-inset-top));">
+    <div class="modal-title"><span>Bildirimler</span><button class="close" id="notifClose">✕</button></div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<!-- HESABI DEVRE DIŞI BIRAK -->
+<!-- MESAJ ŞİKAYET ET -->
+<div class="modal-overlay" id="reportMsgOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Mesajı Şikayet Et</span><button class="close" id="reportMsgClose">✕</button></div>
+    <div class="field">
+      <label>Sebep</label>
+      <select id="reportMsgReason">
+        <option>Küfür / Hakaret</option>
+        <option>Taciz veya zorbalık</option>
+        <option>Spam</option>
+        <option>Uygunsuz içerik</option>
+        <option>Diğer</option>
+      </select>
+    </div>
+    <div class="field"><label>Ek Not (opsiyonel)</label><textarea id="reportMsgNote" placeholder="Detay ekleyebilirsin..."></textarea></div>
+    <button class="submit-btn danger" id="reportMsgSubmit">Şikayet Et</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deactivateOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Hesabı Devre Dışı Bırak</span><button class="close" id="deactivateClose">✕</button></div>
+    <div class="hint" style="margin-top:0; margin-bottom:14px;">Hesap silinmez, sadece askıya alınır — istersen daha sonra "Devre Dışı Bırakılan Hesaplar" listesinden yeniden aktifleştirebilirsin.</div>
+    <div class="field">
+      <label>Sebep</label>
+      <select id="deactivateReasonSelect">
+        <option>Sahte hesap / kimliğe bürünme</option>
+        <option>Uygunsuz içerik veya davranış</option>
+        <option>Spam</option>
+        <option>Kullanıcı talebi</option>
+        <option>Diğer</option>
+      </select>
+    </div>
+    <div class="field"><label>Ek Not (opsiyonel)</label><textarea id="deactivateNote" placeholder="Detay ekleyebilirsin..."></textarea></div>
+    <button class="submit-btn danger" id="deactivateConfirm">Devre Dışı Bırak</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="searchOverlay" style="align-items:flex-start;">
+  <div class="modal-sheet" style="border-radius:0 0 22px 22px; max-height:100vh; padding-top:calc(18px + env(safe-area-inset-top));">
+    <div class="modal-title"><span>Ara</span><button class="close" id="searchClose">✕</button></div>
+    <input type="text" id="searchInput" placeholder="Tarih, not, işveren veya tutar ara...">
+    <div id="searchResults" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Ayarlar</span><button class="close" id="settingsClose">✕</button></div>
+
+    <div class="toggle-row" style="align-items:center;">
+      <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+        <img id="userAvatar" src="" style="width:36px;height:36px;border-radius:50%; display:none; flex-shrink:0;">
+        <div style="overflow:hidden;">
+          <div class="tlbl" id="userName" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">-</div>
+          <div class="tsub" id="userEmail" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">-</div>
+        </div>
+      </div>
+      <button class="mini-btn" id="btnSignOut" style="background:var(--danger); flex-shrink:0;">Çıkış Yap</button>
+    </div>
+
+    <button class="submit-btn secondary" id="btnGoToEdit" style="margin-bottom:16px;">✏️ Profili Düzenle</button>
+    <button class="submit-btn secondary" id="btnGoToAdmin" style="margin-bottom:16px; display:none; border-color:var(--asphalt); color:var(--asphalt); font-weight:800;">🛠️ Admin Paneli</button>
+
+    <div class="toggle-row">
+      <div><div class="tlbl">Koyu Mod</div><div class="tsub">Karanlıkta göz yormaz</div></div>
+      <label class="switch"><input type="checkbox" id="toggleDark"><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="tlbl">Günlük Hatırlatma</div><div class="tsub">Uygulamayı açtığında bugün kayıt yoksa hatırlatır</div></div>
+      <label class="switch"><input type="checkbox" id="toggleReminder"><span class="slider"></span></label>
+    </div>
+    <div class="field">
+      <label>Hatırlatma / Bildirim Saati</label>
+      <input type="time" id="inpReminderTime" value="17:00">
+      <div class="hint">Uygulama açıkken bu saatte, bugün kayıt yoksa telefonuna bildirim gönderilir.</div>
+      <button class="submit-btn secondary" id="btnTestNotification" type="button" style="margin-top:10px;">🔔 Test Bildirimi Gönder</button>
+    </div>
+
+    <div class="field">
+      <label for="inpMonthlyGoal">Aylık Hedef (₺)</label>
+      <input type="number" id="inpMonthlyGoal" min="0" step="100" placeholder="Örn: 100000">
+      <div class="hint">İstatistik sayfasındaki "Hedef Takibi" bölümünde ilerlemen gösterilir.</div>
+    </div>
+    <div class="field">
+      <label for="inpDefaultWage">Varsayılan Yevmiye Tutarı (₺)</label>
+      <input type="number" id="inpDefaultWage" min="0" step="0.01" placeholder="Örn: 1200">
+    </div>
+    <div class="field">
+      <label for="inpCurrency">Para Birimi</label>
+      <select id="inpCurrency">
+        <option value="₺">₺ Türk Lirası</option>
+        <option value="$">$ Amerikan Doları</option>
+        <option value="€">€ Euro</option>
+      </select>
+    </div>
+    <button class="submit-btn" id="btnSaveSettings">Ayarları Kaydet</button>
+
+    <div class="divider"></div>
+    <div class="field">
+      <label>Verileri Yedekle</label>
+      <button class="submit-btn secondary" id="btnExport">⬇ Yedek Dosyası İndir (.json)</button>
+    </div>
+    <div class="field">
+      <label>Yedekten Geri Yükle</label>
+      <label class="file-input-label" for="importFile">📂 Yedek Dosyası Seç (.json)</label>
+      <input type="file" id="importFile" accept="application/json">
+    </div>
+    <div class="divider"></div>
+    <button class="submit-btn danger" id="btnResetAll">🗑 Tüm Verileri Sil</button>
+    <div class="hint" style="text-align:center; margin-top:18px;">Sürüm: 24 Temmuz 2026 · Yarım Gün Güncellemesi</div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
