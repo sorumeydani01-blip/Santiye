@@ -1,4 +1,4 @@
-const CACHE_NAME = 'santiye-defteri-v2';
+const CACHE_NAME = 'santiye-defteri-v3';
 const CORE_ASSETS = ['./', './index.html', './stil.css', './script.js', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -31,10 +31,14 @@ self.addEventListener('fetch', (event) => {
       event.request.url.includes('ipify.org')) {
     return;
   }
+  // ÖNCE İNTERNET: internet varsa her zaman en güncel dosyayı çek ve önbelleği güncelle.
+  // İnternet yoksa (çevrimdışı), o zaman önbellekteki son bilinen kopyayı göster.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).catch(() => cached);
-    })
+    fetch(event.request).then((response) => {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(()=>{});
+      return response;
+    }).catch(() => caches.match(event.request))
   );
 });
 
