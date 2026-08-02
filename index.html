@@ -89,7 +89,6 @@
 </div>
 
 <div id="appRoot" style="display:none;">
-<div id="roleBadgeFixed" style="display:none; position:fixed; bottom:100px; right:90px; z-index:140; width:50px;height:50px;border-radius:15px; background:var(--asphalt); color:#fff; box-shadow:var(--shadow-md); align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:22px; cursor:pointer;"></div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
 <!-- İLK KAYIT (ONBOARDING) -->
@@ -112,6 +111,7 @@
   <div class="brand">
     <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title">Şantiye Defteri</span></div>
     <div style="display:flex; gap:8px;">
+      <button class="gear-btn" id="roleBadgeHeader" style="display:none; background:var(--asphalt); color:#fff; font-weight:800; font-family:'Manrope';" aria-label="Yönetim Paneli"></button>
       <button class="gear-btn" id="btnSearch" aria-label="Ara">🔍</button>
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
@@ -1981,7 +1981,7 @@ let adminStatusUnsub = null, modStatusUnsub = null;
 function updateAdminModButtons(){
   const hasAnyModPerm = Object.values(modPerms).some(v=>v===true);
   const btn = document.getElementById('btnGoToAdmin');
-  const badge = document.getElementById('roleBadgeFixed');
+  const badge = document.getElementById('roleBadgeHeader');
   if(isAdmin){
     btn.style.display = 'block'; btn.textContent = '🛠️ Admin Paneli';
     badge.style.display = 'flex'; badge.textContent = 'A'; badge.title = 'Admin Paneli';
@@ -1996,7 +1996,7 @@ function updateAdminModButtons(){
     applyAdminPermVisibility();
   }
 }
-document.getElementById('roleBadgeFixed').addEventListener('click', openAdminPanel);
+document.getElementById('roleBadgeHeader').addEventListener('click', openAdminPanel);
 function checkIsAdmin(){
   if(!currentUser){ isAdmin = false; modPerms = {}; return; }
   if(adminStatusUnsub) adminStatusUnsub();
