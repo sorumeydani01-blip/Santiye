@@ -143,7 +143,10 @@
       <div><div class="lbl">Önceki Aylardan Kalan</div><div class="val" id="carryVal">₺0</div></div>
     </div>
 
-    <div class="section-title">Takvim</div>
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Takvim</span>
+      <button id="btnCalViewToggle" style="border:1.5px solid var(--line); background:var(--paper); border-radius:12px; padding:5px 12px; font-size:11px; font-weight:800; color:var(--ink-soft); cursor:pointer;">📋 Liste Görünümü</button>
+    </div>
     <div class="cal-nav">
       <button id="calPrev">‹</button>
       <span class="cal-title" id="calTitle"></span>
@@ -155,8 +158,9 @@
       <span><i style="background:var(--blue)"></i>Alacak</span>
       <span><i style="background:var(--green)"></i>Ödeme</span>
     </div>
-    <div class="hint" style="margin:-8px 0 12px;">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
+    <div class="hint" style="margin:-8px 0 12px;" id="calGridHint">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
     <div class="cal-grid" id="calGrid"></div>
+    <div id="calListView" style="display:none;"></div>
 
     <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
     <div class="stat-grid3" id="calMonthStats"></div>
@@ -1740,7 +1744,7 @@ async function openViewProfile(uid){
   if(p && p.role==='admin'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '👑 ' + (p.adminTitle || 'Yönetici'); }
   else if(p && p.role==='moderator'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '🛡️ ' + (p.rank || 'Moderatör'); }
   else { rankBadge.style.display='none'; }
-  document.getElementById('vpTenureBadge').innerHTML = tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;');
+  document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;');
   const sameIpBadge = document.getElementById('vpSameIpBadge');
   const ipRow = document.getElementById('vpIpAddressRow');
   if(canViewIp()){
@@ -2184,6 +2188,7 @@ function adminUserRowHtml(u){
       <div class="info">
         <div class="ttype" style="color:var(--ink);">${escapeHtml(u.fullName||'İsimsiz')} ${u.username?('· '+escapeHtml(u.username)):''}</div>
         <div class="note">${escapeHtml(u.profession||'-')} ${u.city?('· '+escapeHtml(u.city)):''}</div>
+        <div style="margin-top:4px;">${(u.role==='admin') ? '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">👑 '+escapeHtml(u.adminTitle||'Yönetici')+'</span>' : (u.role==='moderator') ? '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">🛡️ '+escapeHtml(u.rank||'Moderatör')+'</span>' : tenureBadgeHtml(u.createdAt)}</div>
       </div>
       <div style="font-size:14px; color:var(--ink-soft);">›</div>
     </div>`;
@@ -5071,8 +5076,45 @@ document.getElementById('fabAdd').addEventListener('click', ()=> openEntryModal(
 document.getElementById('calPrev').addEventListener('click', ()=>{ calMonth--; if(calMonth<0){calMonth=11; calYear--;} renderCalendar(); });
 document.getElementById('calNext').addEventListener('click', ()=>{ calMonth++; if(calMonth>11){calMonth=0; calYear++;} renderCalendar(); });
 
+let calViewMode = 'grid';
+function renderCalListView(){
+  const box = document.getElementById('calListView');
+  if(!box) return;
+  const monthPrefix = calYear + '-' + String(calMonth+1).padStart(2,'0');
+  const monthEntries = entries.filter(e=> e.date.startsWith(monthPrefix)).sort((a,b)=> a.date.localeCompare(b.date));
+  if(monthEntries.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">📋</div><div class="msg">Bu ayda hiç kayıt yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = monthEntries.map(e=>{
+    const [y,m,d] = e.date.split('-');
+    const sign = (e.type==='avans'||e.type==='odeme') ? '−' : '+';
+    return `<div class="entry ${escapeHtml(e.type)}" data-id="${escapeHtml(e.id)}">
+      <div class="bar"></div>
+      <div class="info"><div class="ttype">${TYPE_LABEL[e.type]||e.type}</div><div class="date">${d}.${m}.${y}</div>${e.site?`<div class="site-tag">${escapeHtml(e.site)}</div>`:''}</div>
+      <div class="amount">${sign}${fmt(e.amount)}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.entry').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const entry = entries.find(x=>x.id===row.dataset.id);
+      if(entry) openEntryModal(entry);
+    });
+  });
+}
+document.getElementById('btnCalViewToggle').addEventListener('click', ()=>{
+  calViewMode = calViewMode==='grid' ? 'list' : 'grid';
+  const isList = calViewMode==='list';
+  document.getElementById('calGrid').style.display = isList ? 'none' : 'grid';
+  document.getElementById('calListView').style.display = isList ? 'block' : 'none';
+  document.getElementById('calGridHint').style.display = isList ? 'none' : 'block';
+  document.querySelector('.cal-legend').style.display = isList ? 'none' : 'flex';
+  document.getElementById('btnCalViewToggle').textContent = isList ? '🗓️ Takvim Görünümü' : '📋 Liste Görünümü';
+  if(isList) renderCalListView();
+});
 function renderCalendar(){
   document.getElementById('calTitle').textContent = MONTH_NAMES[calMonth]+' '+calYear;
+  renderCalListView();
   const grid = document.getElementById('calGrid');
   grid.innerHTML = DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('');
 
@@ -5486,10 +5528,13 @@ function renderProfileCompletion(){
   ];
   const doneCount = checks.filter(c=>c.ok).length;
   const pct = Math.round((doneCount / checks.length) * 100);
-  if(pct >= 100){ card.style.display = 'none'; return; }
   card.style.display = 'block';
   document.getElementById('profileCompletionPct').textContent = pct + '%';
   document.getElementById('profileCompletionBar').style.width = pct + '%';
+  if(pct >= 100){
+    document.getElementById('profileCompletionHint').textContent = '✅ Profilin tam dolu!';
+    return;
+  }
   const missing = checks.filter(c=>!c.ok).map(c=>c.label);
   document.getElementById('profileCompletionHint').textContent = 'Eksik: ' + missing.join(', ');
 }
@@ -5586,7 +5631,7 @@ function renderProfile(){
   if(isAdmin){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '👑 ' + (profile.adminTitle || 'Yönetici'); }
   else if(modPerms && modPerms.rank){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '🛡️ ' + modPerms.rank; }
   else { ownRankBadge.style.display='none'; }
-  document.getElementById('ownTenureBadge').innerHTML = tenureBadgeHtml(profile.createdAt, 'margin-left:6px;');
+  document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank)) ? '' : tenureBadgeHtml(profile.createdAt, 'margin-left:6px;');
 
   document.getElementById('viewUserId').textContent = profile.userId || '-';
   document.getElementById('viewEmail').textContent = currentUser.email || '-';
