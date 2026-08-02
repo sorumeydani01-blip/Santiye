@@ -115,8 +115,9 @@
   <div class="brand">
     <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title">Şantiye Defteri</span></div>
     <div style="display:flex; gap:8px;">
-      <button class="gear-btn" id="btnSearch" aria-label="Ara">🔍</button>
+      <button class="gear-btn" id="btnHeaderMessages" aria-label="Mesajlar" style="position:relative;">💬<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+      <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil">👤</button>
       <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
     </div>
   </div>
@@ -1081,25 +1082,12 @@
 <nav class="tabs">
   <button class="active" data-screen="ana"><span class="ic">🏠</span>Ana Sayfa</button>
   <button data-screen="kayitlar"><span class="ic">📋</span>Geçmiş</button>
+  <button id="navSearchBtn"><span class="ic">🔍</span>Ara</button>
   <button data-screen="istatistik"><span class="ic">📊</span>İstatistik</button>
-  <button id="navProfileMenuBtn" style="position:relative;"><span class="ic">👤</span>Profil<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:16px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+  <button data-screen="notlarim"><span class="ic">📝</span>Notlar</button>
 </nav>
 
 </div><!-- /appRoot -->
-
-<!-- PROFİL MENÜSÜ (küçük açılır pencere) -->
-<div class="modal-overlay" id="profileMenuOverlay">
-  <div class="modal-sheet" style="max-width:320px;">
-    <div class="modal-title"><span>Menü</span><button class="close" id="profileMenuClose">✕</button></div>
-    <button class="submit-btn secondary" id="pmNotifBtn" style="margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; position:relative;">
-      🔔 Bildirimler <span id="pmNotifBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 4px;">0</span>
-    </button>
-    <button class="submit-btn secondary" id="pmMessagesBtn" style="margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; position:relative;">
-      💬 Mesajlar <span id="pmMsgBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 4px;">0</span>
-    </button>
-    <button class="submit-btn" id="pmProfileBtn">👤 Profilime Git</button>
-  </div>
-</div>
 
 
 
@@ -1279,7 +1267,6 @@
     </div>
 
     <button class="submit-btn secondary" id="btnGoToEdit" style="margin-bottom:16px;">✏️ Profili Düzenle</button>
-    <button class="submit-btn secondary" id="btnGoToAdmin" style="margin-bottom:16px; display:none; border-color:var(--asphalt); color:var(--asphalt); font-weight:800;">🛠️ Admin Paneli</button>
 
     <div class="toggle-row">
       <div><div class="tlbl">Koyu Mod</div><div class="tsub">Karanlıkta göz yormaz</div></div>
@@ -1335,6 +1322,32 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 <script>
+// ---------- ANDROID GERİ TUŞU YÖNETİMİ ----------
+// Amaç: geri tuşuna basınca uygulamadan direkt çıkmak yerine, önce açık pencereyi kapatsın,
+// sonra sohbetten çıksın, sonra ana sayfaya dönsün — sadece ana sayfadayken gerçekten çıksın.
+history.pushState({sdGuard:true}, '');
+window.addEventListener('popstate', ()=>{
+  const openOverlay = document.querySelector('.modal-overlay.show');
+  if(openOverlay){
+    openOverlay.classList.remove('show');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  if(document.body.classList.contains('chat-open')){
+    document.body.classList.remove('chat-open');
+    switchScreen('mesajlar');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  const activeScreen = document.querySelector('main > .screen.active');
+  if(activeScreen && activeScreen.id !== 'screen-ana'){
+    switchScreen('ana');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  // Ana sayfadayız ve açık bir şey yok — gerçek çıkışa izin ver, tekrar push etmiyoruz.
+});
+
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
     navigator.serviceWorker.register('./sw.js').then(async (reg)=>{
@@ -1986,19 +1999,15 @@ let modPerms = {};
 let adminStatusUnsub = null, modStatusUnsub = null;
 function updateAdminModButtons(){
   const hasAnyModPerm = Object.values(modPerms).some(v=>v===true);
-  const btn = document.getElementById('btnGoToAdmin');
   const badge = document.getElementById('roleBadgeHeader');
   const letterEl = document.getElementById('roleBadgeLetter');
   if(isAdmin){
-    btn.style.display = 'block'; btn.textContent = '🛠️ Admin Paneli';
     badge.style.display = 'flex'; letterEl.textContent = 'A'; badge.title = 'Admin Paneli';
     startPendingAdminCountListener();
   } else if(hasAnyModPerm){
-    btn.style.display = 'block'; btn.textContent = '🛡️ Moderatör Paneli';
     badge.style.display = 'flex'; letterEl.textContent = 'M'; badge.title = 'Moderatör Paneli';
     startPendingAdminCountListener();
   } else {
-    btn.style.display = 'none';
     badge.style.display = 'none';
     stopPendingAdminCountListener();
   }
@@ -2141,7 +2150,7 @@ function openAdminPanel(){
   if(isAdmin){ renderModeratorsList(); loadRankConfig(); loadTenureRankConfig(); }
   if(canBanIp()) renderBannedIpList();
 }
-document.getElementById('btnGoToAdmin').addEventListener('click', openAdminPanel);
+
 document.getElementById('btnBackFromAdmin').addEventListener('click', ()=>{
   document.getElementById('screen-admin').classList.remove('active');
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen==='profil'));
@@ -4318,7 +4327,7 @@ function startConversationsListener(){
         lastSeenMap[d.id] = c.lastMessageAt || lastSeenMap[d.id];
       });
       convosFirstSnapshot = false;
-      ['navMsgBadge','pmMsgBadge'].forEach(id=>{
+      ['navMsgBadge'].forEach(id=>{
         const el = document.getElementById(id);
         if(!el) return;
         if(unread>0){ el.style.display='inline-block'; el.textContent = unread>9?'9+':unread; }
@@ -4599,24 +4608,9 @@ function switchScreen(name){
 }
 document.getElementById('brandHomeLink').addEventListener('click', ()=> switchScreen('ana'));
 
-// ---------- PROFİL MENÜSÜ ----------
-document.getElementById('navProfileMenuBtn').addEventListener('click', ()=>{
-  document.getElementById('profileMenuOverlay').classList.add('show');
-});
-document.getElementById('profileMenuClose').addEventListener('click', ()=> document.getElementById('profileMenuOverlay').classList.remove('show'));
-document.getElementById('pmNotifBtn').addEventListener('click', ()=>{
-  document.getElementById('profileMenuOverlay').classList.remove('show');
-  renderNotifList();
-  document.getElementById('notifOverlay').classList.add('show');
-});
-document.getElementById('pmMessagesBtn').addEventListener('click', ()=>{
-  document.getElementById('profileMenuOverlay').classList.remove('show');
-  switchScreen('mesajlar');
-});
-document.getElementById('pmProfileBtn').addEventListener('click', ()=>{
-  document.getElementById('profileMenuOverlay').classList.remove('show');
-  switchScreen('profil');
-});
+// ---------- HEADER: MESAJLAR / PROFİL DOĞRUDAN ERİŞİM ----------
+document.getElementById('btnHeaderMessages').addEventListener('click', ()=> switchScreen('mesajlar'));
+document.getElementById('btnHeaderProfile').addEventListener('click', ()=> switchScreen('profil'));
 
 // ---------- FAB (+ butonu) SADECE ANA SAYFADA GÖRÜNSÜN ----------
 function updateFabVisibility(){
@@ -5773,7 +5767,7 @@ document.getElementById('btnBackFromRanksInfo').addEventListener('click', ()=>{
 document.getElementById('pfTerms').addEventListener('click', showTerms);
 
 // ---------- GENEL ARAMA ----------
-document.getElementById('btnSearch').addEventListener('click', ()=>{
+document.getElementById('navSearchBtn').addEventListener('click', ()=>{
   document.getElementById('searchInput').value = '';
   document.getElementById('searchResults').innerHTML = '';
   document.getElementById('searchOverlay').classList.add('show');
