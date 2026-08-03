@@ -220,6 +220,9 @@
       <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
       <input type="text" id="msgSearchInput" placeholder="Kişi ara veya mesajlarda ara..." style="width:100%; padding:12px 14px 12px 38px; border-radius:24px; background:var(--concrete); border:none; font-size:14px;">
     </div>
+    <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
+      <span style="font-size:15px;">🔔</span><span></span>
+    </div>
     <div id="msgSearchResults" style="display:none;"></div>
     <div id="msgTabsWrap" style="display:flex; gap:8px; margin-bottom:16px; background:var(--concrete); padding:4px; border-radius:16px;">
       <button class="msg-tab active" data-msgtab="all" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">💬 Tümü <span id="msgTabAllCount" class="msg-tab-count"></span></button>
@@ -252,10 +255,24 @@
       </div>
     </div>
     <div id="chatBlockedNote" style="display:none; text-align:center; font-size:12px; color:var(--danger); background:var(--tint-rust); padding:8px; flex-shrink:0;"></div>
-    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #E9E0D2);"></div>
+    <div id="chatSelectModeBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--asphalt); color:#fff; flex-shrink:0;">
+      <span style="font-weight:700; font-size:13px;">Mesaj seç</span>
+      <button id="chatSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
+    </div>
+    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #E9E0D2); position:relative;"></div>
+    <div id="chatSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0;">
+      <span style="font-size:13px; color:var(--ink-soft);"><span id="chatSelectCount">0</span> mesaj seçildi</span>
+      <button id="chatSelectDeleteBtn" class="submit-btn danger" style="width:auto; padding:9px 16px; font-size:13px;">🗑️ Sil</button>
+    </div>
+    <div id="chatReplyPreview" style="display:none; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; background:var(--concrete); border-top:1px solid var(--line); flex-shrink:0;">
+      <div style="flex:1; min-width:0; font-size:12.5px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">↩️ <span id="chatReplyPreviewText"></span></div>
+      <button id="chatReplyCancel" style="border:none; background:none; font-size:16px; cursor:pointer; color:var(--ink-soft);">✕</button>
+    </div>
+    <div id="chatEmojiPanel" style="display:none; flex-wrap:wrap; gap:6px; padding:10px 12px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0; max-height:150px; overflow-y:auto;"></div>
     <div style="display:flex; gap:8px; align-items:center; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--paper); border-top:1px solid var(--line);">
       <button id="chatAttachBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:22px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
       <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+      <button id="chatEmojiBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">😀</button>
       <input type="text" id="chatInput" placeholder="Mesaj yaz" style="flex:1; border-radius:24px; padding:11px 18px; background:var(--concrete); border:none; font-size:15px;">
       <div id="chatRecordingBar" style="display:none; flex:1; align-items:center; gap:10px; padding:0 14px; height:44px; border-radius:24px; background:var(--tint-rust);">
         <span style="width:9px;height:9px;border-radius:50%; background:var(--danger); animation:recBlink 1s infinite;"></span>
@@ -1164,6 +1181,27 @@
 
 <!-- MAKBUZ TAM EKRAN -->
 <!-- YENİ GRUP OLUŞTUR -->
+<!-- SOHBET HIZLI İŞLEM (basılı tutunca) -->
+<!-- MESAJ EYLEM MENÜSÜ (basılı tutunca) -->
+<div class="modal-overlay" id="msgActionOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>Mesaj</span><button class="close" id="msgActionClose">✕</button></div>
+    <button class="submit-btn secondary" id="msgActionReplyBtn" style="margin-bottom:10px;">↩️ Yanıtla</button>
+    <button class="submit-btn secondary" id="msgActionSelectBtn" style="margin-bottom:10px;">☑️ Seç</button>
+    <button class="submit-btn secondary" id="msgActionReportBtn" style="margin-bottom:10px; color:var(--danger); border-color:var(--danger);">🚩 Şikayet Et</button>
+    <button class="submit-btn danger" id="msgActionDeleteMeBtn" style="margin-bottom:10px;">🗑️ Benden Sil</button>
+    <button class="submit-btn danger" id="msgActionDeleteEveryoneBtn">🗑️ Herkesten Sil</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="convQuickOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span id="convQuickTitle">Sohbet</span><button class="close" id="convQuickClose">✕</button></div>
+    <button class="submit-btn secondary" id="convQuickPinBtn" style="margin-bottom:10px;">📌 Sohbeti Sabitle</button>
+    <button class="submit-btn danger" id="convQuickDeleteBtn">🗑️ Sohbeti Sil</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="newGroupOverlay">
   <div class="modal-sheet">
     <div class="modal-title"><span>Yeni Grup</span><button class="close" id="newGroupClose">✕</button></div>
@@ -3673,6 +3711,10 @@ let currentChatIsGroup = false, currentChatGroupData = null;
 function openChatScreen(cid, otherUid){
   currentConvId = cid; currentChatUid = otherUid;
   currentChatIsGroup = false; currentChatGroupData = null;
+  pendingReplyTo = null;
+  document.getElementById('chatReplyPreview').style.display = 'none';
+  document.getElementById('chatEmojiPanel').style.display = 'none';
+  exitSelectMode();
   document.body.classList.add('chat-open');
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-chat').classList.add('active');
@@ -3729,7 +3771,9 @@ function openChatScreen(cid, otherUid){
   }, 7000);
   chatUnsub = db.collection('messages').where('convId','==',cid).onSnapshot(snap=>{
     clearTimeout(loadTimeout);
-    const msgs = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=> (a.createdAt||'').localeCompare(b.createdAt||''));
+    const msgs = snap.docs.map(d=>({id:d.id, ...d.data()}))
+      .filter(m=> !(Array.isArray(m.deletedFor) && m.deletedFor.includes(currentUser.uid)))
+      .sort((a,b)=> (a.createdAt||'').localeCompare(b.createdAt||''));
     renderChatMessages(msgs);
   }, err=>{
     clearTimeout(loadTimeout);
@@ -3914,15 +3958,26 @@ function chatBubbleHtml(m){
   const textColor = isDark ? '#F1F3F9' : '#111';
   const timeColor = isDark ? '#9CA3AF' : '#667781';
   const tailSide = mine ? 'right' : 'left';
+  if(m.deletedForEveryone){
+    return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px;">
+      <div style="padding:7px 12px; border-radius:8px; background:${isDark?'#1F2937':'#f0f0f0'}; font-size:13px; font-style:italic; color:${timeColor};">🚫 Bu mesaj silindi</div>
+    </div>`;
+  }
+  const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.05)'}; border-left:3px solid var(--asphalt); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
+      <div style="font-weight:800; color:var(--asphalt);">${escapeHtml(m.replyTo.senderName||'')}</div>
+      <div style="color:${timeColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.replyTo.snippet||'')}</div>
+    </div>` : '';
   const imageHtml = m.imageData ? `<img src="${m.imageData}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>` : '';
   const audioHtml = m.audioData ? `<audio controls src="${m.audioData}" style="width:210px; height:36px; display:block; margin-bottom:${m.text?'5px':'0'};"></audio>` : '';
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${escapeHtml(m.text)}</div>` : '';
   const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--asphalt); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
-  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px; user-select:none;">
+  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px; user-select:none; gap:6px;">
+      <input type="checkbox" class="chat-select-box" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:19px;height:19px; flex-shrink:0; ${mine?'order:2;':''}">
       <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'7px 9px 6px 10px'}; border-radius:8px; background:${bubbleBg}; box-shadow:0 1px 1px rgba(0,0,0,0.12);">
         <div style="position:absolute; top:0; ${tailSide}:-7px; width:0; height:0; border-top:8px solid ${bubbleBg}; border-${tailSide==='right'?'left':'right'}:8px solid transparent;"></div>
         ${senderNameHtml}
+        ${replyHtml}
         ${imageHtml}
         ${audioHtml}
         ${expiredHtml}
@@ -3931,25 +3986,43 @@ function chatBubbleHtml(m){
       </div>
     </div>`;
 }
+function dateSeparatorLabel(dateStr){
+  const today = todayStr();
+  const d = new Date(dateStr+'T00:00:00');
+  if(dateStr === today) return 'Bugün';
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;
+  if(dateStr === yStr) return 'Dün';
+  return d.toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'});
+}
+let chatSelectMode = false;
+let chatSelectedIds = new Set();
+let pendingReplyTo = null;
 function renderChatMessages(msgs){
   const box = document.getElementById('chatMessages');
   if(msgs.length===0){
     box.innerHTML = `<div class="empty"><div class="icon">💬</div><div class="msg">Henüz mesaj yok, ilk mesajı sen gönder.</div></div>`;
     return;
   }
-  box.innerHTML = msgs.map(chatBubbleHtml).join('');
+  let html = '';
+  let lastDate = null;
+  msgs.forEach(m=>{
+    const d = (m.createdAt||'').slice(0,10);
+    if(d && d !== lastDate){
+      html += `<div style="text-align:center; margin:14px 0 10px;"><span style="background:var(--concrete); color:var(--ink-soft); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
+      lastDate = d;
+    }
+    html += chatBubbleHtml(m);
+  });
+  box.innerHTML = html;
   box.scrollTop = box.scrollHeight;
-  box.querySelectorAll('.chat-bubble-wrap[data-mine="false"]').forEach(el=>{
+  box.querySelectorAll('.chat-bubble-wrap').forEach(el=>{
     let pressTimer = null;
     const startPress = ()=>{
       pressTimer = setTimeout(()=>{
-        pendingReportMsgId = el.dataset.msgid || null;
-        pendingReportSenderUid = el.dataset.sender;
-        document.getElementById('reportMsgReason').value = 'Küfür / Hakaret';
-        document.getElementById('reportMsgNote').value = '';
-        document.getElementById('reportMsgOverlay').classList.add('show');
         if(navigator.vibrate) navigator.vibrate(15);
-      }, 550);
+        openMessageActionSheet(el.dataset.msgid, el.dataset.sender, el.dataset.mine==='true');
+      }, 500);
     };
     const cancelPress = ()=>{ if(pressTimer) clearTimeout(pressTimer); };
     el.addEventListener('touchstart', startPress, {passive:true});
@@ -3958,8 +4031,96 @@ function renderChatMessages(msgs){
     el.addEventListener('mousedown', startPress);
     el.addEventListener('mouseup', cancelPress);
     el.addEventListener('mouseleave', cancelPress);
+    el.addEventListener('click', ()=>{
+      if(!chatSelectMode) return;
+      const box2 = el.querySelector('.chat-select-box');
+      box2.checked = !box2.checked;
+      toggleMsgSelection(el.dataset.msgid, box2.checked);
+    });
   });
 }
+function toggleMsgSelection(msgId, on){
+  if(on) chatSelectedIds.add(msgId); else chatSelectedIds.delete(msgId);
+  document.getElementById('chatSelectCount').textContent = chatSelectedIds.size;
+  document.getElementById('chatSelectBar').style.display = chatSelectedIds.size>0 ? 'flex' : 'none';
+}
+function enterSelectMode(firstMsgId){
+  chatSelectMode = true;
+  chatSelectedIds.clear();
+  document.querySelectorAll('.chat-select-box').forEach(cb=> cb.style.display='inline-block');
+  document.getElementById('chatSelectModeBar').style.display = 'flex';
+  if(firstMsgId){
+    const cb = document.querySelector(`[data-select-msg="${firstMsgId}"]`);
+    if(cb){ cb.checked = true; toggleMsgSelection(firstMsgId, true); }
+  }
+}
+function exitSelectMode(){
+  chatSelectMode = false;
+  chatSelectedIds.clear();
+  document.querySelectorAll('.chat-select-box').forEach(cb=>{ cb.style.display='none'; cb.checked=false; });
+  document.getElementById('chatSelectModeBar').style.display = 'none';
+  document.getElementById('chatSelectBar').style.display = 'none';
+}
+document.getElementById('chatSelectCancelBtn').addEventListener('click', exitSelectMode);
+document.getElementById('chatSelectDeleteBtn').addEventListener('click', async ()=>{
+  if(chatSelectedIds.size===0) return;
+  if(!confirm(`${chatSelectedIds.size} mesajı listenden silmek istediğine emin misin? (Sadece sende silinir)`)) return;
+  try{
+    const batch = db.batch();
+    chatSelectedIds.forEach(id=> batch.update(db.collection('messages').doc(id), {deletedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)}));
+    await batch.commit();
+    showToast('Mesajlar silindi');
+    exitSelectMode();
+  }catch(e){ showToast('Silinemedi'); }
+});
+let pendingActionMsgId = null, pendingActionSenderUid = null;
+function openMessageActionSheet(msgId, senderUid, isMine){
+  pendingActionMsgId = msgId; pendingActionSenderUid = senderUid;
+  document.getElementById('msgActionReportBtn').style.display = isMine ? 'none' : 'block';
+  document.getElementById('msgActionDeleteEveryoneBtn').style.display = isMine ? 'block' : 'none';
+  document.getElementById('msgActionOverlay').classList.add('show');
+}
+document.getElementById('msgActionClose').addEventListener('click', ()=> document.getElementById('msgActionOverlay').classList.remove('show'));
+document.getElementById('msgActionReplyBtn').addEventListener('click', ()=>{
+  document.getElementById('msgActionOverlay').classList.remove('show');
+  const senderP = profileByUid(pendingActionSenderUid);
+  const snippet = chatMsgTextCache[pendingActionMsgId] || '📎 Medya';
+  pendingReplyTo = {msgId: pendingActionMsgId, senderName: pendingActionSenderUid===currentUser.uid ? 'Sen' : getDisplayName(senderP), snippet: snippet.length>60?snippet.slice(0,60)+'…':snippet};
+  document.getElementById('chatReplyPreviewText').textContent = pendingReplyTo.senderName + ': ' + pendingReplyTo.snippet;
+  document.getElementById('chatReplyPreview').style.display = 'flex';
+  document.getElementById('chatInput').focus();
+});
+document.getElementById('chatReplyCancel').addEventListener('click', ()=>{
+  pendingReplyTo = null;
+  document.getElementById('chatReplyPreview').style.display = 'none';
+});
+document.getElementById('msgActionSelectBtn').addEventListener('click', ()=>{
+  document.getElementById('msgActionOverlay').classList.remove('show');
+  enterSelectMode(pendingActionMsgId);
+});
+document.getElementById('msgActionReportBtn').addEventListener('click', ()=>{
+  document.getElementById('msgActionOverlay').classList.remove('show');
+  pendingReportMsgId = pendingActionMsgId;
+  pendingReportSenderUid = pendingActionSenderUid;
+  document.getElementById('reportMsgReason').value = 'Küfür / Hakaret';
+  document.getElementById('reportMsgNote').value = '';
+  document.getElementById('reportMsgOverlay').classList.add('show');
+});
+document.getElementById('msgActionDeleteMeBtn').addEventListener('click', async ()=>{
+  document.getElementById('msgActionOverlay').classList.remove('show');
+  try{
+    await db.collection('messages').doc(pendingActionMsgId).update({deletedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)});
+    showToast('Mesaj senden silindi');
+  }catch(e){ showToast('Silinemedi'); }
+});
+document.getElementById('msgActionDeleteEveryoneBtn').addEventListener('click', async ()=>{
+  document.getElementById('msgActionOverlay').classList.remove('show');
+  if(!confirm('Bu mesajı herkesten silmek istediğine emin misin? Bu işlem geri alınamaz.')) return;
+  try{
+    await db.collection('messages').doc(pendingActionMsgId).update({deletedForEveryone:true, text:'', imageData: firebase.firestore.FieldValue.delete(), audioData: firebase.firestore.FieldValue.delete()});
+    showToast('Mesaj herkesten silindi');
+  }catch(e){ showToast('Silinemedi'); }
+});
 let pendingReportMsgId = null, pendingReportSenderUid = null;
 document.getElementById('reportMsgClose').addEventListener('click', ()=> document.getElementById('reportMsgOverlay').classList.remove('show'));
 document.getElementById('reportMsgSubmit').addEventListener('click', async ()=>{
@@ -3997,12 +4158,16 @@ async function sendChatMessage(){
 async function sendChatPayload({text, imageData, audioData, audioDuration}){
   const createdAt = new Date().toISOString();
   const preview = audioData ? '🎤 Sesli mesaj' : (imageData ? '📷 Fotoğraf' : text);
-  appendOptimisticMessage({senderUid:currentUser.uid, text:text||'', imageData, audioData, audioDuration, createdAt});
+  const replyToSend = pendingReplyTo ? {...pendingReplyTo} : null;
+  appendOptimisticMessage({senderUid:currentUser.uid, text:text||'', imageData, audioData, audioDuration, createdAt, replyTo:replyToSend});
+  pendingReplyTo = null;
+  document.getElementById('chatReplyPreview').style.display = 'none';
   try{
     const payload = {convId:currentConvId, senderUid:currentUser.uid, text:text||'', createdAt};
     if(!currentChatIsGroup) payload.receiverUid = currentChatUid;
     if(imageData) payload.imageData = imageData;
     if(audioData){ payload.audioData = audioData; payload.audioDuration = audioDuration||0; }
+    if(replyToSend) payload.replyTo = replyToSend;
     await db.collection('messages').add(payload);
     const convUpdate = { lastMessage:preview, lastMessageAt:createdAt, lastSenderUid:currentUser.uid, updatedAt:createdAt };
     if(currentChatIsGroup){
@@ -4036,6 +4201,23 @@ function compressImageToDataUrl(file, maxDim, quality){
     reader.readAsDataURL(file);
   });
 }
+// ---------- EMOJİ PANELİ ----------
+const CHAT_EMOJI_LIST = ['😀','😂','🥹','😍','😎','🤔','😅','😢','😡','👍','👎','🙏','👏','💪','🤝','❤️','🔥','🎉','✅','⚠️','👷','🏗️','🚧','💰','⏰','📌','😴','🤒','🚗','☀️'];
+(function initEmojiPanel(){
+  const panel = document.getElementById('chatEmojiPanel');
+  panel.innerHTML = CHAT_EMOJI_LIST.map(e=>`<button class="chat-emoji-btn" style="border:none; background:none; font-size:24px; padding:6px; cursor:pointer;">${e}</button>`).join('');
+  panel.querySelectorAll('.chat-emoji-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const input = document.getElementById('chatInput');
+      input.value += btn.textContent;
+      input.focus();
+    });
+  });
+})();
+document.getElementById('chatEmojiBtn').addEventListener('click', ()=>{
+  const panel = document.getElementById('chatEmojiPanel');
+  panel.style.display = panel.style.display==='none' ? 'flex' : 'none';
+});
 document.getElementById('chatAttachBtn').addEventListener('click', ()=>{
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
   document.getElementById('chatImageInput').click();
@@ -4126,7 +4308,8 @@ function convRowHtml(c, today){
   const otherUid = isGrp ? null : c.participants.find(u=>u!==currentUser.uid);
   const p = isGrp ? null : profileByUid(otherUid);
   const name = isGrp ? escapeHtml(c.groupName||'Grup') : (escapeHtml(usernameLabel(p)) + rankSuffixHtml(p));
-  const avatarInitials = isGrp ? '👥' : escapeHtml(getInitials(p?p.fullName:name));
+  const avatarInitials = isGrp ? escapeHtml((c.groupName||'G').trim().charAt(0).toUpperCase()) : escapeHtml(getInitials(p?p.fullName:name));
+  const isOnline = !isGrp && p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
   const unread = Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid);
   const isPinned = Array.isArray(c.pinnedFor) && c.pinnedFor.includes(currentUser.uid);
   let time = '';
@@ -4146,7 +4329,7 @@ function convRowHtml(c, today){
   return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:14px; padding:12px 8px; cursor:pointer; border-radius:16px; margin-bottom:4px; transition:background .12s ease;">
       <div style="position:relative; flex-shrink:0;">
         <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm);">${avatarInitials}</div>
-        ${unread?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:var(--asphalt); border:2.5px solid var(--bg);"></span>':''}
+        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--bg);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
         <div style="font-weight:${unread?800:700}; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${name}</div>
@@ -4183,6 +4366,12 @@ function renderFilteredConversations(){
   document.getElementById('msgTabAllCount').textContent = allConvsCache.length ? allConvsCache.length : '';
   document.getElementById('msgTabChatsCount').textContent = chatsCount ? chatsCount : '';
   document.getElementById('msgTabGroupsCount').textContent = groupsCount ? groupsCount : '';
+  const totalUnread = allConvsCache.filter(c=> Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid)).length;
+  const summaryEl = document.getElementById('msgUnreadSummary');
+  if(summaryEl){
+    if(totalUnread > 0){ summaryEl.style.display = 'flex'; summaryEl.querySelector('span').textContent = totalUnread===1 ? '1 okunmamış mesajın var' : `${totalUnread} okunmamış mesajın var`; }
+    else { summaryEl.style.display = 'none'; }
+  }
   let convs = allConvsCache;
   if(msgTabMode==='chats') convs = convs.filter(c=>!c.isGroup);
   else if(msgTabMode==='groups') convs = convs.filter(c=>c.isGroup);
@@ -4196,13 +4385,59 @@ function renderFilteredConversations(){
     return;
   }
   const today = todayStr();
-  box.innerHTML = convs.map(c=> convRowHtml(c, today)).join('');
+  const isPinned = c => Array.isArray(c.pinnedFor) && c.pinnedFor.includes(currentUser.uid);
+  const pinned = convs.filter(isPinned);
+  const rest = convs.filter(c=>!isPinned(c));
+  let html = '';
+  if(pinned.length){
+    html += `<div style="font-size:11px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin:2px 0 8px 4px;">📌 Sabitlenenler</div>`;
+    html += pinned.map(c=> convRowHtml(c, today)).join('');
+    html += `<div style="font-size:11px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin:14px 0 8px 4px;">Tüm Sohbetler</div>`;
+  }
+  html += rest.map(c=> convRowHtml(c, today)).join('');
+  box.innerHTML = html;
+  wireConvSwipeRows(box);
+}
+function wireConvSwipeRows(box){
   box.querySelectorAll('[data-conv]').forEach(row=>{
-    row.addEventListener('click', ()=> openChatScreen(row.dataset.conv, row.dataset.other || null));
-    row.addEventListener('touchstart', ()=> row.style.background='var(--concrete)', {passive:true});
-    row.addEventListener('touchend', ()=> row.style.background='transparent', {passive:true});
+    let pressTimer = null, longPressed = false;
+    row.addEventListener('click', ()=>{ if(longPressed){ longPressed=false; return; } openChatScreen(row.dataset.conv, row.dataset.other || null); });
+    row.addEventListener('touchstart', ()=>{
+      row.style.background='var(--concrete)';
+      longPressed = false;
+      pressTimer = setTimeout(()=>{
+        longPressed = true;
+        if(navigator.vibrate) navigator.vibrate(15);
+        openConvQuickActions(row.dataset.conv, row.dataset.other || null);
+      }, 500);
+    }, {passive:true});
+    row.addEventListener('touchend', ()=>{ row.style.background='transparent'; clearTimeout(pressTimer); }, {passive:true});
+    row.addEventListener('touchmove', ()=>{ clearTimeout(pressTimer); }, {passive:true});
   });
 }
+function openConvQuickActions(convId, otherUid){
+  const c = allConvsCache.find(x=>x.id===convId);
+  if(!c) return;
+  const isPinned = Array.isArray(c.pinnedFor) && c.pinnedFor.includes(currentUser.uid);
+  document.getElementById('convQuickTitle').textContent = c.isGroup ? (c.groupName||'Grup') : getDisplayName(profileByUid(otherUid));
+  document.getElementById('convQuickPinBtn').textContent = isPinned ? '📌 Sabitlemeyi Kaldır' : '📌 Sohbeti Sabitle';
+  document.getElementById('convQuickPinBtn').onclick = async ()=>{
+    document.getElementById('convQuickOverlay').classList.remove('show');
+    try{
+      if(isPinned) await db.collection('conversations').doc(convId).update({pinnedFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)});
+      else await db.collection('conversations').doc(convId).update({pinnedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)});
+      renderConversationList();
+    }catch(e){ showToast('İşlem başarısız'); }
+  };
+  document.getElementById('convQuickDeleteBtn').onclick = async ()=>{
+    document.getElementById('convQuickOverlay').classList.remove('show');
+    if(!confirm('Bu sohbeti listenden silmek istediğine emin misin?')) return;
+    try{ await db.collection('conversations').doc(convId).delete(); renderConversationList(); showToast('Sohbet silindi'); }
+    catch(e){ showToast('Silinemedi'); }
+  };
+  document.getElementById('convQuickOverlay').classList.add('show');
+}
+document.getElementById('convQuickClose').addEventListener('click', ()=> document.getElementById('convQuickOverlay').classList.remove('show'));
 document.querySelectorAll('.msg-tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
     document.querySelectorAll('.msg-tab').forEach(t=>t.classList.remove('active'));
