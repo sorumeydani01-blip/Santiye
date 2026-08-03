@@ -224,13 +224,25 @@
       <span style="font-size:15px;">🔔</span><span></span>
     </div>
     <div id="msgSearchResults" style="display:none;"></div>
+    <div id="convSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--asphalt); color:#fff; border-radius:14px; margin-bottom:14px;">
+      <span style="font-weight:700; font-size:13px;"><span id="convSelectCount">0</span> sohbet seçildi</span>
+      <div style="display:flex; gap:8px;">
+        <button id="convSelectReadBtn" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer;">✓ Okundu</button>
+        <button id="convSelectDeleteBtn" style="background:var(--danger); border:none; color:#fff; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer;">🗑️ Sil</button>
+        <button id="convSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
+      </div>
+    </div>
     <div id="msgTabsWrap" style="display:flex; gap:8px; margin-bottom:16px; background:var(--concrete); padding:4px; border-radius:16px;">
       <button class="msg-tab active" data-msgtab="all" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">💬 Tümü <span id="msgTabAllCount" class="msg-tab-count"></span></button>
       <button class="msg-tab" data-msgtab="chats" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👤 Sohbetler <span id="msgTabChatsCount" class="msg-tab-count"></span></button>
       <button class="msg-tab" data-msgtab="groups" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👥 Gruplar <span id="msgTabGroupsCount" class="msg-tab-count"></span></button>
     </div>
     <div id="conversationListWrap">
+      <div id="pullRefreshIndicator" style="text-align:center; height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700;">↓ Yenilemek için bırak</div>
       <div id="conversationList"></div>
+      <div id="archiveLinkRow" style="display:none; text-align:center; padding:14px 0;">
+        <button id="btnOpenArchive" style="border:1.5px solid var(--line); background:var(--paper); border-radius:14px; padding:9px 16px; font-size:12.5px; font-weight:700; color:var(--ink-soft); cursor:pointer;">📥 Arşivlenenler (<span id="archiveCount">0</span>)</button>
+      </div>
     </div>
   </section>
 
@@ -249,6 +261,9 @@
           <button id="btnChatReportUser" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">🚩 Kullanıcıyı Şikayet Et</button>
           <button id="btnChatGroupMembers" style="display:none; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">👥 Grup Üyeleri</button>
           <button id="btnChatPin" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">📌 Sohbeti Sabitle</button>
+          <button id="btnChatMute" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">🔕 Sessize Al</button>
+          <button id="btnChatSearchInChat" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">🔍 Sohbette Ara</button>
+          <button id="btnChatMediaGallery" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer;">📷 Paylaşılan Fotoğraflar</button>
           <button id="btnChatBlock" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--danger);">🚫 Engelle</button>
           <button id="btnChatDelete" style="display:block; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--danger);">🗑️ Sohbeti Sil</button>
         </div>
@@ -284,7 +299,10 @@
       <button id="chatSendBtn" style="width:42px;height:42px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm);">➤</button>
     </div>
   </section>
-  <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}</style>
+  <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  @keyframes shimmerMove{0%{background-position:-200px 0;}100%{background-position:200px 0;}}
+  .skeleton-shimmer{background:linear-gradient(90deg,var(--concrete) 25%,var(--line) 50%,var(--concrete) 75%); background-size:400px 100%; animation:shimmerMove 1.4s infinite linear;}
+  </style>
 
   <!-- GEÇMİŞ -->
   <section class="screen" id="screen-kayitlar">
@@ -1196,10 +1214,20 @@
   </div>
 </div>
 
+<!-- MEDYA GALERİSİ -->
+<div class="modal-overlay" id="mediaGalleryOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>📷 Paylaşılan Fotoğraflar</span><button class="close" id="mediaGalleryClose">✕</button></div>
+    <div id="mediaGalleryGrid"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="convQuickOverlay">
   <div class="modal-sheet">
     <div class="modal-title"><span id="convQuickTitle">Sohbet</span><button class="close" id="convQuickClose">✕</button></div>
     <button class="submit-btn secondary" id="convQuickPinBtn" style="margin-bottom:10px;">📌 Sohbeti Sabitle</button>
+    <button class="submit-btn secondary" id="convQuickArchiveBtn" style="margin-bottom:10px;">📥 Arşivle</button>
+    <button class="submit-btn secondary" id="convQuickSelectBtn" style="margin-bottom:10px;">☑️ Seç</button>
     <button class="submit-btn danger" id="convQuickDeleteBtn">🗑️ Sohbeti Sil</button>
   </div>
 </div>
@@ -3732,6 +3760,17 @@ async function cleanupOldMedia(cid){
   }catch(e){ console.error('medya temizleme hatasi', e); }
 }
 let currentChatIsGroup = false, currentChatGroupData = null;
+let typingUnsub = null;
+function refreshChatHeaderSub(){
+  const subEl = document.getElementById('chatHeaderSub');
+  if(subEl.dataset.typing==='1') return;
+  if(currentChatIsGroup){
+    subEl.textContent = currentChatGroupData ? (currentChatGroupData.participants||[]).length + ' üye' : '';
+  } else {
+    const p = profileByUid(currentChatUid);
+    subEl.textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
+  }
+}
 function openChatScreen(cid, otherUid){
   currentConvId = cid; currentChatUid = otherUid;
   currentChatIsGroup = false; currentChatGroupData = null;
@@ -3739,12 +3778,28 @@ function openChatScreen(cid, otherUid){
   document.getElementById('chatReplyPreview').style.display = 'none';
   document.getElementById('chatEmojiPanel').style.display = 'none';
   exitSelectMode();
+  try{ document.getElementById('chatInput').value = localStorage.getItem('chatDraft_'+cid) || ''; }catch(e){}
+  if(typingUnsub){ typingUnsub(); typingUnsub = null; }
+  typingUnsub = db.collection('conversations').doc(cid).onSnapshot(doc=>{
+    if(!doc.exists || currentConvId!==cid) return;
+    const data = doc.data();
+    const othersTyping = Object.keys(data).filter(k=> k.startsWith('typing_') && k!=='typing_'+currentUser.uid && data[k]===true);
+    const subEl = document.getElementById('chatHeaderSub');
+    if(othersTyping.length>0){
+      subEl.textContent = currentChatIsGroup ? 'yazıyor...' : 'yazıyor...';
+      subEl.dataset.typing = '1';
+    } else if(subEl.dataset.typing==='1'){
+      subEl.dataset.typing = '';
+      refreshChatHeaderSub();
+    }
+  }, ()=>{});
   document.body.classList.add('chat-open');
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-chat').classList.add('active');
   updateFabVisibility();
   cleanupOldMedia(cid);
   refreshChatPinState(cid);
+  refreshChatMuteState(cid);
   document.getElementById('btnChatBlock').style.display = otherUid ? 'block' : 'none';
   if(!otherUid){
     document.getElementById('chatHeaderName').textContent = 'Yükleniyor...';
@@ -3758,7 +3813,9 @@ function openChatScreen(cid, otherUid){
       if(data.isGroup){
         currentChatIsGroup = true; currentChatGroupData = data;
         document.getElementById('chatHeaderName').textContent = data.groupName || 'Grup';
-        document.getElementById('chatHeaderAvatar').textContent = '👥';
+        document.getElementById('chatHeaderAvatar').textContent = (data.groupName||'G').trim().charAt(0).toUpperCase();
+        document.getElementById('chatHeaderAvatar').style.background = avatarGradient(cid);
+        document.getElementById('chatHeaderAvatar').style.borderRadius = '12px';
         document.getElementById('chatHeaderSub').textContent = (data.participants||[]).length + ' üye';
         document.getElementById('chatHeaderName').onclick = openGroupMembers;
         document.getElementById('chatHeaderAvatar').onclick = openGroupMembers;
@@ -3771,6 +3828,8 @@ function openChatScreen(cid, otherUid){
     const p = profileByUid(otherUid);
     document.getElementById('chatHeaderName').innerHTML = usernameLabelHtml(p);
     document.getElementById('chatHeaderAvatar').textContent = getInitials(p?p.fullName:'?');
+    document.getElementById('chatHeaderAvatar').style.background = avatarGradient(otherUid);
+    document.getElementById('chatHeaderAvatar').style.borderRadius = '50%';
     document.getElementById('chatHeaderName').onclick = ()=> openViewProfile(otherUid);
     document.getElementById('chatHeaderAvatar').onclick = ()=> openViewProfile(otherUid);
     document.getElementById('chatHeaderSub').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
@@ -3786,10 +3845,13 @@ function openChatScreen(cid, otherUid){
     refreshChatBlockState(otherUid);
   }
   if(chatUnsub) chatUnsub();
-  document.getElementById('chatMessages').innerHTML = `<div class="hint" style="text-align:center;">Yükleniyor...</div>`;
+  document.getElementById('chatMessages').innerHTML = Array(6).fill(0).map((_,i)=>`
+    <div style="display:flex; justify-content:${i%2===0?'flex-start':'flex-end'}; margin-bottom:8px;">
+      <div class="skeleton-shimmer" style="width:${120+((i*37)%90)}px; height:${i%3===0?54:34}px; border-radius:14px;"></div>
+    </div>`).join('');
   const loadTimeout = setTimeout(()=>{
     const box = document.getElementById('chatMessages');
-    if(box.textContent.includes('Yükleniyor')){
+    if(box.querySelector('.skeleton-shimmer')){
       box.innerHTML = `<div class="empty"><div class="icon">⚠️</div><div class="msg">Mesajlar yüklenemedi.<br>İnternet bağlantını kontrol edip tekrar dene.</div></div>
         <div style="text-align:center; margin-top:12px;"><button class="submit-btn secondary" id="btnChatRetry" style="max-width:200px; margin:0 auto;">Tekrar Dene</button></div>`;
       const retryBtn = document.getElementById('btnChatRetry');
@@ -3823,6 +3885,57 @@ async function refreshChatPinState(cid){
     document.getElementById('btnChatPin').textContent = currentChatPinned ? '📌 Sabitlemeyi Kaldır' : '📌 Sohbeti Sabitle';
   }catch(e){}
 }
+// ---------- SÜRÜKLEYEREK YENİLEME ----------
+(function initPullToRefresh(){
+  const wrap = document.getElementById('conversationListWrap');
+  const indicator = document.getElementById('pullRefreshIndicator');
+  let startY = 0, pulling = false;
+  wrap.addEventListener('touchstart', (e)=>{
+    if(wrap.scrollTop > 0) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+  }, {passive:true});
+  wrap.addEventListener('touchmove', (e)=>{
+    if(!pulling) return;
+    const diff = e.touches[0].clientY - startY;
+    if(diff > 0 && wrap.scrollTop <= 0){
+      indicator.style.height = Math.min(diff/2, 50) + 'px';
+    }
+  }, {passive:true});
+  wrap.addEventListener('touchend', ()=>{
+    if(!pulling) return;
+    pulling = false;
+    const h = parseInt(indicator.style.height,10) || 0;
+    indicator.style.height = '0px';
+    if(h >= 40){
+      indicator.textContent = '🔄 Yenileniyor...';
+      renderConversationList().then(()=>{ indicator.textContent = '↓ Yenilemek için bırak'; });
+    }
+  });
+})();
+document.getElementById('btnOpenArchive').addEventListener('click', ()=>{
+  const isArchived = c => Array.isArray(c.archivedFor) && c.archivedFor.includes(currentUser.uid);
+  const archived = allConvsCache.filter(isArchived);
+  const today = todayStr();
+  openAdminList('Arşivlenenler', archived, {
+    renderRowFn: (c)=> {
+      const rowHtml = convRowHtml(c, today);
+      return `<div style="position:relative;">${rowHtml}<button data-unarchive="${escapeHtml(c.id)}" style="position:absolute; top:8px; right:4px; border:1.5px solid var(--line); background:var(--paper); border-radius:10px; padding:5px 10px; font-size:11px; font-weight:700; cursor:pointer;">Geri Al</button></div>`;
+    },
+    wireRows: (box)=>{
+      box.querySelectorAll('[data-conv]').forEach(row=>{
+        row.addEventListener('click', (e)=>{ if(e.target.closest('[data-unarchive]')) return; document.getElementById('adminListOverlay').classList.remove('show'); openChatScreen(row.dataset.conv, row.dataset.other || null); });
+      });
+      box.querySelectorAll('[data-unarchive]').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          e.stopPropagation();
+          try{ await db.collection('conversations').doc(btn.dataset.unarchive).update({archivedFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)}); showToast('Sohbet geri alındı'); document.getElementById('adminListOverlay').classList.remove('show'); renderConversationList(); }
+          catch(err){ showToast('İşlem başarısız'); }
+        });
+      });
+    }
+  });
+});
 document.getElementById('btnChatPin').addEventListener('click', async ()=>{
   document.getElementById('chatHeaderMenu').style.display = 'none';
   if(!currentConvId) return;
@@ -3837,6 +3950,66 @@ document.getElementById('btnChatPin').addEventListener('click', async ()=>{
     await refreshChatPinState(currentConvId);
   }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
 });
+let currentChatMuted = false;
+async function refreshChatMuteState(cid){
+  try{
+    const doc = await db.collection('conversations').doc(cid).get();
+    const data = doc.exists ? doc.data() : {};
+    currentChatMuted = Array.isArray(data.mutedFor) && data.mutedFor.includes(currentUser.uid);
+    document.getElementById('btnChatMute').textContent = currentChatMuted ? '🔔 Sesi Aç' : '🔕 Sessize Al';
+  }catch(e){}
+}
+document.getElementById('btnChatMute').addEventListener('click', async ()=>{
+  document.getElementById('chatHeaderMenu').style.display = 'none';
+  if(!currentConvId) return;
+  try{
+    if(currentChatMuted) await db.collection('conversations').doc(currentConvId).update({mutedFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)});
+    else await db.collection('conversations').doc(currentConvId).update({mutedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)});
+    showToast(currentChatMuted ? 'Ses açıldı' : 'Sohbet sessize alındı');
+    await refreshChatMuteState(currentConvId);
+  }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
+});
+document.getElementById('btnChatSearchInChat').addEventListener('click', ()=>{
+  document.getElementById('chatHeaderMenu').style.display = 'none';
+  const q = prompt('Bu sohbette aranacak kelimeyi yaz:');
+  if(!q) return;
+  const query = q.trim().toLowerCase();
+  const bubbles = Array.from(document.querySelectorAll('.chat-bubble-wrap'));
+  const matches = bubbles.filter(b=>{
+    const id = b.dataset.msgid;
+    const text = (chatMsgTextCache[id]||'').toLowerCase();
+    return text.includes(query);
+  });
+  if(matches.length===0){ showToast('Sonuç bulunamadı'); return; }
+  bubbles.forEach(b=> b.style.background='');
+  matches.forEach(b=> b.style.background='rgba(99,102,241,0.12)');
+  matches[matches.length-1].scrollIntoView({behavior:'smooth', block:'center'});
+  showToast(`${matches.length} sonuç bulundu, son eşleşmeye gidildi`);
+});
+document.getElementById('btnChatMediaGallery').addEventListener('click', async ()=>{
+  document.getElementById('chatHeaderMenu').style.display = 'none';
+  if(!currentConvId) return;
+  document.getElementById('mediaGalleryGrid').innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  document.getElementById('mediaGalleryOverlay').classList.add('show');
+  try{
+    const snap = await db.collection('messages').where('convId','==',currentConvId).get();
+    const withImages = snap.docs.map(d=>d.data()).filter(m=> m.imageData && (!m.viewOnce || m.senderUid===currentUser.uid || canViewFullMedia()));
+    const grid = document.getElementById('mediaGalleryGrid');
+    if(withImages.length===0){ grid.innerHTML = `<div class="empty"><div class="icon">📷</div><div class="msg">Bu sohbette paylaşılmış fotoğraf yok.</div></div>`; return; }
+    withImages.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
+    grid.innerHTML = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">${withImages.map(m=>`<img src="${m.imageData}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; cursor:pointer;" data-gallery-img>`).join('')}</div>`;
+    grid.querySelectorAll('[data-gallery-img]').forEach(img=>{
+      img.addEventListener('click', ()=>{
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; padding:20px;';
+        overlay.innerHTML = `<img src="${img.src}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
+        overlay.addEventListener('click', ()=> overlay.remove());
+        document.body.appendChild(overlay);
+      });
+    });
+  }catch(e){ document.getElementById('mediaGalleryGrid').innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
+});
+document.getElementById('mediaGalleryClose').addEventListener('click', ()=> document.getElementById('mediaGalleryOverlay').classList.remove('show'));
 async function refreshChatBlockState(otherUid){
   currentChatBlockStatus = hasAnyAdminTool() ? {byMe:false,byThem:false} : await isBlockedEitherWay(otherUid);
   const note = document.getElementById('chatBlockedNote');
@@ -3972,6 +4145,11 @@ document.getElementById('btnChatDelete').addEventListener('click', async ()=>{
 });
 document.getElementById('btnBackFromChat').addEventListener('click', ()=>{
   if(chatUnsub){ chatUnsub(); chatUnsub = null; }
+  if(typingUnsub){ typingUnsub(); typingUnsub = null; }
+  if(currentConvId && typingActive){
+    db.collection('conversations').doc(currentConvId).set({['typing_'+currentUser.uid]: firebase.firestore.FieldValue.delete()}, {merge:true}).catch(()=>{});
+    typingActive = false;
+  }
   document.body.classList.remove('chat-open');
   switchScreen('mesajlar');
 });
@@ -3987,7 +4165,7 @@ function chatBubbleHtml(m){
   const tailSide = mine ? 'right' : 'left';
   if(m.deletedForEveryone){
     return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px;">
-      <div style="padding:7px 12px; border-radius:8px; background:${isDark?'#1F2937':'#f0f0f0'}; font-size:13px; font-style:italic; color:${timeColor};">🚫 Bu mesaj silindi</div>
+      <div style="padding:8px 13px; border-radius:14px; background:${isDark?'#1F2937':'#f0f0f0'}; font-size:13px; font-style:italic; color:${timeColor}; box-shadow:0 2px 8px rgba(17,24,39,0.06);">🚫 Bu mesaj silindi</div>
     </div>`;
   }
   const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.05)'}; border-left:3px solid var(--asphalt); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
@@ -4014,14 +4192,13 @@ function chatBubbleHtml(m){
     const canDelArch = canDeleteArchivedMedia();
     imageHtml = `<div style="position:relative;"><img src="${m.imageDataArchived}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:5px; opacity:0.85;" data-view-img><div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">⏱️ Süresi doldu (yönetici görünümü)</div>${canDelArch?`<button data-delete-archived="${escapeHtml(m.id||'')}" style="position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none; border-radius:6px; font-size:9px; font-weight:800; padding:3px 7px; cursor:pointer;">🗑️ Kalıcı Sil</button>`:''}</div>`;
   }
-  const audioHtml = m.audioData ? `<audio controls src="${m.audioData}" style="width:210px; height:36px; display:block; margin-bottom:${m.text?'5px':'0'};"></audio>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><audio controls src="${m.audioDataArchived}" style="width:210px; height:36px; display:block; margin-bottom:5px;"></audio>` : '');
+  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${escapeHtml(m.text)}</div>` : '';
   const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--asphalt); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
   return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px; user-select:none; gap:6px;">
       <input type="checkbox" class="chat-select-box" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:19px;height:19px; flex-shrink:0; ${mine?'order:2;':''}">
-      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'7px 9px 6px 10px'}; border-radius:8px; background:${bubbleBg}; box-shadow:0 1px 1px rgba(0,0,0,0.12);">
-        <div style="position:absolute; top:0; ${tailSide}:-7px; width:0; height:0; border-top:8px solid ${bubbleBg}; border-${tailSide==='right'?'left':'right'}:8px solid transparent;"></div>
+      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'8px 11px 6px 12px'}; border-radius:14px; background:${bubbleBg}; box-shadow:0 2px 8px rgba(17,24,39,0.08);">
         ${senderNameHtml}
         ${replyHtml}
         ${imageHtml}
@@ -4055,13 +4232,25 @@ function renderChatMessages(msgs){
   msgs.forEach(m=>{
     const d = (m.createdAt||'').slice(0,10);
     if(d && d !== lastDate){
-      html += `<div style="text-align:center; margin:14px 0 10px;"><span style="background:var(--concrete); color:var(--ink-soft); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
+      html += `<div style="position:sticky; top:4px; z-index:5; text-align:center; margin:14px 0 10px;"><span style="background:var(--paper); box-shadow:var(--shadow-sm); color:var(--ink-soft); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
       lastDate = d;
     }
     html += chatBubbleHtml(m);
   });
   box.innerHTML = html;
   box.scrollTop = box.scrollHeight;
+  box.querySelectorAll('.chat-speed-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const audioEl = btn.previousElementSibling;
+      const speeds = [1, 1.5, 2];
+      const cur = parseFloat(btn.dataset.speed);
+      const next = speeds[(speeds.indexOf(cur)+1) % speeds.length];
+      btn.dataset.speed = next;
+      btn.textContent = next + 'x';
+      if(audioEl) audioEl.playbackRate = next;
+    });
+  });
   box.querySelectorAll('.chat-bubble-wrap').forEach(el=>{
     let pressTimer = null;
     const startPress = ()=>{
@@ -4192,6 +4381,26 @@ function appendOptimisticMessage(m){
   box.scrollTop = box.scrollHeight;
 }
 document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
+let typingDebounce = null, typingActive = false;
+document.getElementById('chatInput').addEventListener('input', ()=>{
+  if(!currentConvId) return;
+  try{
+    const val = document.getElementById('chatInput').value;
+    if(val) localStorage.setItem('chatDraft_'+currentConvId, val);
+    else localStorage.removeItem('chatDraft_'+currentConvId);
+  }catch(e){}
+  if(document.getElementById('chatInput').value.trim()){
+    if(!typingActive){
+      typingActive = true;
+      db.collection('conversations').doc(currentConvId).set({['typing_'+currentUser.uid]: true}, {merge:true}).catch(()=>{});
+    }
+    clearTimeout(typingDebounce);
+    typingDebounce = setTimeout(()=>{
+      typingActive = false;
+      db.collection('conversations').doc(currentConvId).set({['typing_'+currentUser.uid]: firebase.firestore.FieldValue.delete()}, {merge:true}).catch(()=>{});
+    }, 2500);
+  }
+});
 document.getElementById('chatInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ sendChatMessage(); } });
 async function sendChatMessage(){
   const input = document.getElementById('chatInput');
@@ -4199,6 +4408,7 @@ async function sendChatMessage(){
   if(!text || !currentConvId) return;
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
   input.value = '';
+  try{ localStorage.removeItem('chatDraft_'+currentConvId); }catch(e){}
   await sendChatPayload({text});
 }
 async function sendChatPayload({text, imageData, audioData, audioDuration}){
@@ -4403,15 +4613,23 @@ function convRowHtml(c, today){
     if(iAmLastSender) prefix = 'Sen: ';
     else if(isGrp && c.lastSenderUid){ const sp = profileByUid(c.lastSenderUid); prefix = sp ? escapeHtml(getDisplayName(sp))+': ' : ''; }
   }
-  const preview = c.lastMessage ? (prefix + (c.lastMessage.length>36?c.lastMessage.slice(0,36)+'…':c.lastMessage)) : 'Henüz mesaj yok';
-  return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:14px; padding:12px 8px; cursor:pointer; border-radius:16px; margin-bottom:4px; transition:background .12s ease;">
+  let preview;
+  if(c.lastMessage === '📷 Fotoğraf'){
+    preview = `<span style="display:inline-flex; align-items:center; gap:4px;"><span style="background:var(--tint-slate); color:var(--text-slate); border-radius:6px; padding:1px 5px; font-size:10px;">📷</span> ${escapeHtml(prefix)}Fotoğraf</span>`;
+  } else if(c.lastMessage === '🎤 Sesli mesaj'){
+    preview = `<span style="display:inline-flex; align-items:center; gap:4px;"><span style="background:var(--tint-forest); color:var(--text-forest); border-radius:6px; padding:1px 5px; font-size:10px;">🎤</span> ${escapeHtml(prefix)}Sesli mesaj</span>`;
+  } else {
+    preview = c.lastMessage ? escapeHtml(prefix + (c.lastMessage.length>36?c.lastMessage.slice(0,36)+'…':c.lastMessage)) : 'Henüz mesaj yok';
+  }
+  return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer; border-radius:16px; margin-bottom:4px; transition:background .12s ease;">
+      <input type="checkbox" class="conv-select-box" data-select-conv="${escapeHtml(c.id)}" style="display:none; width:19px;height:19px; flex-shrink:0;">
       <div style="position:relative; flex-shrink:0;">
-        <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm);">${avatarInitials}</div>
+        <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:${avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm);">${avatarInitials}</div>
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--bg);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
-        <div style="font-weight:${unread?800:700}; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${name}</div>
-        <div style="font-size:12.5px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?700:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${escapeHtml(preview)}</div>
+        <div style="font-weight:${unread?800:700}; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${(Array.isArray(c.mutedFor)&&c.mutedFor.includes(currentUser.uid))?'🔕 ':''}${name}</div>
+        <div style="font-size:12.5px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?700:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${preview}</div>
       </div>
       <div style="text-align:right; flex-shrink:0;">
         <div style="font-size:11px; color:${unread?'var(--asphalt)':'var(--ink-soft)'}; font-weight:${unread?700:400};">${time}</div>
@@ -4423,7 +4641,14 @@ let allConvsCache = [];
 let msgTabMode = 'all';
 async function renderConversationList(){
   const box = document.getElementById('conversationList');
-  box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  box.innerHTML = Array(5).fill(0).map(()=>`
+    <div style="display:flex; align-items:center; gap:14px; padding:12px 8px;">
+      <div class="skeleton-shimmer" style="width:52px;height:52px;border-radius:50%; flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div class="skeleton-shimmer" style="width:55%; height:14px; border-radius:6px; margin-bottom:8px;"></div>
+        <div class="skeleton-shimmer" style="width:80%; height:11px; border-radius:6px;"></div>
+      </div>
+    </div>`).join('');
   try{
     const snap = await db.collection('conversations').where('participants','array-contains',currentUser.uid).get();
     let convs = snap.docs.map(d=>({id:d.id, ...d.data()}));
@@ -4439,27 +4664,47 @@ async function renderConversationList(){
 }
 function renderFilteredConversations(){
   const box = document.getElementById('conversationList');
-  const chatsCount = allConvsCache.filter(c=>!c.isGroup).length;
-  const groupsCount = allConvsCache.filter(c=>c.isGroup).length;
-  document.getElementById('msgTabAllCount').textContent = allConvsCache.length ? allConvsCache.length : '';
+  const isArchived = c => Array.isArray(c.archivedFor) && c.archivedFor.includes(currentUser.uid);
+  const archivedCount = allConvsCache.filter(isArchived).length;
+  document.getElementById('archiveLinkRow').style.display = archivedCount>0 ? 'block' : 'none';
+  document.getElementById('archiveCount').textContent = archivedCount;
+  const visibleConvs = allConvsCache.filter(c=>!isArchived(c));
+  const chatsCount = visibleConvs.filter(c=>!c.isGroup).length;
+  const groupsCount = visibleConvs.filter(c=>c.isGroup).length;
+  document.getElementById('msgTabAllCount').textContent = visibleConvs.length ? visibleConvs.length : '';
   document.getElementById('msgTabChatsCount').textContent = chatsCount ? chatsCount : '';
   document.getElementById('msgTabGroupsCount').textContent = groupsCount ? groupsCount : '';
-  const totalUnread = allConvsCache.filter(c=> Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid)).length;
+  const totalUnread = visibleConvs.filter(c=> Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid)).length;
   const summaryEl = document.getElementById('msgUnreadSummary');
   if(summaryEl){
     if(totalUnread > 0){ summaryEl.style.display = 'flex'; summaryEl.querySelector('span').textContent = totalUnread===1 ? '1 okunmamış mesajın var' : `${totalUnread} okunmamış mesajın var`; }
     else { summaryEl.style.display = 'none'; }
   }
-  let convs = allConvsCache;
+  let convs = visibleConvs;
   if(msgTabMode==='chats') convs = convs.filter(c=>!c.isGroup);
   else if(msgTabMode==='groups') convs = convs.filter(c=>c.isGroup);
   if(convs.length===0){
     const emptyMsg = msgTabMode==='groups'
       ? 'Henüz bir grubun yok.<br>👥 ikonuna dokunup yeni bir grup oluşturabilirsin.'
       : msgTabMode==='chats'
-        ? 'Henüz bir sohbetin yok.<br>Bir kullanıcının profiline gidip "💬 Mesaj" ile başlayabilirsin.'
-        : 'Henüz hiç mesajın yok.<br>Bir kullanıcının profiline gidip "💬 Mesaj" ile başlayabilirsin.';
-    box.innerHTML = `<div class="empty"><div class="icon">${msgTabMode==='groups'?'👥':'💬'}</div><div class="msg">${emptyMsg}</div></div>`;
+        ? 'Henüz bir sohbetin yok.<br>Aşağıdan birine mesaj atmayı dene:'
+        : 'Henüz hiç mesajın yok.<br>Aşağıdan birine mesaj atmayı dene:';
+    const suggestions = allPublicProfiles
+      .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused)
+      .sort((a,b)=> new Date(b.lastActive||0).getTime() - new Date(a.lastActive||0).getTime())
+      .slice(0,4);
+    const suggestHtml = (msgTabMode!=='groups' && suggestions.length) ? `
+      <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px; max-width:280px; margin-left:auto; margin-right:auto;">
+        ${suggestions.map(u=>`
+          <button class="submit-btn secondary" data-suggest-uid="${escapeHtml(u.uid)}" style="display:flex; align-items:center; gap:10px; text-align:left; padding:10px 14px;">
+            <div style="width:32px;height:32px;border-radius:50%; background:${avatarGradient(u.uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; flex-shrink:0;">${escapeHtml(getInitials(u.fullName))}</div>
+            <span style="font-size:13px; font-weight:700;">${escapeHtml(u.username||'kullanici')}</span>
+          </button>`).join('')}
+      </div>` : '';
+    box.innerHTML = `<div class="empty"><div class="icon">${msgTabMode==='groups'?'👥':'💬'}</div><div class="msg">${emptyMsg}</div>${suggestHtml}</div>`;
+    box.querySelectorAll('[data-suggest-uid]').forEach(btn=>{
+      btn.addEventListener('click', ()=> openOrCreateConversation(btn.dataset.suggestUid));
+    });
     return;
   }
   const today = todayStr();
@@ -4476,10 +4721,65 @@ function renderFilteredConversations(){
   box.innerHTML = html;
   wireConvSwipeRows(box);
 }
+let convSelectMode = false;
+let convSelectedIds = new Set();
+function enterConvSelectMode(firstConvId){
+  convSelectMode = true;
+  convSelectedIds.clear();
+  document.querySelectorAll('.conv-select-box').forEach(cb=> cb.style.display='inline-block');
+  document.getElementById('convSelectBar').style.display = 'flex';
+  if(firstConvId){
+    const cb = document.querySelector(`[data-select-conv="${firstConvId}"]`);
+    if(cb){ cb.checked = true; toggleConvSelection(firstConvId, true); }
+  }
+}
+function exitConvSelectMode(){
+  convSelectMode = false;
+  convSelectedIds.clear();
+  document.querySelectorAll('.conv-select-box').forEach(cb=>{ cb.style.display='none'; cb.checked=false; });
+  document.getElementById('convSelectBar').style.display = 'none';
+}
+function toggleConvSelection(convId, on){
+  if(on) convSelectedIds.add(convId); else convSelectedIds.delete(convId);
+  document.getElementById('convSelectCount').textContent = convSelectedIds.size;
+}
+document.getElementById('convSelectCancelBtn').addEventListener('click', exitConvSelectMode);
+document.getElementById('convSelectReadBtn').addEventListener('click', async ()=>{
+  if(convSelectedIds.size===0) return;
+  try{
+    const batch = db.batch();
+    convSelectedIds.forEach(id=> batch.update(db.collection('conversations').doc(id), {unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)}));
+    await batch.commit();
+    showToast('Okundu olarak işaretlendi');
+    exitConvSelectMode();
+    renderConversationList();
+  }catch(e){ showToast('İşlem başarısız'); }
+});
+document.getElementById('convSelectDeleteBtn').addEventListener('click', async ()=>{
+  if(convSelectedIds.size===0) return;
+  if(!confirm(`${convSelectedIds.size} sohbeti silmek istediğine emin misin?`)) return;
+  try{
+    const batch = db.batch();
+    convSelectedIds.forEach(id=> batch.delete(db.collection('conversations').doc(id)));
+    await batch.commit();
+    showToast('Sohbetler silindi');
+    exitConvSelectMode();
+    renderConversationList();
+  }catch(e){ showToast('İşlem başarısız'); }
+});
 function wireConvSwipeRows(box){
   box.querySelectorAll('[data-conv]').forEach(row=>{
     let pressTimer = null, longPressed = false;
-    row.addEventListener('click', ()=>{ if(longPressed){ longPressed=false; return; } openChatScreen(row.dataset.conv, row.dataset.other || null); });
+    row.addEventListener('click', ()=>{
+      if(longPressed){ longPressed=false; return; }
+      if(convSelectMode){
+        const cb = row.querySelector('.conv-select-box');
+        cb.checked = !cb.checked;
+        toggleConvSelection(row.dataset.conv, cb.checked);
+        return;
+      }
+      openChatScreen(row.dataset.conv, row.dataset.other || null);
+    });
     row.addEventListener('touchstart', ()=>{
       row.style.background='var(--concrete)';
       longPressed = false;
@@ -4506,6 +4806,15 @@ function openConvQuickActions(convId, otherUid){
       else await db.collection('conversations').doc(convId).update({pinnedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)});
       renderConversationList();
     }catch(e){ showToast('İşlem başarısız'); }
+  };
+  document.getElementById('convQuickArchiveBtn').onclick = async ()=>{
+    document.getElementById('convQuickOverlay').classList.remove('show');
+    try{ await db.collection('conversations').doc(convId).update({archivedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)}); renderConversationList(); showToast('Sohbet arşivlendi'); }
+    catch(e){ showToast('İşlem başarısız'); }
+  };
+  document.getElementById('convQuickSelectBtn').onclick = ()=>{
+    document.getElementById('convQuickOverlay').classList.remove('show');
+    enterConvSelectMode(convId);
   };
   document.getElementById('convQuickDeleteBtn').onclick = async ()=>{
     document.getElementById('convQuickOverlay').classList.remove('show');
@@ -4688,7 +4997,8 @@ function startConversationsListener(){
         if(!convosFirstSnapshot && c.lastSenderUid && c.lastSenderUid !== currentUser.uid && c.lastMessageAt){
           const prevSeen = lastSeenMap[d.id];
           const isOpenNow = document.body.classList.contains('chat-open') && currentConvId === d.id;
-          if((!prevSeen || c.lastMessageAt > prevSeen) && !isOpenNow){
+          const isMuted = Array.isArray(c.mutedFor) && c.mutedFor.includes(currentUser.uid);
+          if((!prevSeen || c.lastMessageAt > prevSeen) && !isOpenNow && !isMuted){
             const senderP = profileByUid(c.lastSenderUid);
             const senderName = c.isGroup ? (getDisplayName(senderP) + ' (' + (c.groupName||'Grup') + ')') : getDisplayName(senderP);
             fireLocalNotification('💬 ' + senderName, c.lastMessage || 'Yeni bir mesajın var');
@@ -5818,6 +6128,18 @@ function getInitials(name){
   if(!name) return '?';
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0]||'') + (parts[1]?.[0]||'')).toUpperCase() || '?';
+}
+const AVATAR_PALETTE = [
+  ['#F97316','#EA580C'], ['#22C55E','#16A34A'], ['#0EA5E9','#0284C7'], ['#A855F7','#9333EA'],
+  ['#EC4899','#DB2777'], ['#14B8A6','#0D9488'], ['#EAB308','#CA8A04'], ['#EF4444','#DC2626'],
+  ['#6366F1','#4F46E5'], ['#84CC16','#65A30D'],
+];
+function avatarGradient(seed){
+  if(!seed) return 'linear-gradient(150deg,var(--asphalt),var(--asphalt-2))';
+  let hash = 0;
+  for(let i=0;i<seed.length;i++){ hash = (hash*31 + seed.charCodeAt(i)) >>> 0; }
+  const [c1,c2] = AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
+  return `linear-gradient(150deg,${c1},${c2})`;
 }
 function applyAvatar(imgEl, initialsEl){
   const photo = profile.photoData || null;
