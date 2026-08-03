@@ -462,6 +462,8 @@
 
     <button class="submit-btn" id="btnGoToEdit" style="margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); box-shadow:var(--shadow-md);">✏️ Profili Düzenle</button>
 
+    <div id="ownWarningBanner" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:14px; padding:14px; margin-bottom:14px; font-size:12.5px; font-weight:700; line-height:1.5;"></div>
+
     <div class="card" id="profileCompletionCard" style="display:none; padding:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <div style="font-size:12.5px; font-weight:700;">Profil Tamamlanma</div>
@@ -647,13 +649,16 @@
         <p class="hint">Şantiye Defteri; günlük yevmiyeni, alacaklarını, avanslarını ve tahsil ettiğin ödemeleri kaydetmeni, ay ay ve yıl yıl takip etmeni sağlayan kişisel bir defterdir. Verilerin hesabınla bulutta saklanır, hangi telefondan girersen gir seninle gelir.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Nasıl kayıt olurum / giriş yaparım?</summary>
-        <p class="hint">Giriş ekranında "Kayıt Ol" sekmesinden e-posta ve şifre belirleyerek hesap oluşturabilir, ya da "Google ile Giriş Yap" ile tek dokunuşla giriş yapabilirsin. Şifreni unutursan giriş ekranındaki "Şifremi Unuttum" linkine dokunman yeterli.</p>
+        <p class="hint">Giriş ekranında "Kayıt Ol" sekmesinden e-posta ve şifre belirleyerek hesap oluşturabilir, ya da "Google ile Giriş Yap" ile tek dokunuşla giriş yapabilirsin. Ad Soyad bilgisi artık zorunlu değil. Şifreni unutursan giriş ekranındaki "Şifremi Unuttum" linkine dokunman yeterli.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Ana Sayfa'daki "Veriler" ve "Takvim" sekmeleri ne işe yarar?</summary>
+        <p class="hint">Ana Sayfa'da Günün Ayeti'nin altında iki sekme var. "Veriler" varsayılan açılır ve bu ay özeti, önceki aylardan kalan bakiyeni, notlarını, avanslarını ve aktif üyeleri gösterir. "Takvim"e dokunursan aynı sayfada takvime geçersin, ay ay çalışma günlerini işaretleyebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takvimde bir günü nasıl işaretlerim?</summary>
-        <p class="hint">Ana Sayfa'daki takvimde boş bir güne dokun: 1. dokunuş tam gün (yeşil), 2. dokunuş yarım gün (turuncu, tutar otomatik yarıya iner), 3. dokunuş kaydı tamamen kaldırır. Tam gün için önce Ayarlar'dan varsayılan yevmiye tutarını belirlemen gerekir.</p>
+        <p class="hint">Takvim sekmesinde boş bir güne dokun: 1. dokunuş tam gün (yeşil), 2. dokunuş yarım gün (turuncu, tutar otomatik yarıya iner), 3. dokunuş kaydı tamamen kaldırır. Tam gün için önce Ayarlar'dan varsayılan yevmiye tutarını belirlemen gerekir. Takvimi sağa/sola kaydırarak da ay değiştirebilir, "📋 Liste Görünümü" ile takvim yerine düz listeye geçebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Avans, alacak veya ödeme nasıl eklerim?</summary>
-        <p class="hint">Sağ alttaki ＋ butonuna dokun, kayıt türünü (Yevmiye/Alacak/Avans/Ödeme Alındı) seç, tarih ve tutarı gir, istersen işveren/şantiye adı ve not ekle, "Kaydet" de. Var olan bir kaydı düzenlemek için o kayda dokunman yeterli.</p>
+        <p class="hint">Ana Sayfa'daki "Avanslarım" kartından "Ekle" ile avans, "Notlarım" kartından not ekleyebilirsin. Yevmiye kayıtları takvimden eklenir. Var olan bir kaydı düzenlemek/silmek için o kayda dokunman yeterli.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Notlar nasıl çalışır?</summary>
         <p class="hint">Ana Sayfa ve Profil sayfasının altındaki "Notlarım" bölümünden serbest metin notlar ekleyebilirsin. Bu notlar para hesaplarına dahil edilmez, sadece hatırlatma amaçlıdır.</p>
@@ -662,31 +667,37 @@
         <p class="hint">Üstte genel özet kartları, altında üç sekme: Çalışma Günleri (tüm yevmiye kayıtların), Avanslar (avans/alacak/ödeme kayıtların) ve Aylık Özet (yıl bazlı grafik, ay ay detay ve işverene göre kazanç dağılımı).</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">İstatistik sayfası ne gösteriyor?</summary>
-        <p class="hint">Bugün/Bu Hafta/Bu Ay/Bu Yıl/Tüm Zamanlar filtreleriyle kazanç özetini, çalışma oranını, rekorlarını (en yüksek/düşük yevmiye vb.), üç farklı grafiği ve aylık hedef takibini görebilirsin. Hedefini "Hedef Takibi" kartından belirleyip kaydedebilirsin.</p>
+        <p class="hint">Bugün/Bu Hafta/Bu Ay/Bu Yıl/Tüm Zamanlar filtreleriyle kazanç özetini, çalışma oranını, rekorlarını (en yüksek/düşük yevmiye vb.), aylık kazanç grafiğini (üzerinde o ayın toplam tutarı yazar) ve haftalık çalışma grafiğini görebilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">PDF rapor nasıl alırım?</summary>
+        <p class="hint">Ayarlar sayfasında "📄 PDF Rapor İndir" bölümünden Genel, Bu Ay veya Geçen Ay dönemlerinden birini seçip düzenli, yazdırılabilir bir PDF rapor indirebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Profilimi nasıl düzenlerim?</summary>
-        <p class="hint">Profil sayfasındaki "✏️ Profili Düzenle" butonuna dokun. Orada fotoğrafını, adını, kullanıcı adını (1 kez değiştirme hakkın var), mesleğini ve şehrini güncelleyebilir, ayrıca şifreni değiştirebilirsin.</p>
+        <p class="hint">Profil sayfasındaki "✏️ Profili Düzenle" butonuna dokun. Orada fotoğrafını, adını, kullanıcı adını (en fazla 16 karakter, 1 kez değiştirme hakkın var), mesleğini ve şehrini güncelleyebilir, ayrıca şifreni değiştirebilirsin. Profilinde ayrıca "Çalıştığım Yerler" (kayıtlarından otomatik derlenir) ve "Belgelerim" (ehliyet, sertifika gibi belgelerini saklayabileceğin) bölümleri var.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Kıdem rütbem ne anlama geliyor?</summary>
+        <p class="hint">Üyelik süren arttıkça profilinde bir kıdem rozeti (🌱, 🔨 gibi) belirir. Profil sayfasında rozetine dokunursan, o rütbenin kaç günlük üyeliğe karşılık geldiğini gösteren küçük bir açıklama çıkar.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Arama nasıl çalışır?</summary>
-        <p class="hint">Üstteki 🔍 ikonuna dokunup tarih, not, işveren adı veya tutar yazarak kendi kayıtların içinde arama yapabilirsin. Aynı kutuya bir meslek adı (örn. "elektrikçi") ya da şehir (örn. "istanbul") yazarsan, o bilgilere sahip diğer kullanıcılar da listelenir — bu arama sadece isim/kullanıcı adı/meslek/şehir bilgisiyle sınırlıdır, kimsenin para bilgisi asla görünmez.</p>
+        <p class="hint">Alt menüdeki büyüteç ikonuna dokunup tarih, not, işveren adı veya tutar yazarak kendi kayıtların içinde arama yapabilirsin. Aynı kutuya bir meslek adı (örn. "elektrikçi") ya da şehir (örn. "istanbul") yazarsan, o bilgilere sahip diğer kullanıcılar da listelenir — bu arama sadece kullanıcı adı/meslek/şehir bilgisiyle sınırlıdır, kimsenin para bilgisi asla görünmez.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Ayarlar'da neler var?</summary>
-        <p class="hint">⚙️ simgesinden: koyu mod, günlük "çalıştın mı?" hatırlatması, varsayılan yevmiye tutarı, para birimi, verilerini yedekleme/geri yükleme (.json dosyası olarak) ve tüm verileri silme.</p>
+        <p class="hint">⚙️ simgesinden: koyu mod, günlük "çalıştın mı?" hatırlatması (saatini seçebilirsin), varsayılan yevmiye tutarı, para birimi, PDF rapor indirme, verilerini yedekleme/geri yükleme (.json dosyası olarak) ve tüm verileri silme.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Verilerim güvende mi, kim görebilir?</summary>
-        <p class="hint">Kayıtların (yevmiye, avans, alacak, notlar) sadece senin hesabınla ilişkilendirilir ve yalnızca sen görebilirsin. Diğer kullanıcılar arama yaptığında sadece adını, kullanıcı adını, mesleğini ve şehrini görebilir — asla kazancını, kayıtlarını ya da e-postanı göremezler. Bu kuralın tek istisnası, teknik ve hesap desteği sağlayan yöneticiler/moderatörlerdir.</p>
+        <p class="hint">Kayıtların (yevmiye, avans, alacak, notlar) sadece senin hesabınla ilişkilendirilir ve yalnızca sen görebilirsin. Diğer kullanıcılar arama yaptığında sadece kullanıcı adını, mesleğini ve şehrini görebilir — asla kazancını, kayıtlarını ya da e-postanı göremezler. Bu kuralın tek istisnası, teknik ve hesap desteği sağlayan yöneticiler/moderatörlerdir.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takip sistemi nasıl çalışır?</summary>
         <p class="hint">Bir kullanıcının profilinde 🤍 "Takip Et" butonuna dokunarak onu takip edebilirsin, takip edilen kişiye bildirim gider. Ayarlar'dan takipçi listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Mesajlaşma nasıl çalışır?</summary>
-        <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilirsin. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece takipçilerine açabilirsin. Tüm mesajların "Mesajlar" sekmesinde listelenir.</p>
+        <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece takipçilerine açabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Bildirimler ne zaman gelir?</summary>
-        <p class="hint">Biri seni takip ettiğinde, sana mesaj yazdığında veya yöneticiden bir duyuru geldiğinde 🔔 zil ikonuna bildirim düşer. İzin verirsen bunlar telefonuna sistem bildirimi olarak da gelir.</p>
+        <p class="hint">Biri seni takip ettiğinde, sana mesaj yazdığında veya yöneticiden bir duyuru geldiğinde 🔔 zil ikonuna bildirim düşer. İzin verirsen bunlar uygulama açık/arka planda çalışırken telefonuna sistem bildirimi olarak da gelir; günlük yevmiye hatırlatıcısının saatini Ayarlar'dan seçebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Yönetici ve moderatör rozetleri ne anlama gelir?</summary>
-        <p class="hint">Bazı profillerde "👑 Yönetici" ya da "🛡️ Moderatör" rozetleri görebilirsin — bunlar uygulamayı yöneten, destek sağlayan yetkili hesaplardır.</p>
+        <p class="hint">Bazı profillerde "👑 Yönetici" ya da "🛡️ Moderatör" rozetleri görebilirsin — bunlar uygulamayı yöneten, destek sağlayan yetkili hesaplardır. Bu hesapların kendi belirledikleri unvan/rütbeleri de rozetin yanında görünür.</p>
       </details>
       <details style="margin-bottom:0;"><summary style="font-weight:700; cursor:pointer;">Hesabımı nasıl silerim?</summary>
         <p class="hint">Profil sayfası → Güvenlik bölümü → "Hesabı Sil" butonuna dokun. Hesabın hemen silinmez — 30 gün "silinmeyi bekliyor" durumunda kalır, bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur.</p>
@@ -794,14 +805,9 @@
     </div>
 
     <div id="vpAdminToolsSection" style="display:none; margin-top:8px; padding-top:18px; border-top:2px dashed var(--line);">
-      <div class="section-title" id="vpAdminToolsToggle" style="border-left-color:var(--danger); color:var(--danger); cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
-        <span>🛠️ Yönetici Araçları</span>
-        <span id="vpAdminToolsChevron" style="font-size:12px; transition:transform .2s ease;">▾</span>
-      </div>
+      <div class="section-title" style="border-left-color:var(--danger); color:var(--danger);">🛠️ Yönetici Araçları</div>
 
-      <div id="vpAdminToolsInner" style="display:none; grid-template-columns:1fr 1fr; gap:10px; align-items:start; margin-top:10px;">
-
-      <details class="card" id="vpToolEdit" style="display:none; grid-column:1/-1;">
+      <details class="card" id="vpToolEdit" style="display:none;">
         <summary style="font-weight:700; cursor:pointer;">✏️ Kullanıcı Bilgilerini Düzenle</summary>
         <div style="margin-top:14px;">
           <div class="field"><label>Ad Soyad</label><input type="text" id="vpEditFullName"></div>
@@ -820,12 +826,12 @@
         </div>
       </details>
 
-      <details class="card" id="vpToolUserNotifs" style="display:none; grid-column:1/-1;">
+      <details class="card" id="vpToolUserNotifs" style="display:none;">
         <summary style="font-weight:700; cursor:pointer;">🔔 Bu Kullanıcının Bildirimleri</summary>
         <div style="margin-top:14px;" id="vpUserNotifsList"></div>
       </details>
 
-      <details class="card" id="vpToolLoginHistory" style="display:none; grid-column:1/-1;">
+      <details class="card" id="vpToolLoginHistory" style="display:none;">
         <summary style="font-weight:700; cursor:pointer;">🔑 Giriş Geçmişi</summary>
         <div style="margin-top:14px;" id="vpLoginHistoryList"></div>
       </details>
@@ -840,6 +846,27 @@
         <summary style="font-weight:700; cursor:pointer;">🔄 Hesabı Sıfırla</summary>
         <div class="hint" style="margin-top:0;">Kayıtları (yevmiye/avans/alacak) ve notları tamamen temizler, hesap ve profil kalır.</div>
         <button class="submit-btn danger" id="vpResetAccount" style="margin-top:10px;">Kayıtları Sıfırla</button>
+      </details>
+
+      <details class="card" id="vpToolWarning" style="display:none;">
+        <summary style="font-weight:700; cursor:pointer;">⚠️ Uyarı</summary>
+        <div style="margin-top:14px;">
+          <div id="vpWarningStatus" style="margin-bottom:12px;"></div>
+          <div class="field"><label>Uyarı Sebebi</label><textarea id="vpWarningReason" placeholder="Örn: Küfür/hakaret içeren mesaj"></textarea></div>
+          <div class="field">
+            <label>Süre</label>
+            <select id="vpWarningDuration">
+              <option value="1">1 Gün</option>
+              <option value="3" selected>3 Gün</option>
+              <option value="7">7 Gün</option>
+              <option value="30">30 Gün</option>
+            </select>
+          </div>
+          <button class="submit-btn danger" id="vpWarningIssue">Uyarı Ver</button>
+          <button class="submit-btn secondary" id="vpWarningClear" style="margin-top:10px; display:none;">Uyarıyı Erken Kaldır</button>
+          <div class="section-title" style="margin-top:18px; margin-bottom:6px; font-size:13px;">Uyarı Geçmişi</div>
+          <div id="vpWarningHistory"></div>
+        </div>
       </details>
 
       <details class="card" id="vpToolIp" style="display:none;">
@@ -870,15 +897,16 @@
         <button class="submit-btn" id="vpReactivateBtn" style="margin-top:10px;">Yeniden Aktifleştir</button>
       </details>
 
-      <details class="card" id="vpToolModerator" style="display:none; grid-column:1/-1;">
+      <details class="card" id="vpToolModerator" style="display:none;">
         <summary style="font-weight:700; cursor:pointer;">🛡️ Moderatörlük</summary>
         <div style="margin-top:14px;">
           <div class="field">
             <label>Rütbe</label>
             <select id="vpModRankSelect"></select>
+            <div id="vpModRankDesc" style="font-size:11.5px; line-height:1.5; background:var(--tint-slate); color:var(--text-slate); border-radius:10px; padding:8px 10px; margin-top:6px;"></div>
           </div>
           <div class="hint" style="margin-top:0; margin-bottom:10px;">Aşağıdan yetkilerini seç:</div>
-          <div class="toggle-row" style="background:var(--tint-forest); border-radius:12px; padding:10px 12px;"><div class="tlbl" style="color:var(--text-forest);">✅ Temel Moderatör Yetkisi<br><span style="font-weight:400; font-size:10.5px;">(Profil Düzenleme, Fotoğraf Silme, İstatistik, Şikayetler, Öneriler, Öneriler Geçmişi, Kullanıcı Bildirimleri, Giriş Geçmişi, Tam Medya, İtirazlar)</span></div><label class="switch"><input type="checkbox" id="vpModTemelYetki"><span class="slider"></span></label></div>
+          <div class="toggle-row" style="background:var(--tint-forest); border-radius:12px; padding:10px 12px;"><div class="tlbl" style="color:var(--text-forest);">✅ Temel Moderatör Yetkisi (zorunlu)<br><span style="font-weight:400; font-size:10.5px;">(Profil Düzenleme, Fotoğraf Silme, İstatistik, Şikayetler, Öneriler, Öneriler Geçmişi, Kullanıcı Bildirimleri, Giriş Geçmişi, Tam Medya, İtirazlar)</span></div><label class="switch"><input type="checkbox" id="vpModTemelYetki" checked disabled><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🚫 Hesap Devre Dışı Bırakma</div><label class="switch"><input type="checkbox" id="vpModDeleteAccount"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🔁 Hesap Aktifleştirme</div><label class="switch"><input type="checkbox" id="vpModReactivateAccount"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🔄 Hesap Sıfırlama</div><label class="switch"><input type="checkbox" id="vpModResetAccount"><span class="slider"></span></label></div>
@@ -887,6 +915,7 @@
           <div class="toggle-row"><div class="tlbl">📖 Günün Ayeti Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditQuotes"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">⚠️ Uyarı Verme</div><label class="switch"><input type="checkbox" id="vpModManageWarnings"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📜 İşlem Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewModLog"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🗑️ Hesabı Kalıcı Silme</div><label class="switch"><input type="checkbox" id="vpModPermanentDelete"><span class="slider"></span></label></div>
@@ -897,7 +926,6 @@
           <button class="submit-btn danger" id="vpModRemove" style="margin-top:10px; display:none;">Moderatörlükten Çıkar</button>
         </div>
       </details>
-      </div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -1149,11 +1177,16 @@
 
 
 <div class="toast" id="toast"></div>
+<div id="rankInfoPopup" style="display:none; position:fixed; z-index:250; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); padding:16px; max-width:240px; text-align:center; border:1px solid var(--line);">
+  <div id="rankInfoIcon" style="font-size:28px; margin-bottom:6px;"></div>
+  <div id="rankInfoName" style="font-weight:800; font-size:14px; margin-bottom:4px;"></div>
+  <div id="rankInfoDesc" style="font-size:12px; color:var(--ink-soft); line-height:1.5;"></div>
+</div>
 
 <nav class="tabs">
   <button class="active" data-screen="ana"><span class="ic">🏠</span>Ana Sayfa</button>
   <button data-screen="kayitlar"><span class="ic">📋</span>Geçmiş</button>
-  <button id="navSearchBtn"><span class="ic">🔍</span></button>
+  <button id="navSearchBtn"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="#fff" stroke-width="2.4"/><line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span></button>
   <button data-screen="istatistik"><span class="ic">📊</span>İstatistik</button>
   <button data-screen="notlarim"><span class="ic">📝</span>Notlar</button>
 </nav>
@@ -1432,6 +1465,33 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 <script>
+// ---------- RÜTBE ROZETİ AÇIKLAMA PENCERESİ ----------
+document.addEventListener('click', (e)=>{
+  const badge = e.target.closest('.rank-badge-clickable');
+  const popup = document.getElementById('rankInfoPopup');
+  if(badge){
+    const min = badge.dataset.rankMin, max = badge.dataset.rankMax;
+    let desc;
+    if(!max) desc = `${min} gün ve üzeri süredir üye olanlar bu rütbeye sahip olur.`;
+    else if(min==='0') desc = `İlk ${max} gün içindeki üyeler bu rütbeye sahip olur.`;
+    else desc = `${min}-${max} gün arası üyelik süresine sahip olanlar bu rütbeye sahiptir.`;
+    document.getElementById('rankInfoIcon').textContent = badge.dataset.rankIcon;
+    document.getElementById('rankInfoName').textContent = badge.dataset.rankName;
+    document.getElementById('rankInfoDesc').textContent = desc;
+    const rect = badge.getBoundingClientRect();
+    popup.style.display = 'block';
+    let left = rect.left + rect.width/2 - 120;
+    left = Math.max(10, Math.min(left, window.innerWidth - 250));
+    let top = rect.bottom + 8;
+    if(top + 120 > window.innerHeight) top = rect.top - 128;
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    e.stopPropagation();
+  } else if(!popup.contains(e.target)){
+    popup.style.display = 'none';
+  }
+});
+
 // ---------- RESİMLERDE VARSAYILAN MENÜYÜ ENGELLE ----------
 document.addEventListener('contextmenu', (e)=>{
   if(e.target && e.target.tagName === 'IMG') e.preventDefault();
@@ -1580,10 +1640,11 @@ function getTenureBadge(createdAt){
   }
   return ranks.length ? ranks[ranks.length-1] : null;
 }
-function tenureBadgeHtml(createdAt, extraStyle){
+function tenureBadgeHtml(createdAt, extraStyle, clickable){
   const r = getTenureBadge(createdAt);
   if(!r) return '';
-  return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  if(!clickable) return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  return `<span class="rank-badge-clickable" data-rank-name="${escapeHtml(r.name)}" data-rank-icon="${escapeHtml(r.icon)}" data-rank-min="${r.minDays}" data-rank-max="${r.maxDays==null?'':r.maxDays}" style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); cursor:pointer; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
 
 const QUOTES=[
@@ -1684,6 +1745,8 @@ async function toggleFollow(targetUid){
   const ref = db.collection('follows').doc(followDocId(currentUser.uid, targetUid));
   const doc = await ref.get();
   if(doc.exists){ await ref.delete(); return false; }
+  const warnedUntil = isCurrentUserWarned();
+  if(warnedUntil){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar birini takip edemezsin'); return false; }
   await ref.set({followerUid:currentUser.uid, followedUid:targetUid, createdAt:new Date().toISOString()});
   try{
     const myName = (profile && profile.fullName) || currentUser.email || 'Bir kullanıcı';
@@ -1818,8 +1881,6 @@ function renderBadgesFromFlags(containerId, badges, profession){
 async function openViewProfile(uid){
   if(uid===currentUser.uid){ switchScreen('profil'); return; }
   currentViewedUid = uid;
-  document.getElementById('vpAdminToolsInner').style.display = 'none';
-  document.getElementById('vpAdminToolsChevron').style.transform = 'rotate(0deg)';
   try{
     const freshDoc = await db.collection('public_profiles').doc(uid).get();
     if(freshDoc.exists){
@@ -1855,7 +1916,7 @@ async function openViewProfile(uid){
   if(p && p.role==='admin'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '👑 ' + (p.adminTitle || 'Yönetici'); }
   else if(p && p.role==='moderator'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '🛡️ ' + (p.rank || 'Moderatör'); }
   else { rankBadge.style.display='none'; }
-  document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;');
+  document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true);
   const sameIpBadge = document.getElementById('vpSameIpBadge');
   const ipRow = document.getElementById('vpIpAddressRow');
   if(canViewIp()){
@@ -2040,6 +2101,11 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
       await checkSameIpAccounts(lastIp, uid);
     }catch(e){ document.getElementById('vpKnownIp').textContent = '-'; }
   }
+  // Uyarı
+  document.getElementById('vpToolWarning').style.display = canManageWarnings() ? 'block' : 'none';
+  if(canManageWarnings()){
+    renderWarningTool(p, uid);
+  }
   // Devre dışı / Aktifleştir
   const isDeactivated = p && p.deactivated;
   document.getElementById('vpToolDeactivate').style.display = (canDeleteAccount() && !isDeactivated) ? 'block' : 'none';
@@ -2059,9 +2125,10 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
   document.getElementById('vpToolModerator').style.display = isAdmin ? 'block' : 'none';
   if(isAdmin){
     await fillModeratorRankSelect(document.getElementById('vpModRankSelect'), targetModDoc ? targetModDoc.rank : null);
+    updateModRankDesc();
     const BASE_MOD_PERMS = {temelYetki:true};
     const perms = targetModDoc || BASE_MOD_PERMS;
-    document.getElementById('vpModTemelYetki').checked = !!perms.temelYetki;
+    document.getElementById('vpModTemelYetki').checked = true;
     document.getElementById('vpModDeleteAccount').checked = !!perms.deleteAccount;
     document.getElementById('vpModReactivateAccount').checked = !!perms.reactivateAccount;
     document.getElementById('vpModResetAccount').checked = !!perms.resetAccount;
@@ -2070,6 +2137,7 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
     document.getElementById('vpModEditQuotes').checked = !!perms.editQuotes;
     document.getElementById('vpModEditProfessions').checked = !!perms.editProfessions;
     document.getElementById('vpModBanIp').checked = !!perms.banIp;
+    document.getElementById('vpModManageWarnings').checked = !!perms.manageWarnings;
     document.getElementById('vpModViewPrivateInfo').checked = !!perms.viewPrivateInfo;
     document.getElementById('vpModViewIp').checked = !!perms.viewIp;
     document.getElementById('vpModChangeUsername').checked = !!perms.changeUsername;
@@ -2215,9 +2283,10 @@ function canReactivateAccount(){ return isAdmin || !!modPerms.reactivateAccount;
 function canDeletePhoto(){ return isAdmin || !!modPerms.deletePhoto || hasTemelPerm('deletePhoto'); }
 function canResetAccount(){ return isAdmin || !!modPerms.resetAccount; }
 function canBroadcast(){ return isAdmin || !!modPerms.broadcast; }
-function canEditContent(){ return isAdmin || !!modPerms.editContent; }
+
 function canViewStats(){ return isAdmin || !!modPerms.viewStats || hasTemelPerm('viewStats'); }
 function canBanIp(){ return isAdmin || !!modPerms.banIp; }
+function canManageWarnings(){ return isAdmin || !!modPerms.manageWarnings; }
 function canViewPrivateInfo(){ return isAdmin || !!modPerms.viewPrivateInfo; }
 function canViewAppeals(){ return isAdmin || !!modPerms.viewAppeals || hasTemelPerm('viewAppeals'); }
 function canBulkActions(){ return isAdmin; }
@@ -2236,7 +2305,7 @@ function canDeleteArchivedMedia(){ return isAdmin || !!modPerms.deleteArchivedMe
 function canEditAnnouncements(){ return isAdmin || !!modPerms.editAnnouncements; }
 function canEditQuotes(){ return isAdmin || !!modPerms.editQuotes; }
 function canEditProfessions(){ return isAdmin || !!modPerms.editProfessions; }
-function canEditRanks(){ return isAdmin; }
+
 
 async function logModAction(action, targetUid, details){
   try{
@@ -2479,12 +2548,59 @@ document.getElementById('vpBanIp').addEventListener('click', async ()=>{
     showToast('IP engellendi');
   }catch(e){ showToast('Engellenemedi: '+(e.message||'')); }
 });
-document.getElementById('vpAdminToolsToggle').addEventListener('click', ()=>{
-  const inner = document.getElementById('vpAdminToolsInner');
-  const chevron = document.getElementById('vpAdminToolsChevron');
-  const isOpen = inner.style.display === 'grid';
-  inner.style.display = isOpen ? 'none' : 'grid';
-  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+function renderWarningTool(p, uid){
+  const statusBox = document.getElementById('vpWarningStatus');
+  const isActive = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
+  if(isActive){
+    statusBox.innerHTML = `<div style="background:var(--tint-rust); color:var(--danger); border-radius:10px; padding:10px 12px; font-size:12.5px; font-weight:700;">⚠️ Şu an uyarılı — ${new Date(p.activeWarningUntil).toLocaleString('tr-TR')} tarihine kadar<br><span style="font-weight:400; font-size:11.5px;">Sebep: ${escapeHtml(p.activeWarningReason||'-')}</span></div>`;
+    document.getElementById('vpWarningClear').style.display = 'block';
+  } else {
+    statusBox.innerHTML = `<div class="hint" style="margin:0;">Şu an aktif bir uyarısı yok.</div>`;
+    document.getElementById('vpWarningClear').style.display = 'none';
+  }
+  const history = Array.isArray(p && p.warningHistory) ? p.warningHistory.slice().reverse() : [];
+  const histBox = document.getElementById('vpWarningHistory');
+  histBox.innerHTML = history.length ? history.map(w=>{
+    const issuer = profileByUid(w.issuedBy);
+    return `<div class="card" style="padding:10px; margin-bottom:8px;">
+      <div style="font-size:12px; font-weight:700;">${w.durationDays} gün — ${new Date(w.issuedAt).toLocaleDateString('tr-TR')}</div>
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">Sebep: ${escapeHtml(w.reason||'-')}</div>
+      <div style="font-size:10.5px; color:var(--ink-soft); margin-top:2px;">Veren: ${escapeHtml(usernameLabel(issuer))}</div>
+    </div>`;
+  }).join('') : `<div class="hint" style="margin:0;">Hiç uyarı geçmişi yok.</div>`;
+}
+document.getElementById('vpWarningIssue').addEventListener('click', async ()=>{
+  const uid = currentViewedUid;
+  const reason = document.getElementById('vpWarningReason').value.trim();
+  const days = parseInt(document.getElementById('vpWarningDuration').value, 10);
+  if(!reason){ showToast('Uyarı sebebi yaz'); return; }
+  if(!confirm(`Bu kullanıcıya ${days} gün süreyle uyarı vermek istediğine emin misin? Bu süre boyunca mesaj gönderemeyecek/yeni sohbet başlatamayacak.`)) return;
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + days*24*60*60*1000).toISOString();
+  const record = {reason, durationDays: days, issuedAt: now.toISOString(), expiresAt, issuedBy: currentUser.uid};
+  try{
+    await db.collection('public_profiles').doc(uid).set({
+      activeWarningUntil: expiresAt, activeWarningReason: reason,
+      warningHistory: firebase.firestore.FieldValue.arrayUnion(record)
+    }, {merge:true});
+    await logModAction('issueWarning', uid, `${days} gün — ${reason}`);
+    await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'mod_update', message:`⚠️ Hesabına ${days} günlük uyarı verildi. Sebep: ${reason}. Bu süre içinde mesaj gönderemez/yeni sohbet başlatamazsın.`, read:false, createdAt:new Date().toISOString()});
+    showToast('Uyarı verildi');
+    await loadPublicProfiles();
+    document.getElementById('vpWarningReason').value = '';
+    renderWarningTool(profileByUid(uid), uid);
+  }catch(e){ showToast('Uyarı verilemedi: '+(e.message||'')); }
+});
+document.getElementById('vpWarningClear').addEventListener('click', async ()=>{
+  const uid = currentViewedUid;
+  if(!confirm('Uyarıyı erken sonlandırmak istediğine emin misin?')) return;
+  try{
+    await db.collection('public_profiles').doc(uid).set({activeWarningUntil: firebase.firestore.FieldValue.delete(), activeWarningReason: firebase.firestore.FieldValue.delete()}, {merge:true});
+    await logModAction('clearWarning', uid, '');
+    showToast('Uyarı kaldırıldı');
+    await loadPublicProfiles();
+    renderWarningTool(profileByUid(uid), uid);
+  }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
 });
 document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>{
   if(currentViewedUid === MAIN_ADMIN_UID){ showToast('Bu hesaba işlem yapılamaz'); return; }
@@ -2539,8 +2655,20 @@ document.getElementById('vpEditSave').addEventListener('click', async ()=>{
   }catch(e){ showToast('Güncellenemedi: '+(e.message||'')); }
 });
 
+const MOD_RANK_DESCRIPTIONS = {
+  '👷 Saha Moderatörü': 'Giriş seviyesi moderatör. Temel moderasyon görevlerini yürütür, günlük şikayet ve önerilere bakar.',
+  '🔨 Usta Moderatör': 'Deneyim kazanmış moderatör. Daha karmaşık vakaları çözer, yeni moderatörlere yol gösterir.',
+  '🏗️ Şantiye Şefi': 'Orta-üst seviye sorumluluk. Birden fazla vakada koordinasyon kurar, önemli kararlarda söz sahibidir.',
+  '📋 Saha Amiri': 'Üst düzey sorumluluk. Genel moderasyon sürecini denetler, kural ihlallerinde nihai kararlara destek olur.',
+  '⭐ Baş Moderatör': 'En yüksek moderatör rütbesi. Admin\'e en yakın konum, tüm moderatör ekibinin koordinasyonundan sorumludur.'
+};
+function updateModRankDesc(){
+  const rank = document.getElementById('vpModRankSelect').value;
+  document.getElementById('vpModRankDesc').textContent = MOD_RANK_DESCRIPTIONS[rank] || 'Bu rütbe için henüz bir açıklama girilmedi.';
+}
+document.getElementById('vpModRankSelect').addEventListener('change', updateModRankDesc);
 async function fillModeratorRankSelect(selectEl, selected){
-  let ranks = ['Moderatör','Genel Moderatör','Uzman Moderatör'];
+  let ranks = ['👷 Saha Moderatörü','🔨 Usta Moderatör','🏗️ Şantiye Şefi','📋 Saha Amiri','⭐ Baş Moderatör'];
   try{
     const doc = await db.collection('app_config').doc('moderatorRanks').get();
     if(doc.exists && Array.isArray(doc.data().ranks) && doc.data().ranks.length) ranks = doc.data().ranks;
@@ -2548,6 +2676,10 @@ async function fillModeratorRankSelect(selectEl, selected){
   selectEl.innerHTML = ranks.map(r=>`<option value="${escapeHtml(r)}" ${r===selected?'selected':''}>${escapeHtml(r)}</option>`).join('');
 }
 document.getElementById('vpModSave').addEventListener('click', async ()=>{
+  if(!document.getElementById('vpModTemelYetki').checked){
+    showToast('Moderatör olabilmesi için "✅ Temel Moderatör Yetkisi" işaretli olmalı');
+    return;
+  }
   const rank = document.getElementById('vpModRankSelect').value;
   const prevProfile = profileByUid(currentViewedUid);
   const wasAlreadyMod = prevProfile && prevProfile.role==='moderator';
@@ -2568,6 +2700,7 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     editQuotes: document.getElementById('vpModEditQuotes').checked,
     editProfessions: document.getElementById('vpModEditProfessions').checked,
     banIp: document.getElementById('vpModBanIp').checked,
+    manageWarnings: document.getElementById('vpModManageWarnings').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
     viewModLog: document.getElementById('vpModViewModLog').checked,
     permanentDelete: document.getElementById('vpModPermanentDelete').checked,
@@ -2930,7 +3063,7 @@ const PERM_LABELS = {
   editProfessions:'👷 Meslek Listesi Düzenleme', viewStats:'📊 İstatistik Görme', banIp:'🌐 IP Engelleme',
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
-  viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi',
+  viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
   viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme'
 };
 const MOD_ACTION_LABELS = {
@@ -2940,7 +3073,7 @@ const MOD_ACTION_LABELS = {
   bulkDeactivateAll:'🚫 Tüm kullanıcıları devre dışı bıraktı', bulkDeletePhotos:'🖼️ Tüm fotoğrafları sildi',
   appealApproved:'✅ İtirazı onayladı', appealRejected:'❌ İtirazı reddetti', permanentDelete:'🗑️ Hesabı kalıcı sildi',
   reportResolved:'🚩 Şikayeti çözümledi', reportDismissed:'🚩 Şikayeti reddetti', suggestionResponded:'💡 Öneriyi yanıtladı', changeUsername:'✏️ Kullanıcı adını değiştirdi',
-  assignAdmin:'👑 Admin yaptı', removeAdmin:'👑 Admin yetkisini kaldırdı', emergencyStripMods:'🛑 Tüm moderatör yetkilerini acil durdurdu', wipeAllData:'☢️ Tüm verileri temizledi'
+  assignAdmin:'👑 Admin yaptı', removeAdmin:'👑 Admin yetkisini kaldırdı', emergencyStripMods:'🛑 Tüm moderatör yetkilerini acil durdurdu', wipeAllData:'☢️ Tüm verileri temizledi', issueWarning:'⚠️ Uyarı verdi', clearWarning:'⚠️ Uyarıyı kaldırdı'
 };
 function modLogRowHtml(l){
   const actorP = profileByUid(l.actorUid);
@@ -3263,7 +3396,7 @@ let currentModRanksList = [];
 async function loadRankConfig(){
   try{
     const doc = await db.collection('app_config').doc('moderatorRanks').get();
-    currentModRanksList = (doc.exists && Array.isArray(doc.data().ranks) && doc.data().ranks.length) ? doc.data().ranks.slice() : ['Moderatör','Genel Moderatör','Uzman Moderatör'];
+    currentModRanksList = (doc.exists && Array.isArray(doc.data().ranks) && doc.data().ranks.length) ? doc.data().ranks.slice() : ['👷 Saha Moderatörü','🔨 Usta Moderatör','🏗️ Şantiye Şefi','📋 Saha Amiri','⭐ Baş Moderatör'];
     renderModRankDisplay();
   }catch(e){}
 }
@@ -3581,7 +3714,7 @@ function activeMemberRowHtml(u){
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--bg);"></span>':''}
       </div>
       <div class="info">
-        <div class="ttype" style="color:var(--ink);">${escapeHtml(u.username||'kullanici')}</div>
+        <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${(u.role!=='admin'&&u.role!=='moderator')?tenureBadgeHtml(u.createdAt):''}</div>
         <div class="note">${escapeHtml(formatLastActive(u.lastActive))}</div>
       </div>
     </div>`;
@@ -3636,13 +3769,6 @@ async function isBlockedEitherWay(otherUid){
     ]);
     return { byMe: meBlockedThem.exists, byThem: theyBlockedMe.exists };
   }catch(e){ return { byMe:false, byThem:false }; }
-}
-async function toggleBlockUser(targetUid){
-  const ref = db.collection('blocks').doc(blockDocId(currentUser.uid, targetUid));
-  const doc = await ref.get();
-  if(doc.exists){ await ref.delete(); return false; }
-  await ref.set({blockerUid:currentUser.uid, blockedUid:targetUid, createdAt:new Date().toISOString()});
-  return true;
 }
 async function renderBlockedList(){
   const box = document.getElementById('blockedListBody');
@@ -3766,6 +3892,8 @@ async function canMessageUser(targetUid){
 }
 async function openOrCreateConversation(targetUid){
   if(targetUid===currentUser.uid) return;
+  const warnedUntil = isCurrentUserWarned();
+  if(warnedUntil && !hasAnyAdminTool()){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar yeni sohbet başlatamazsın'); return; }
   if(!hasAnyAdminTool()){
     const blockStatus = await isBlockedEitherWay(targetUid);
     if(blockStatus.byMe){ showToast('Bu kullanıcıyı engellemiştin, mesaj göndermek için önce engeli kaldır'); return; }
@@ -4478,11 +4606,17 @@ document.getElementById('chatInput').addEventListener('input', ()=>{
   }
 });
 document.getElementById('chatInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ sendChatMessage(); } });
+function isCurrentUserWarned(){
+  const own = profileByUid(currentUser.uid);
+  return own && own.activeWarningUntil && new Date(own.activeWarningUntil).getTime() > Date.now() ? own.activeWarningUntil : null;
+}
 async function sendChatMessage(){
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if(!text || !currentConvId) return;
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
+  const warnedUntil = isCurrentUserWarned();
+  if(warnedUntil){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar mesaj gönderemezsin'); return; }
   input.value = '';
   try{ localStorage.removeItem('chatDraft_'+currentConvId); }catch(e){}
   await sendChatPayload({text});
@@ -4567,6 +4701,8 @@ document.getElementById('chatCameraBtn').addEventListener('click', ()=>{
 });
 async function handleChatImageFile(file){
   if(!file || !currentConvId) return;
+  const warnedUntil = isCurrentUserWarned();
+  if(warnedUntil){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar medya gönderemezsin'); return; }
   showToast('Fotoğraf hazırlanıyor...');
   try{
     let dataUrl = await compressImageToDataUrl(file, 1000, 0.6);
@@ -5274,20 +5410,6 @@ async function renderModeratorsList(){
       });
     }
   }catch(e){ box.innerHTML = `<div class="hint">Liste yüklenemedi.</div>`; }
-}
-
-async function deleteAllAccountData(){
-  const uid = currentUser.uid;
-  if(userDocRef) await userDocRef.delete();
-  try{ await db.collection('public_profiles').doc(uid).delete(); }catch(e){ console.error(e); }
-  try{
-    const asFollower = await db.collection('follows').where('followerUid','==',uid).get();
-    const asFollowed = await db.collection('follows').where('followedUid','==',uid).get();
-    const batch = db.batch();
-    asFollower.docs.forEach(d=> batch.delete(d.ref));
-    asFollowed.docs.forEach(d=> batch.delete(d.ref));
-    await batch.commit();
-  }catch(e){ console.error('follows temizlenemedi', e); }
 }
 
 async function loadPublicProfiles(){
@@ -6445,6 +6567,16 @@ document.getElementById('documentFileInput').addEventListener('change', async (e
 function renderProfile(){
   if(!profile || !currentUser) return;
 
+  const ownP = profileByUid(currentUser.uid);
+  const warningBanner = document.getElementById('ownWarningBanner');
+  const warnedUntil = ownP && ownP.activeWarningUntil && new Date(ownP.activeWarningUntil).getTime() > Date.now() ? ownP.activeWarningUntil : null;
+  if(warnedUntil){
+    warningBanner.style.display = 'block';
+    warningBanner.innerHTML = `⚠️ Hesabın uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(ownP.activeWarningReason||'-')}<br>Bitiş: ${new Date(warnedUntil).toLocaleString('tr-TR')}<br>Bu süre içinde mesaj gönderemez, yeni sohbet başlatamaz, birini takip edemezsin.</span>`;
+  } else {
+    warningBanner.style.display = 'none';
+  }
+
   applyAvatar(document.getElementById('profileAvatarImg'), document.getElementById('profileAvatarInitials'));
   updateHeaderAvatar();
   document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
@@ -6458,7 +6590,7 @@ function renderProfile(){
   if(isAdmin){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '👑 ' + (profile.adminTitle || 'Yönetici'); }
   else if(modPerms && modPerms.rank){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '🛡️ ' + modPerms.rank; }
   else { ownRankBadge.style.display='none'; }
-  document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank)) ? '' : tenureBadgeHtml(profile.createdAt, 'margin-left:6px;');
+  document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank)) ? '' : tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true);
 
   document.getElementById('viewUserId').textContent = profile.userId || '-';
   document.getElementById('viewEmail').textContent = currentUser.email || '-';
