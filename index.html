@@ -89,7 +89,7 @@
 </div>
 
 <div id="appRoot" style="display:none;">
-<button id="roleBadgeHeader" style="display:none; position:fixed; bottom:166px; right:20px; z-index:140; width:50px;height:50px;border-radius:16px; background:var(--asphalt); color:#fff; box-shadow:var(--shadow-md); align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:22px; border:none; cursor:pointer;">
+<button id="roleBadgeHeader" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140; width:44px;height:44px;border-radius:15px; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; box-shadow:var(--shadow-md); align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:19px; border:none; cursor:pointer;">
   <span id="roleBadgeLetter"></span>
   <span id="roleBadgePendingCount" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
 </button>
@@ -136,6 +136,12 @@
       <div class="qtext" id="quoteText"></div>
     </div>
 
+    <div id="homeViewTabsWrap" style="display:flex; gap:8px; margin:14px 0 16px; background:var(--concrete); padding:4px; border-radius:16px;">
+      <button class="home-view-tab active" data-homeview="data" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft);">📊 Veriler</button>
+      <button class="home-view-tab" data-homeview="calendar" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft);">🗓️ Takvim</button>
+    </div>
+
+    <div id="homeDataSection">
     <div class="stat-grid3" id="homeStats"></div>
 
     <div class="carry-card" id="carryCard" style="display:none;">
@@ -144,6 +150,23 @@
     </div>
     <div id="carryMonthsCard" style="display:none;"></div>
 
+    <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
+    <div class="stat-grid3" id="calMonthStats"></div>
+
+    <div class="section-title">Notlarım <button class="mini-btn" id="btnAddNote">Ekle</button></div>
+    <div class="card" id="notesCard"></div>
+
+    <div class="section-title">Avanslarım <button class="mini-btn" id="btnAddAvans">Ekle</button></div>
+    <div class="card" id="avansCard"></div>
+
+    <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
+    <div id="recentList"></div>
+
+    <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
+    <div id="activeMembersList"></div>
+    </div>
+
+    <div id="homeCalendarSection" style="display:none;">
     <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
       <span>Takvim</span>
       <button id="btnCalViewToggle" style="border:1.5px solid var(--line); background:var(--paper); border-radius:12px; padding:5px 12px; font-size:11px; font-weight:800; color:var(--ink-soft); cursor:pointer;">📋 Liste Görünümü</button>
@@ -162,21 +185,7 @@
     <div class="hint" style="margin:-8px 0 12px;" id="calGridHint">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
     <div class="cal-grid" id="calGrid"></div>
     <div id="calListView" style="display:none;"></div>
-
-    <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
-    <div class="stat-grid3" id="calMonthStats"></div>
-
-    <div class="section-title">Notlarım <button class="mini-btn" id="btnAddNote">Ekle</button></div>
-    <div class="card" id="notesCard"></div>
-
-    <div class="section-title">Avanslarım <button class="mini-btn" id="btnAddAvans">Ekle</button></div>
-    <div class="card" id="avansCard"></div>
-
-    <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
-    <div id="recentList"></div>
-
-    <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
-    <div id="activeMembersList"></div>
+    </div>
 
     <div class="section-title">Uygulama</div>
     <div class="card">
@@ -288,6 +297,8 @@
     <div style="display:flex; gap:8px; align-items:center; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--paper); border-top:1px solid var(--line);">
       <button id="chatAttachBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:22px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
       <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+      <button id="chatCameraBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📷</button>
+      <input type="file" id="chatCameraInput" accept="image/*" capture="environment" style="display:none;">
       <button id="chatEmojiBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">😀</button>
       <input type="text" id="chatInput" placeholder="Mesaj yaz" style="flex:1; border-radius:24px; padding:11px 18px; background:var(--concrete); border:none; font-size:15px;">
       <div id="chatRecordingBar" style="display:none; flex:1; align-items:center; gap:10px; padding:0 14px; height:44px; border-radius:24px; background:var(--tint-rust);">
@@ -764,6 +775,7 @@
         <div style="flex:1; min-width:0;">
           <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpName">-</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;" id="vpLastActive"></div>
+          <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpCreatedAtStaffOnly"></div>
           <div style="font-size:12px; color:var(--ink-soft);" id="vpUsername">-</div>
           <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;" id="vpMeta">-</div>
           <div id="vpRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
@@ -782,9 +794,14 @@
     </div>
 
     <div id="vpAdminToolsSection" style="display:none; margin-top:8px; padding-top:18px; border-top:2px dashed var(--line);">
-      <div class="section-title" style="border-left-color:var(--danger); color:var(--danger);">🛠️ Yönetici Araçları</div>
+      <div class="section-title" id="vpAdminToolsToggle" style="border-left-color:var(--danger); color:var(--danger); cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+        <span>🛠️ Yönetici Araçları</span>
+        <span id="vpAdminToolsChevron" style="font-size:12px; transition:transform .2s ease;">▾</span>
+      </div>
 
-      <details class="card" id="vpToolEdit" style="display:none;">
+      <div id="vpAdminToolsInner" style="display:none; grid-template-columns:1fr 1fr; gap:10px; align-items:start; margin-top:10px;">
+
+      <details class="card" id="vpToolEdit" style="display:none; grid-column:1/-1;">
         <summary style="font-weight:700; cursor:pointer;">✏️ Kullanıcı Bilgilerini Düzenle</summary>
         <div style="margin-top:14px;">
           <div class="field"><label>Ad Soyad</label><input type="text" id="vpEditFullName"></div>
@@ -803,12 +820,12 @@
         </div>
       </details>
 
-      <details class="card" id="vpToolUserNotifs" style="display:none;">
+      <details class="card" id="vpToolUserNotifs" style="display:none; grid-column:1/-1;">
         <summary style="font-weight:700; cursor:pointer;">🔔 Bu Kullanıcının Bildirimleri</summary>
         <div style="margin-top:14px;" id="vpUserNotifsList"></div>
       </details>
 
-      <details class="card" id="vpToolLoginHistory" style="display:none;">
+      <details class="card" id="vpToolLoginHistory" style="display:none; grid-column:1/-1;">
         <summary style="font-weight:700; cursor:pointer;">🔑 Giriş Geçmişi</summary>
         <div style="margin-top:14px;" id="vpLoginHistoryList"></div>
       </details>
@@ -853,7 +870,7 @@
         <button class="submit-btn" id="vpReactivateBtn" style="margin-top:10px;">Yeniden Aktifleştir</button>
       </details>
 
-      <details class="card" id="vpToolModerator" style="display:none;">
+      <details class="card" id="vpToolModerator" style="display:none; grid-column:1/-1;">
         <summary style="font-weight:700; cursor:pointer;">🛡️ Moderatörlük</summary>
         <div style="margin-top:14px;">
           <div class="field">
@@ -861,34 +878,26 @@
             <select id="vpModRankSelect"></select>
           </div>
           <div class="hint" style="margin-top:0; margin-bottom:10px;">Aşağıdan yetkilerini seç:</div>
-          <div class="toggle-row"><div class="tlbl">✏️ Profil Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfile"><span class="slider"></span></label></div>
+          <div class="toggle-row" style="background:var(--tint-forest); border-radius:12px; padding:10px 12px;"><div class="tlbl" style="color:var(--text-forest);">✅ Temel Moderatör Yetkisi<br><span style="font-weight:400; font-size:10.5px;">(Profil Düzenleme, Fotoğraf Silme, İstatistik, Şikayetler, Öneriler, Öneriler Geçmişi, Kullanıcı Bildirimleri, Giriş Geçmişi, Tam Medya, İtirazlar)</span></div><label class="switch"><input type="checkbox" id="vpModTemelYetki"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🚫 Hesap Devre Dışı Bırakma</div><label class="switch"><input type="checkbox" id="vpModDeleteAccount"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🔁 Hesap Aktifleştirme</div><label class="switch"><input type="checkbox" id="vpModReactivateAccount"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">🖼️ Fotoğraf Silme</div><label class="switch"><input type="checkbox" id="vpModDeletePhoto"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🔄 Hesap Sıfırlama</div><label class="switch"><input type="checkbox" id="vpModResetAccount"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📢 Toplu Bildirim</div><label class="switch"><input type="checkbox" id="vpModBroadcast"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📢 Duyuru Bandı Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditAnnouncements"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📖 Günün Ayeti Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditQuotes"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">📊 İstatistik Görme</div><label class="switch"><input type="checkbox" id="vpModViewStats"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">✉️ İtirazları Görme</div><label class="switch"><input type="checkbox" id="vpModViewAppeals"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📜 İşlem Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewModLog"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🗑️ Hesabı Kalıcı Silme</div><label class="switch"><input type="checkbox" id="vpModPermanentDelete"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">🚩 Şikayetleri Görme</div><label class="switch"><input type="checkbox" id="vpModViewReports"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">💡 Önerileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewSuggestions"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">📜 Öneriler Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewSuggestionHistory"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Adresi Görme</div><label class="switch"><input type="checkbox" id="vpModViewIp"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">✏️ Kullanıcı Adı Değiştirme (sınırsız)</div><label class="switch"><input type="checkbox" id="vpModChangeUsername"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">🔔 Kullanıcı Bildirimlerini Görme</div><label class="switch"><input type="checkbox" id="vpModViewUserNotifications"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">🔑 Giriş Geçmişini Görme</div><label class="switch"><input type="checkbox" id="vpModViewLoginHistory"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">🖼️ Tam Medya Görme (tek seferlik/süresi dolmuş dahil)</div><label class="switch"><input type="checkbox" id="vpModViewFullMedia"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🗑️ Arşivlenmiş Medyayı Kalıcı Silme</div><label class="switch"><input type="checkbox" id="vpModDeleteArchivedMedia"><span class="slider"></span></label></div>
           <button class="submit-btn" id="vpModSave" style="margin-top:6px;">Moderatör Olarak Ata / Güncelle</button>
           <button class="submit-btn danger" id="vpModRemove" style="margin-top:10px; display:none;">Moderatörlükten Çıkar</button>
         </div>
       </details>
+      </div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -1096,6 +1105,15 @@
       </div>
     </details>
 
+    <details class="card" id="permBaseModManage">
+      <summary style="font-weight:800; cursor:pointer; font-size:15px;">✅ Temel Moderatör Yetkisi İçeriği</summary>
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">"Temel Moderatör Yetkisi"ni açık olan tüm moderatörlerin sahip olacağı yetkileri buradan belirle. İşaretlediklerin bu paketin içinde olur.</div>
+        <div id="baseModPermList" style="margin-top:10px;"></div>
+        <button class="submit-btn" id="btnSaveBaseModPerms" style="margin-top:12px;">Kaydet</button>
+      </div>
+    </details>
+
     <details class="card" id="permBulk" style="border-color:var(--danger);">
       <summary style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
       <div style="margin-top:14px;">
@@ -1128,14 +1146,14 @@
 
 </main>
 
-<button class="fab" id="fabAdd" aria-label="Kayıt Ekle">＋</button>
+
 
 <div class="toast" id="toast"></div>
 
 <nav class="tabs">
   <button class="active" data-screen="ana"><span class="ic">🏠</span>Ana Sayfa</button>
   <button data-screen="kayitlar"><span class="ic">📋</span>Geçmiş</button>
-  <button id="navSearchBtn"><span class="ic">🔍</span>Ara</button>
+  <button id="navSearchBtn"><span class="ic">🔍</span></button>
   <button data-screen="istatistik"><span class="ic">📊</span>İstatistik</button>
   <button data-screen="notlarim"><span class="ic">📝</span>Notlar</button>
 </nav>
@@ -1800,6 +1818,8 @@ function renderBadgesFromFlags(containerId, badges, profession){
 async function openViewProfile(uid){
   if(uid===currentUser.uid){ switchScreen('profil'); return; }
   currentViewedUid = uid;
+  document.getElementById('vpAdminToolsInner').style.display = 'none';
+  document.getElementById('vpAdminToolsChevron').style.transform = 'rotate(0deg)';
   try{
     const freshDoc = await db.collection('public_profiles').doc(uid).get();
     if(freshDoc.exists){
@@ -1817,6 +1837,13 @@ async function openViewProfile(uid){
   document.getElementById('vpAvatar').textContent = getInitials(p ? p.fullName : '?');
   document.getElementById('vpName').textContent = getDisplayName(p);
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
+  const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
+  if(hasAnyAdminTool() && p && p.createdAt){
+    createdAtStaffEl.style.display = 'block';
+    createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
+  } else {
+    createdAtStaffEl.style.display = 'none';
+  }
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
@@ -2032,29 +2059,20 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
   document.getElementById('vpToolModerator').style.display = isAdmin ? 'block' : 'none';
   if(isAdmin){
     await fillModeratorRankSelect(document.getElementById('vpModRankSelect'), targetModDoc ? targetModDoc.rank : null);
-    const BASE_MOD_PERMS = {editProfile:true, viewStats:true, viewLoginHistory:true, viewReports:true, deletePhoto:true, viewFullMedia:true};
+    const BASE_MOD_PERMS = {temelYetki:true};
     const perms = targetModDoc || BASE_MOD_PERMS;
-    document.getElementById('vpModEditProfile').checked = !!perms.editProfile;
+    document.getElementById('vpModTemelYetki').checked = !!perms.temelYetki;
     document.getElementById('vpModDeleteAccount').checked = !!perms.deleteAccount;
     document.getElementById('vpModReactivateAccount').checked = !!perms.reactivateAccount;
-    document.getElementById('vpModDeletePhoto').checked = !!perms.deletePhoto;
     document.getElementById('vpModResetAccount').checked = !!perms.resetAccount;
     document.getElementById('vpModBroadcast').checked = !!perms.broadcast;
     document.getElementById('vpModEditAnnouncements').checked = !!perms.editAnnouncements;
     document.getElementById('vpModEditQuotes').checked = !!perms.editQuotes;
     document.getElementById('vpModEditProfessions').checked = !!perms.editProfessions;
-    document.getElementById('vpModViewStats').checked = !!perms.viewStats;
     document.getElementById('vpModBanIp').checked = !!perms.banIp;
     document.getElementById('vpModViewPrivateInfo').checked = !!perms.viewPrivateInfo;
-    document.getElementById('vpModViewAppeals').checked = !!perms.viewAppeals;
-    document.getElementById('vpModViewReports').checked = !!perms.viewReports;
-    document.getElementById('vpModViewSuggestions').checked = !!perms.viewSuggestions;
-    document.getElementById('vpModViewSuggestionHistory').checked = !!perms.viewSuggestionHistory;
     document.getElementById('vpModViewIp').checked = !!perms.viewIp;
     document.getElementById('vpModChangeUsername').checked = !!perms.changeUsername;
-    document.getElementById('vpModViewUserNotifications').checked = !!perms.viewUserNotifications;
-    document.getElementById('vpModViewLoginHistory').checked = !!perms.viewLoginHistory;
-    document.getElementById('vpModViewFullMedia').checked = !!perms.viewFullMedia;
     document.getElementById('vpModDeleteArchivedMedia').checked = !!perms.deleteArchivedMedia;
     document.getElementById('vpModRemove').style.display = targetModDoc ? 'block' : 'none';
   }
@@ -2125,7 +2143,11 @@ function updateAdminModButtons(){
     applyAdminPermVisibility();
   }
 }
-document.getElementById('roleBadgeHeader').addEventListener('click', openAdminPanel);
+document.getElementById('roleBadgeHeader').addEventListener('click', ()=>{
+  const isOpen = document.getElementById('screen-admin').classList.contains('active');
+  if(isOpen) switchScreen('ana');
+  else openAdminPanel();
+});
 
 // ---------- ROZET ÜZERİNDE BEKLEYEN SAYISI ----------
 let pendingAppealsUnsub = null, pendingReportsUnsub = null, pendingSuggestionsUnsub = null;
@@ -2187,29 +2209,29 @@ function checkIsAdmin(){
     if(document.getElementById('screen-profil').classList.contains('active')) renderProfile();
   }, err=>{ console.error('moderator durum dinleyici hatasi', err); modPerms = {}; updateAdminModButtons(); });
 }
-function canEditProfile(){ return isAdmin || !!modPerms.editProfile; }
+function canEditProfile(){ return isAdmin || !!modPerms.editProfile || hasTemelPerm('editProfile'); }
 function canDeleteAccount(){ return isAdmin || !!modPerms.deleteAccount; }
 function canReactivateAccount(){ return isAdmin || !!modPerms.reactivateAccount; }
-function canDeletePhoto(){ return isAdmin || !!modPerms.deletePhoto; }
+function canDeletePhoto(){ return isAdmin || !!modPerms.deletePhoto || hasTemelPerm('deletePhoto'); }
 function canResetAccount(){ return isAdmin || !!modPerms.resetAccount; }
 function canBroadcast(){ return isAdmin || !!modPerms.broadcast; }
 function canEditContent(){ return isAdmin || !!modPerms.editContent; }
-function canViewStats(){ return isAdmin || !!modPerms.viewStats; }
+function canViewStats(){ return isAdmin || !!modPerms.viewStats || hasTemelPerm('viewStats'); }
 function canBanIp(){ return isAdmin || !!modPerms.banIp; }
 function canViewPrivateInfo(){ return isAdmin || !!modPerms.viewPrivateInfo; }
-function canViewAppeals(){ return isAdmin || !!modPerms.viewAppeals; }
+function canViewAppeals(){ return isAdmin || !!modPerms.viewAppeals || hasTemelPerm('viewAppeals'); }
 function canBulkActions(){ return isAdmin; }
 function canViewModLog(){ return isAdmin || !!modPerms.viewModLog; }
 function canPermanentDelete(){ return isAdmin || !!modPerms.permanentDelete; }
-function canViewReports(){ return isAdmin || !!modPerms.viewReports; }
-function canViewSuggestions(){ return isAdmin || !!modPerms.viewSuggestions; }
-function canViewSuggestionHistory(){ return isAdmin || !!modPerms.viewSuggestionHistory; }
+function canViewReports(){ return isAdmin || !!modPerms.viewReports || hasTemelPerm('viewReports'); }
+function canViewSuggestions(){ return isAdmin || !!modPerms.viewSuggestions || hasTemelPerm('viewSuggestions'); }
+function canViewSuggestionHistory(){ return isAdmin || !!modPerms.viewSuggestionHistory || hasTemelPerm('viewSuggestionHistory'); }
 function canViewIp(){ return isAdmin || !!modPerms.viewIp; }
 function canChangeUsername(){ return isAdmin || !!modPerms.changeUsername; }
 function canAssignAdmin(){ return isAdmin; } // sadece admin — moderatöre bu yetki hiç verilemez
-function canViewUserNotifications(){ return isAdmin || !!modPerms.viewUserNotifications; }
-function canViewLoginHistory(){ return isAdmin || !!modPerms.viewLoginHistory; }
-function canViewFullMedia(){ return isAdmin || !!modPerms.viewFullMedia; }
+function canViewUserNotifications(){ return isAdmin || !!modPerms.viewUserNotifications || hasTemelPerm('viewUserNotifications'); }
+function canViewLoginHistory(){ return isAdmin || !!modPerms.viewLoginHistory || hasTemelPerm('viewLoginHistory'); }
+function canViewFullMedia(){ return isAdmin || !!modPerms.viewFullMedia || hasTemelPerm('viewFullMedia'); }
 function canDeleteArchivedMedia(){ return isAdmin || !!modPerms.deleteArchivedMedia; }
 function canEditAnnouncements(){ return isAdmin || !!modPerms.editAnnouncements; }
 function canEditQuotes(){ return isAdmin || !!modPerms.editQuotes; }
@@ -2243,6 +2265,8 @@ function applyAdminPermVisibility(){
   document.getElementById('permRanks').style.display = isAdmin ? 'block' : 'none';
   document.getElementById('permIpBan').style.display = canBanIp() ? 'block' : 'none';
   document.getElementById('permModerators').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('permBaseModManage').style.display = isAdmin ? 'block' : 'none';
+  if(isAdmin) renderBaseModPermList();
   document.getElementById('permBulk').style.display = canBulkActions() ? 'block' : 'none';
 }
 
@@ -2367,8 +2391,7 @@ document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async 
   const p = profileByUid(uid);
   if(p && p.role==='admin'){ showToast('Admin hesapları kalıcı olarak silinemez — önce admin yetkisini kaldır.'); return; }
   const targetName = usernameLabel(p);
-  const confirmText = prompt(`"${targetName}" adlı hesabı KALICI OLARAK silmek üzeresin. Bu işlem GERİ ALINAMAZ. Onaylamak için tam olarak "KALICI OLARAK SIL" yaz:`);
-  if(confirmText !== 'KALICI OLARAK SIL'){ showToast('İşlem iptal edildi'); return; }
+  if(!confirm(`"${targetName}" adlı hesabı KALICI OLARAK silmek istediğine emin misin? Bu işlem GERİ ALINAMAZ.`)) return;
   try{
     await logModAction('permanentDelete', uid, `Silinen hesap: ${targetName} (${p?p.username:'-'})`);
     await db.collection('users').doc(uid).delete();
@@ -2428,9 +2451,25 @@ document.getElementById('vpResetAccount').addEventListener('click', async ()=>{
     showToast('Hesap sıfırlandı');
   }catch(e){ showToast('Sıfırlanamadı: '+(e.message||'')); }
 });
+async function checkIpAffectsStaff(ip){
+  try{
+    const snap = await db.collection('users').where('lastKnownIp','==',ip).get();
+    const affected = [];
+    snap.docs.forEach(d=>{
+      const p = profileByUid(d.id);
+      if(d.id===currentUser.uid) affected.push('SEN (kendi hesabın!)');
+      else if(p && (p.role==='admin' || p.role==='moderator')) affected.push(usernameLabel(p) + ' (yönetim ekibi)');
+    });
+    return affected;
+  }catch(e){ return []; }
+}
 document.getElementById('vpBanIp').addEventListener('click', async ()=>{
   const ip = document.getElementById('vpKnownIp').textContent;
   if(!ip || ip==='-'){ showToast('Bilinen IP yok'); return; }
+  const affected = await checkIpAffectsStaff(ip);
+  if(affected.length>0){
+    if(!confirm(`⚠️ DİKKAT: Bu IP adresi şu hesap(lar) tarafından da kullanılıyor:\n${affected.join(', ')}\n\nBu IP'yi engellersen onlar da giriş yapamaz. Yine de devam etmek istiyor musun?`)) return;
+  }
   if(!confirm(ip + ' adresini engellemek istediğine emin misin?')) return;
   try{
     await db.collection('banned_ips').doc(ip.replace(/[.:]/g,'_')).set({
@@ -2439,6 +2478,13 @@ document.getElementById('vpBanIp').addEventListener('click', async ()=>{
     await logModAction('banIp', currentViewedUid, ip);
     showToast('IP engellendi');
   }catch(e){ showToast('Engellenemedi: '+(e.message||'')); }
+});
+document.getElementById('vpAdminToolsToggle').addEventListener('click', ()=>{
+  const inner = document.getElementById('vpAdminToolsInner');
+  const chevron = document.getElementById('vpAdminToolsChevron');
+  const isOpen = inner.style.display === 'grid';
+  inner.style.display = isOpen ? 'none' : 'grid';
+  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
 });
 document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>{
   if(currentViewedUid === MAIN_ADMIN_UID){ showToast('Bu hesaba işlem yapılamaz'); return; }
@@ -2513,29 +2559,20 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
   }catch(e){}
   const perms = {
     rank,
-    editProfile: document.getElementById('vpModEditProfile').checked,
+    temelYetki: document.getElementById('vpModTemelYetki').checked,
     deleteAccount: document.getElementById('vpModDeleteAccount').checked,
     reactivateAccount: document.getElementById('vpModReactivateAccount').checked,
-    deletePhoto: document.getElementById('vpModDeletePhoto').checked,
     resetAccount: document.getElementById('vpModResetAccount').checked,
     broadcast: document.getElementById('vpModBroadcast').checked,
     editAnnouncements: document.getElementById('vpModEditAnnouncements').checked,
     editQuotes: document.getElementById('vpModEditQuotes').checked,
     editProfessions: document.getElementById('vpModEditProfessions').checked,
-    viewStats: document.getElementById('vpModViewStats').checked,
     banIp: document.getElementById('vpModBanIp').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
-    viewAppeals: document.getElementById('vpModViewAppeals').checked,
     viewModLog: document.getElementById('vpModViewModLog').checked,
     permanentDelete: document.getElementById('vpModPermanentDelete').checked,
-    viewReports: document.getElementById('vpModViewReports').checked,
-    viewSuggestions: document.getElementById('vpModViewSuggestions').checked,
-    viewSuggestionHistory: document.getElementById('vpModViewSuggestionHistory').checked,
     viewIp: document.getElementById('vpModViewIp').checked,
     changeUsername: document.getElementById('vpModChangeUsername').checked,
-    viewUserNotifications: document.getElementById('vpModViewUserNotifications').checked,
-    viewLoginHistory: document.getElementById('vpModViewLoginHistory').checked,
-    viewFullMedia: document.getElementById('vpModViewFullMedia').checked,
     deleteArchivedMedia: document.getElementById('vpModDeleteArchivedMedia').checked,
     addedBy: currentUser.uid, addedAt: new Date().toISOString()
   };
@@ -2884,6 +2921,8 @@ document.getElementById('adminListClose').addEventListener('click', ()=> documen
 function seeAllBtnHtml(id){ return `<div style="text-align:center; margin-top:10px;"><button class="submit-btn secondary" id="${id}" style="max-width:220px; margin:0 auto;">Tümünü Gör</button></div>`; }
 
 // ---------- İŞLEM GEÇMİŞİ ----------
+let dynamicBaseModPerms = ['editProfile','deletePhoto','viewStats','viewReports','viewSuggestions','viewSuggestionHistory','viewUserNotifications','viewLoginHistory','viewFullMedia','viewAppeals'];
+function hasTemelPerm(key){ return !!modPerms.temelYetki && dynamicBaseModPerms.includes(key); }
 const PERM_LABELS = {
   editProfile:'✏️ Profil Düzenleme', deleteAccount:'🚫 Devre Dışı Bırakma', reactivateAccount:'🔁 Yeniden Aktifleştirme',
   deletePhoto:'🖼️ Fotoğraf Silme', resetAccount:'🔄 Hesap Sıfırlama', permanentDelete:'🗑️ Kalıcı Silme',
@@ -2891,7 +2930,7 @@ const PERM_LABELS = {
   editProfessions:'👷 Meslek Listesi Düzenleme', viewStats:'📊 İstatistik Görme', banIp:'🌐 IP Engelleme',
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
-  viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme',
+  viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi',
   viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme'
 };
 const MOD_ACTION_LABELS = {
@@ -3382,6 +3421,10 @@ async function renderBannedIpList(){
 document.getElementById('adminManualIpAdd').addEventListener('click', async ()=>{
   const ip = document.getElementById('adminManualIp').value.trim();
   if(!ip){ showToast('IP adresi gir'); return; }
+  const affected = await checkIpAffectsStaff(ip);
+  if(affected.length>0){
+    if(!confirm(`⚠️ DİKKAT: Bu IP adresi şu hesap(lar) tarafından da kullanılıyor:\n${affected.join(', ')}\n\nBu IP'yi engellersen onlar da giriş yapamaz. Yine de devam etmek istiyor musun?`)) return;
+  }
   try{
     await db.collection('banned_ips').doc(ip.replace(/[.:]/g,'_')).set({
       originalIp: ip, reason:'Yönetici tarafından manuel eklendi', bannedBy: currentUser.uid, bannedAt: new Date().toISOString()
@@ -3476,6 +3519,7 @@ async function loadAppConfig(){
       const data = doc.data();
       if(Array.isArray(data.quotes) && data.quotes.length) dynamicQuotes = data.quotes;
       if(Array.isArray(data.professions) && data.professions.length) dynamicProfessions = data.professions;
+      if(Array.isArray(data.baseModPermKeys)) dynamicBaseModPerms = data.baseModPermKeys;
       const expired = data.bannerExpiresAt && new Date(data.bannerExpiresAt).getTime() < Date.now();
       homeBanner = expired ? '' : (data.banner || '');
     }
@@ -3487,6 +3531,7 @@ async function loadAppConfig(){
     }
   }catch(e){}
   renderHomeBanner();
+  if(document.getElementById('screen-ana').classList.contains('active')) renderQuote();
 }
 function renderReceivableReminder(all){
   const box = document.getElementById('receivableReminderBox');
@@ -4516,9 +4561,11 @@ document.getElementById('chatAttachBtn').addEventListener('click', ()=>{
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
   document.getElementById('chatImageInput').click();
 });
-document.getElementById('chatImageInput').addEventListener('change', async (e)=>{
-  const file = e.target.files[0];
-  e.target.value = '';
+document.getElementById('chatCameraBtn').addEventListener('click', ()=>{
+  if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
+  document.getElementById('chatCameraInput').click();
+});
+async function handleChatImageFile(file){
   if(!file || !currentConvId) return;
   showToast('Fotoğraf hazırlanıyor...');
   try{
@@ -4527,7 +4574,14 @@ document.getElementById('chatImageInput').addEventListener('change', async (e)=>
     if(dataUrl.length > 900000){ showToast('Fotoğraf çok büyük, daha küçük bir görsel dene'); return; }
     await sendChatPayload({text:'', imageData:dataUrl});
   }catch(err){ showToast('Fotoğraf gönderilemedi'); }
+}
+document.getElementById('chatImageInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; e.target.value = ''; handleChatImageFile(file);
 });
+document.getElementById('chatCameraInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; e.target.value = ''; handleChatImageFile(file);
+});
+// (chatImageInput değişiklik işleyicisi yukarıda handleChatImageFile üzerinden bağlandı)
 
 // ---------- SESLİ MESAJ ----------
 let mediaRecorder = null, recordedChunks = [], recordStartTime = 0, recordTimerInt = null, recordCancelled = false;
@@ -5182,6 +5236,21 @@ function wireModRows(box){
   });
 }
 let allModsCache = [];
+const BASE_MOD_MANAGEABLE_KEYS = ['editProfile','deletePhoto','viewStats','viewReports','viewSuggestions','viewSuggestionHistory','viewUserNotifications','viewLoginHistory','viewFullMedia','viewAppeals'];
+function renderBaseModPermList(){
+  const box = document.getElementById('baseModPermList');
+  box.innerHTML = BASE_MOD_MANAGEABLE_KEYS.map(k=>`
+    <div class="toggle-row"><div class="tlbl">${PERM_LABELS[k]||k}</div><label class="switch"><input type="checkbox" data-basekey="${k}" ${dynamicBaseModPerms.includes(k)?'checked':''}><span class="slider"></span></label></div>
+  `).join('');
+}
+document.getElementById('btnSaveBaseModPerms').addEventListener('click', async ()=>{
+  const selected = Array.from(document.querySelectorAll('#baseModPermList [data-basekey]')).filter(cb=>cb.checked).map(cb=>cb.dataset.basekey);
+  try{
+    await db.collection('app_config').doc('content').set({baseModPermKeys: selected}, {merge:true});
+    dynamicBaseModPerms = selected;
+    showToast('Temel Moderatör Yetkisi içeriği güncellendi');
+  }catch(e){ showToast('Kaydedilemedi: '+(e.message||'')); }
+});
 async function renderModeratorsList(){
   const box = document.getElementById('modList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
@@ -5355,6 +5424,8 @@ document.getElementById('btnHeaderProfile').addEventListener('click', ()=> switc
 
 // ---------- FAB (+ butonu) SADECE ANA SAYFADA GÖRÜNSÜN ----------
 function updateFabVisibility(){
+  const el = document.getElementById('fabAdd');
+  if(!el) return;
   const active = document.querySelector('main > .screen.active');
   const name = active ? active.id.replace('screen-','') : 'ana';
   document.getElementById('fabAdd').style.display = (name==='ana') ? 'flex' : 'none';
@@ -5790,7 +5861,7 @@ function refreshSiteList(){
   document.getElementById('siteList').innerHTML = sites.map(s=>`<option value="${escapeHtml(s)}"></option>`).join('');
 }
 
-document.getElementById('fabAdd').addEventListener('click', ()=> openEntryModal(null, todayStr()));
+
 
 // ---------- CALENDAR (inside Ana Sayfa) ----------
 document.getElementById('calPrev').addEventListener('click', ()=>{ calMonth--; if(calMonth<0){calMonth=11; calYear--;} renderCalendar(); });
@@ -5840,6 +5911,16 @@ function renderCalListView(){
     });
   });
 }
+document.querySelectorAll('.home-view-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.home-view-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const showCalendar = tab.dataset.homeview === 'calendar';
+    document.getElementById('homeDataSection').style.display = showCalendar ? 'none' : 'block';
+    document.getElementById('homeCalendarSection').style.display = showCalendar ? 'block' : 'none';
+    if(showCalendar) renderCalendar();
+  });
+});
 document.getElementById('btnCalViewToggle').addEventListener('click', ()=>{
   calViewMode = calViewMode==='grid' ? 'list' : 'grid';
   const isList = calViewMode==='list';
@@ -7213,7 +7294,8 @@ async function startApp(){
   document.getElementById('deactivatedScreen').style.display = 'none';
   document.getElementById('ipBannedScreen').style.display = 'none';
   const [ipBlocked] = await Promise.all([captureAndCheckIp(), loadCloudData()]);
-  if(ipBlocked){
+  const isStaffAccount = profile && (profile.role==='admin' || profile.role==='moderator');
+  if(ipBlocked && !isStaffAccount){
     document.getElementById('ipBannedScreen').style.display = 'flex';
     return;
   }
