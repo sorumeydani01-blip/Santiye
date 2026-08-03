@@ -113,11 +113,11 @@
 
 <header class="top">
   <div class="brand">
-    <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title">Şantiye Defteri</span></div>
-    <div style="display:flex; gap:8px;">
+    <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title" id="headerTitleText">Şantiye Defteri</span></div>
+    <div style="display:flex; gap:8px; flex-shrink:0;">
       <button class="gear-btn" id="btnHeaderMessages" aria-label="Mesajlar" style="position:relative;">💬<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
-      <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil">👤</button>
+      <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
       <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
     </div>
   </div>
@@ -140,8 +140,9 @@
 
     <div class="carry-card" id="carryCard" style="display:none;">
       <div class="icon">⇄</div>
-      <div><div class="lbl">Önceki Aylardan Kalan</div><div class="val" id="carryVal">₺0</div></div>
+      <div><div class="lbl">Genel — Önceki Aylardan Kalan</div><div class="val" id="carryVal">₺0</div></div>
     </div>
+    <div id="carryMonthsCard" style="display:none;"></div>
 
     <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
       <span>Takvim</span>
@@ -237,7 +238,7 @@
       <button class="msg-tab" data-msgtab="chats" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👤 Sohbetler <span id="msgTabChatsCount" class="msg-tab-count"></span></button>
       <button class="msg-tab" data-msgtab="groups" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👥 Gruplar <span id="msgTabGroupsCount" class="msg-tab-count"></span></button>
     </div>
-    <div id="conversationListWrap">
+    <div id="conversationListWrap" style="overscroll-behavior-y:contain;">
       <div id="pullRefreshIndicator" style="text-align:center; height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700;">↓ Yenilemek için bırak</div>
       <div id="conversationList"></div>
       <div id="archiveLinkRow" style="display:none; text-align:center; padding:14px 0;">
@@ -383,20 +384,12 @@
       <div class="toggle-row" style="margin-bottom:0;"><div class="tlbl">En Çok Çalışılan Ay</div><div class="tsub" id="recBestWorkMonth">-</div></div>
     </div>
 
-    <div class="section-title">📄 Rapor</div>
-    <div class="card">
-      <div class="hint" style="margin-top:0;">Seçili zaman aralığındaki (üstteki filtre) kayıtların düzenli, yazdırılabilir PDF raporunu indir.</div>
-      <button class="submit-btn secondary" id="btnDownloadPdfReport">📄 PDF Rapor İndir</button>
-    </div>
-
     <div class="section-title">📊 Aylık Kazanç Grafiği</div>
-    <div class="ychart" id="chartMonthly"></div>
+    <div id="chartMonthlySummary"></div>
+    <div class="ychart" id="chartMonthly" style="padding-top:20px;"></div>
 
     <div class="section-title">📊 Haftalık Çalışma Grafiği</div>
     <div class="ychart" id="chartWeekly"></div>
-
-    <div class="section-title">📊 Günlük Yevmiye Değişimi</div>
-    <div class="ychart" id="chartDaily"></div>
 
     <div class="section-title">⏳ Kullanım Özeti</div>
     <div class="card">
@@ -456,6 +449,8 @@
       </div>
     </div>
 
+    <button class="submit-btn" id="btnGoToEdit" style="margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); box-shadow:var(--shadow-md);">✏️ Profili Düzenle</button>
+
     <div class="card" id="profileCompletionCard" style="display:none; padding:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <div style="font-size:12.5px; font-weight:700;">Profil Tamamlanma</div>
@@ -499,9 +494,6 @@
         </div>
       </div>
     </div>
-
-    <div class="section-title">Hesap Bilgileri</div>
-    <div class="stat-grid3" id="profileStats"></div>
 
     <div class="section-title">Rozetler</div>
     <div class="card" id="profileBadges" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
@@ -562,7 +554,7 @@
       <div class="field"><label>Ad Soyad</label><input type="text" id="pfFullName"></div>
       <div class="field">
         <label>Kullanıcı Adı</label>
-        <input type="text" id="pfUsername">
+        <input type="text" id="pfUsername" maxlength="16">
         <div class="hint" id="pfUsernameHint"></div>
       </div>
       <div class="field" id="pfAdminTitleWrap" style="display:none;">
@@ -796,7 +788,7 @@
         <summary style="font-weight:700; cursor:pointer;">✏️ Kullanıcı Bilgilerini Düzenle</summary>
         <div style="margin-top:14px;">
           <div class="field"><label>Ad Soyad</label><input type="text" id="vpEditFullName"></div>
-          <div class="field"><label>Kullanıcı Adı</label><input type="text" id="vpEditUsername"></div>
+          <div class="field"><label>Kullanıcı Adı</label><input type="text" id="vpEditUsername" maxlength="16"></div>
           <div class="field"><label>Meslek</label><select id="vpEditProfession"></select></div>
           <div class="field"><label>Şehir</label><input type="text" id="vpEditCity"></div>
           <button class="submit-btn secondary" id="vpEditSave">Bilgileri Kaydet</button>
@@ -1358,8 +1350,6 @@
       <button class="mini-btn" id="btnSignOut" style="background:var(--danger); flex-shrink:0;">Çıkış Yap</button>
     </div>
 
-    <button class="submit-btn secondary" id="btnGoToEdit" style="margin-bottom:16px;">✏️ Profili Düzenle</button>
-
     <div class="toggle-row">
       <div><div class="tlbl">Koyu Mod</div><div class="tsub">Karanlıkta göz yormaz</div></div>
       <label class="switch"><input type="checkbox" id="toggleDark"><span class="slider"></span></label>
@@ -1395,6 +1385,16 @@
     <button class="submit-btn" id="btnSaveSettings">Ayarları Kaydet</button>
 
     <div class="divider"></div>
+    <div class="divider"></div>
+    <div class="field">
+      <label>📄 PDF Rapor İndir</label>
+      <div class="hint" style="margin-top:0;">Hangi dönemin raporunu istediğini seç:</div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="submit-btn secondary" id="btnPdfRangeAll" style="flex:1; font-size:12px; padding:12px 4px;">Genel</button>
+        <button class="submit-btn secondary" id="btnPdfRangeMonth" style="flex:1; font-size:12px; padding:12px 4px;">Bu Ay</button>
+        <button class="submit-btn secondary" id="btnPdfRangeLastMonth" style="flex:1; font-size:12px; padding:12px 4px;">Geçen Ay</button>
+      </div>
+    </div>
     <div class="field">
       <label>Verileri Yedekle</label>
       <button class="submit-btn secondary" id="btnExport">⬇ Yedek Dosyası İndir (.json)</button>
@@ -1414,6 +1414,14 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 <script>
+// ---------- RESİMLERDE VARSAYILAN MENÜYÜ ENGELLE ----------
+document.addEventListener('contextmenu', (e)=>{
+  if(e.target && e.target.tagName === 'IMG') e.preventDefault();
+});
+document.addEventListener('dragstart', (e)=>{
+  if(e.target && e.target.tagName === 'IMG') e.preventDefault();
+});
+
 // ---------- ANDROID GERİ TUŞU YÖNETİMİ ----------
 // Amaç: geri tuşuna basınca uygulamadan direkt çıkmak yerine, önce açık pencereyi kapatsın,
 // sonra sohbetten çıksın, sonra ana sayfaya dönsün — sadece ana sayfadayken gerçekten çıksın.
@@ -2166,6 +2174,7 @@ function checkIsAdmin(){
       try{ await db.collection('public_profiles').doc(currentUser.uid).set({role:'admin'}, {merge:true}); }catch(e){}
     }
     updateAdminModButtons();
+    if(document.getElementById('screen-profil').classList.contains('active')) renderProfile();
   }, err=>{ console.error('admin durum dinleyici hatasi', err); isAdmin = false; updateAdminModButtons(); });
   modStatusUnsub = db.collection('moderators').doc(currentUser.uid).onSnapshot(async (doc)=>{
     const prevHadPerm = Object.values(modPerms).some(v=>v===true);
@@ -2175,6 +2184,7 @@ function checkIsAdmin(){
       try{ await db.collection('public_profiles').doc(currentUser.uid).set({role:'moderator', rank: modPerms.rank||'Moderatör'}, {merge:true}); }catch(e){}
     }
     updateAdminModButtons();
+    if(document.getElementById('screen-profil').classList.contains('active')) renderProfile();
   }, err=>{ console.error('moderator durum dinleyici hatasi', err); modPerms = {}; updateAdminModButtons(); });
 }
 function canEditProfile(){ return isAdmin || !!modPerms.editProfile; }
@@ -3761,6 +3771,8 @@ async function cleanupOldMedia(cid){
 }
 let currentChatIsGroup = false, currentChatGroupData = null;
 let typingUnsub = null;
+let currentChatOtherLastRead = null;
+let lastRenderedMsgs = null;
 function refreshChatHeaderSub(){
   const subEl = document.getElementById('chatHeaderSub');
   if(subEl.dataset.typing==='1') return;
@@ -3774,6 +3786,7 @@ function refreshChatHeaderSub(){
 function openChatScreen(cid, otherUid){
   currentConvId = cid; currentChatUid = otherUid;
   currentChatIsGroup = false; currentChatGroupData = null;
+  currentChatOtherLastRead = null; lastRenderedMsgs = null;
   pendingReplyTo = null;
   document.getElementById('chatReplyPreview').style.display = 'none';
   document.getElementById('chatEmojiPanel').style.display = 'none';
@@ -3791,6 +3804,13 @@ function openChatScreen(cid, otherUid){
     } else if(subEl.dataset.typing==='1'){
       subEl.dataset.typing = '';
       refreshChatHeaderSub();
+    }
+    if(!currentChatIsGroup && otherUid){
+      const newReadAt = data['lastReadAt_'+otherUid] || null;
+      if(newReadAt !== currentChatOtherLastRead){
+        currentChatOtherLastRead = newReadAt;
+        if(lastRenderedMsgs) renderChatMessages(lastRenderedMsgs);
+      }
     }
   }, ()=>{});
   document.body.classList.add('chat-open');
@@ -3863,6 +3883,7 @@ function openChatScreen(cid, otherUid){
     const msgs = snap.docs.map(d=>({id:d.id, ...d.data()}))
       .filter(m=> !(Array.isArray(m.deletedFor) && m.deletedFor.includes(currentUser.uid)))
       .sort((a,b)=> (a.createdAt||'').localeCompare(b.createdAt||''));
+    lastRenderedMsgs = msgs;
     renderChatMessages(msgs);
   }, err=>{
     clearTimeout(loadTimeout);
@@ -3873,7 +3894,7 @@ function openChatScreen(cid, otherUid){
     const retryBtn = document.getElementById('btnChatRetry');
     if(retryBtn) retryBtn.addEventListener('click', ()=> openChatScreen(cid, otherUid));
   });
-  try{ db.collection('conversations').doc(cid).update({unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)}); }catch(e){}
+  try{ db.collection('conversations').doc(cid).update({unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid), ['lastReadAt_'+currentUser.uid]: new Date().toISOString()}); }catch(e){}
 }
 let currentChatBlockStatus = {byMe:false, byThem:false};
 let currentChatPinned = false;
@@ -3899,9 +3920,10 @@ async function refreshChatPinState(cid){
     if(!pulling) return;
     const diff = e.touches[0].clientY - startY;
     if(diff > 0 && wrap.scrollTop <= 0){
+      e.preventDefault();
       indicator.style.height = Math.min(diff/2, 50) + 'px';
     }
-  }, {passive:true});
+  }, {passive:false});
   wrap.addEventListener('touchend', ()=>{
     if(!pulling) return;
     pulling = false;
@@ -4010,6 +4032,9 @@ document.getElementById('btnChatMediaGallery').addEventListener('click', async (
   }catch(e){ document.getElementById('mediaGalleryGrid').innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
 });
 document.getElementById('mediaGalleryClose').addEventListener('click', ()=> document.getElementById('mediaGalleryOverlay').classList.remove('show'));
+document.getElementById('mediaGalleryOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'mediaGalleryOverlay') document.getElementById('mediaGalleryOverlay').classList.remove('show');
+});
 async function refreshChatBlockState(otherUid){
   currentChatBlockStatus = hasAnyAdminTool() ? {byMe:false,byThem:false} : await isBlockedEitherWay(otherUid);
   const note = document.getElementById('chatBlockedNote');
@@ -4154,6 +4179,12 @@ document.getElementById('btnBackFromChat').addEventListener('click', ()=>{
   switchScreen('mesajlar');
 });
 let chatMsgTextCache = {};
+function chatTickHtml(m){
+  if(!m.id) return '<span style="color:'+ (settings.darkMode?'#9CA3AF':'#8B93A7') +';">✓</span>';
+  if(currentChatIsGroup) return '<span style="color:var(--asphalt);">✓✓</span>';
+  const seen = currentChatOtherLastRead && m.createdAt && m.createdAt <= currentChatOtherLastRead;
+  return seen ? '<span style="color:#22C55E;">✓✓</span>' : '<span style="color:var(--asphalt);">✓✓</span>';
+}
 function chatBubbleHtml(m){
   const mine = m.senderUid===currentUser.uid;
   const time = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
@@ -4205,7 +4236,7 @@ function chatBubbleHtml(m){
         ${audioHtml}
         ${expiredHtml}
         ${textHtml}
-        <div style="font-size:10.5px; color:${timeColor}; margin-top:2px; text-align:right;">${time}${mine?' <span style="color:var(--asphalt);">✓✓</span>':''}</div>
+        <div style="font-size:10.5px; color:${timeColor}; margin-top:2px; text-align:right;">${time}${mine?' '+chatTickHtml(m):''}</div>
       </div>
     </div>`;
 }
@@ -5264,8 +5295,37 @@ function applyTheme(){
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{ if(btn.dataset.screen) switchScreen(btn.dataset.screen); });
 });
+const SCREEN_TITLES = {
+  ana:null, kayitlar:'Geçmiş', istatistik:'İstatistik', notlarim:'Notlarım', mesajlar:'Mesajlar',
+  profil:'Profil', ayarlar:'Ayarlar', staff:'Yönetim Ekibi', admin:'Panel', help:'Nasıl Kullanılır',
+  privacy:'Gizlilik Politikası', terms:'Kullanım Koşulları', 'view-profile':'Profil', 'edit-profile':'Profili Düzenle',
+  'ranks-info':'Rütbeler', suggestions:'Öneriler'
+};
+function updateHeaderTitle(name){
+  const el = document.getElementById('headerTitleText');
+  if(!el) return;
+  if(name==='ana' || !SCREEN_TITLES[name]){
+    const hour = new Date().getHours();
+    const greeting = hour<12 ? 'Günaydın' : (hour<18 ? 'İyi günler' : 'İyi akşamlar');
+    const firstName = (profile && profile.fullName) ? profile.fullName.split(' ')[0] : '';
+    el.textContent = firstName ? `${greeting}, ${firstName}` : 'Şantiye Defteri';
+  } else {
+    el.textContent = SCREEN_TITLES[name];
+  }
+}
+function updateHeaderAvatar(){
+  const btn = document.getElementById('btnHeaderProfile');
+  if(!btn || !currentUser) return;
+  btn.style.background = avatarGradient(currentUser.uid);
+  if(profile && profile.photoData){
+    btn.innerHTML = `<img src="${profile.photoData}" style="width:100%;height:100%; object-fit:cover;">`;
+  } else {
+    btn.textContent = getInitials(profile ? profile.fullName : '?');
+  }
+}
 function switchScreen(name){
   document.body.classList.remove('chat-open');
+  updateHeaderTitle(name);
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
@@ -5311,7 +5371,7 @@ function renderQuote(){
 document.getElementById('btnQuoteRefresh').addEventListener('click', renderQuote);
 
 // ---------- PDF RAPOR ----------
-const STAT_RANGE_LABELS = {today:'Bugün', week:'Bu Hafta', month:'Bu Ay', year:'Bu Yıl', all:'Tüm Zamanlar'};
+const STAT_RANGE_LABELS = {today:'Bugün', week:'Bu Hafta', month:'Bu Ay', lastMonth:'Geçen Ay', year:'Bu Yıl', all:'Tüm Zamanlar'};
 function loadScriptOnce(src){
   return new Promise((resolve, reject)=>{
     if(document.querySelector(`script[src="${src}"]`)){ resolve(); return; }
@@ -5326,16 +5386,16 @@ async function ensurePdfLibs(){
   if(!window.html2canvas){ await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'); }
   if(!window.jspdf){ await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'); }
 }
-async function generatePdfReport(){
-  const btn = document.getElementById('btnDownloadPdfReport');
-  btn.disabled = true; btn.textContent = 'Hazırlanıyor...';
-  try{ await ensurePdfLibs(); }catch(e){ showToast('PDF kütüphanesi yüklenemedi, internetini kontrol et'); btn.disabled=false; btn.textContent='📄 PDF Rapor İndir'; return; }
-  if(!window.jspdf || !window.html2canvas){ showToast('PDF kütüphanesi yüklenemedi, internetini kontrol et'); btn.disabled=false; btn.textContent='📄 PDF Rapor İndir'; return; }
+async function generatePdfReport(range, btn){
+  const originalText = btn.textContent;
+  btn.disabled = true; btn.textContent = '...';
+  try{ await ensurePdfLibs(); }catch(e){ showToast('PDF kütüphanesi yüklenemedi, internetini kontrol et'); btn.disabled=false; btn.textContent=originalText; return; }
+  if(!window.jspdf || !window.html2canvas){ showToast('PDF kütüphanesi yüklenemedi, internetini kontrol et'); btn.disabled=false; btn.textContent=originalText; return; }
   try{
-    const {start, end} = getRangeDates(statRange);
+    const {start, end} = getRangeDates(range);
     const filtered = entries.filter(e=> e.date>=start && e.date<=end).sort((a,b)=> a.date.localeCompare(b.date));
     const t = computeTotals(filtered);
-    const periodLabel = STAT_RANGE_LABELS[statRange] || 'Seçili Dönem';
+    const periodLabel = STAT_RANGE_LABELS[range] || 'Seçili Dönem';
     const genDate = new Date().toLocaleDateString('tr-TR', {day:'2-digit', month:'long', year:'numeric'});
     const userName = (profile && profile.fullName) || (currentUser && currentUser.email) || 'Kullanıcı';
 
@@ -5411,10 +5471,12 @@ async function generatePdfReport(){
     console.error(e);
     showToast('PDF oluşturulamadı: '+(e.message||''));
   }finally{
-    btn.disabled = false; btn.textContent = '📄 PDF Rapor İndir';
+    btn.disabled = false; btn.textContent = originalText;
   }
 }
-document.getElementById('btnDownloadPdfReport').addEventListener('click', generatePdfReport);
+document.getElementById('btnPdfRangeAll').addEventListener('click', (e)=> generatePdfReport('all', e.target));
+document.getElementById('btnPdfRangeMonth').addEventListener('click', (e)=> generatePdfReport('month', e.target));
+document.getElementById('btnPdfRangeLastMonth').addEventListener('click', (e)=> generatePdfReport('lastMonth', e.target));
 
 // ---------- SHARED TOTALS ----------
 function computeTotals(list){
@@ -5437,6 +5499,38 @@ function statGridHtml(t, labels){
 }
 
 // ---------- HOME ----------
+function renderCarryMonthsBreakdown(prevEntries, curMonth){
+  const box = document.getElementById('carryMonthsCard');
+  const monthsSet = Array.from(new Set(prevEntries.map(e=>monthKey(e.date)))).sort((a,b)=> b.localeCompare(a));
+  if(monthsSet.length===0){ box.style.display='none'; return; }
+  box.style.display='block';
+  const rowHtml = (mk)=>{
+    const [y,m] = mk.split('-');
+    const label = MONTH_NAMES[parseInt(m,10)-1] + ' ' + y;
+    const t = computeTotals(prevEntries.filter(e=>monthKey(e.date)===mk));
+    return `<div class="toggle-row" style="margin-bottom:8px;">
+      <div class="tlbl" style="font-size:13px;">${label}</div>
+      <div style="text-align:right; font-size:11.5px;">
+        <div style="color:var(--text-rust); font-weight:700;">Avans: ${fmt(t.avans)}</div>
+        <div style="color:${t.net>=0?'var(--text-forest)':'var(--danger)'}; font-weight:800; margin-top:2px;">Kalan: ${fmt(t.net)}</div>
+      </div>
+    </div>`;
+  };
+  const preview = monthsSet.slice(0,3);
+  const rest = monthsSet.slice(3);
+  let html = `<div class="section-title" style="margin-top:0;">Aylara Göre Döküm</div><div class="card">` + preview.map(rowHtml).join('');
+  if(rest.length>0){
+    html += `<button class="submit-btn secondary" id="btnExpandCarryMonths" style="margin-top:4px; font-size:12px; padding:10px;">Genişlet (+${rest.length} ay daha)</button>`;
+  }
+  html += `</div>`;
+  box.innerHTML = html;
+  const expandBtn = document.getElementById('btnExpandCarryMonths');
+  if(expandBtn){
+    expandBtn.addEventListener('click', ()=>{
+      box.querySelector('.card').innerHTML = preview.map(rowHtml).join('') + rest.map(rowHtml).join('');
+    });
+  }
+}
 function renderHome(){
   const all = computeTotals(entries);
   document.getElementById('homeStats').innerHTML = statGridHtml(all, {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'});
@@ -5451,8 +5545,10 @@ function renderHome(){
   if(entries.some(e=>monthKey(e.date) < curMonth)){
     carryCard.style.display='flex';
     document.getElementById('carryVal').textContent = fmt(carry);
+    renderCarryMonthsBreakdown(prevEntries, curMonth);
   } else {
     carryCard.style.display='none';
+    document.getElementById('carryMonthsCard').style.display='none';
   }
 
   renderCalendar();
@@ -5699,6 +5795,24 @@ document.getElementById('fabAdd').addEventListener('click', ()=> openEntryModal(
 // ---------- CALENDAR (inside Ana Sayfa) ----------
 document.getElementById('calPrev').addEventListener('click', ()=>{ calMonth--; if(calMonth<0){calMonth=11; calYear--;} renderCalendar(); });
 document.getElementById('calNext').addEventListener('click', ()=>{ calMonth++; if(calMonth>11){calMonth=0; calYear++;} renderCalendar(); });
+(function initCalendarSwipe(){
+  const grid = document.getElementById('calGrid');
+  let startX = 0, startY = 0, swiping = false;
+  grid.addEventListener('touchstart', (e)=>{
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY; swiping = true;
+  }, {passive:true});
+  grid.addEventListener('touchend', (e)=>{
+    if(!swiping) return;
+    swiping = false;
+    const diffX = e.changedTouches[0].clientX - startX;
+    const diffY = e.changedTouches[0].clientY - startY;
+    if(Math.abs(diffX) > 55 && Math.abs(diffX) > Math.abs(diffY)*1.5){
+      if(diffX < 0){ calMonth++; if(calMonth>11){calMonth=0; calYear++;} }
+      else { calMonth--; if(calMonth<0){calMonth=11; calYear--;} }
+      renderCalendar();
+    }
+  });
+})();
 
 let calViewMode = 'grid';
 function renderCalListView(){
@@ -5759,7 +5873,9 @@ function renderCalendar(){
     const dotColors = {alacak:'var(--blue)', avans:'var(--orange)', odeme:'var(--green)'};
     const dots = types.map(t=>`<span style="background:${dotColors[t]}"></span>`).join('');
     const cellClass = isFull ? 'has-yevmiye' : (isHalf ? 'has-half' : '');
-    grid.innerHTML += `<div class="cal-day ${cellClass} ${iso===today?'today':''}" data-date="${iso}">
+    const dow = (startOffset + d - 1) % 7;
+    const weekendClass = (dow===5 || dow===6) ? 'weekend' : '';
+    grid.innerHTML += `<div class="cal-day ${cellClass} ${weekendClass} ${iso===today?'today':''}" data-date="${iso}">
       ${isHalf?'<span class="half-badge">½</span>':''}
       <div>${d}</div><div class="dots">${dots}</div>
     </div>`;
@@ -5979,6 +6095,11 @@ function getRangeDates(range){
     start = today.slice(0,4)+'-01-01';
     const yearEnd = today.slice(0,4)+'-12-31';
     if(yearEnd > end) end = yearEnd;
+  } else if(range==='lastMonth'){
+    const lm = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    start = `${lm.getFullYear()}-${String(lm.getMonth()+1).padStart(2,'0')}-01`;
+    const lastDay = new Date(lm.getFullYear(), lm.getMonth()+1, 0).getDate();
+    end = `${lm.getFullYear()}-${String(lm.getMonth()+1).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
   }
   else { // all
     const earliest = entries.length ? entries.map(e=>e.date).sort()[0] : today;
@@ -6058,9 +6179,12 @@ function renderLifetimeStats(){
     rolling.push({label: MONTH_NAMES[d.getMonth()].slice(0,3), yevmiye: mt.yevmiye});
   }
   const maxRoll = Math.max(1, ...rolling.map(r=>r.yevmiye));
-  document.getElementById('chartMonthly').innerHTML = `<div class="bars">${rolling.map(r=>`
-    <div class="bcol ${r.yevmiye>0?'active':''}">
-      <div class="bv" style="height:${Math.max(4,(r.yevmiye/maxRoll*130))}px"></div>
+  const curMonthTotal = rolling[rolling.length-1] ? rolling[rolling.length-1].yevmiye : 0;
+  document.getElementById('chartMonthlySummary').innerHTML = `<div style="text-align:center; margin-bottom:10px;"><span style="font-size:12px; color:var(--ink-soft); font-weight:700;">${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()} toplam kazancın:</span><br><span style="font-size:24px; font-weight:800; color:var(--asphalt); font-family:'Manrope';">${fmt(curMonthTotal)}</span></div>`;
+  document.getElementById('chartMonthly').innerHTML = `<div class="bars">${rolling.map((r,idx)=>`
+    <div class="bcol ${r.yevmiye>0?'active':''}" style="position:relative;">
+      ${r.yevmiye>0?`<div style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:8.5px; font-weight:800; color:var(--ink-soft); white-space:nowrap;">${r.yevmiye>=1000?Math.round(r.yevmiye/1000)+'k':fmt(r.yevmiye)}</div>`:''}
+      <div class="bv" style="height:${Math.max(4,(r.yevmiye/maxRoll*130))}px; ${idx===rolling.length-1?'background:linear-gradient(180deg,var(--asphalt),var(--asphalt-2)); box-shadow:0 0 0 2px var(--tint-slate);':''}"></div>
       <div class="bl">${r.label}</div>
     </div>`).join('')}</div>`;
 
@@ -6082,21 +6206,6 @@ function renderLifetimeStats(){
       <div class="bv" style="height:${Math.max(4,(w.days/maxWeek*130))}px"></div>
       <div class="bl">${w.label}</div>
     </div>`).join('')}</div>`;
-
-  // Grafik 3: Günlük Yevmiye Değişimi (seçili dönem içindeki yevmiye kayıtları, en fazla son 30)
-  const dailyEntries = filtered.filter(e=>e.type==='yevmiye').sort((a,b)=>a.date.localeCompare(b.date)).slice(-30);
-  if(dailyEntries.length===0){
-    document.getElementById('chartDaily').innerHTML = `<div class="empty"><div class="icon">📊</div><div class="msg">Bu dönemde yevmiye kaydı yok.</div></div>`;
-  } else {
-    const maxDaily = Math.max(1, ...dailyEntries.map(e=>Number(e.amount)));
-    document.getElementById('chartDaily').innerHTML = `<div class="bars">${dailyEntries.map(e=>{
-      const d = e.date.split('-')[2];
-      return `<div class="bcol active">
-        <div class="bv" style="height:${Math.max(4,(Number(e.amount)/maxDaily*130))}px"></div>
-        <div class="bl">${d}</div>
-      </div>`;
-    }).join('')}</div>`;
-  }
 
   // Kullanım Özeti
   const accountDays = profile && profile.createdAt ? Math.floor((Date.now()-new Date(profile.createdAt).getTime())/86400000) : 0;
@@ -6256,6 +6365,7 @@ function renderProfile(){
   if(!profile || !currentUser) return;
 
   applyAvatar(document.getElementById('profileAvatarImg'), document.getElementById('profileAvatarInitials'));
+  updateHeaderAvatar();
   document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
   document.getElementById('profileUsername').textContent = (profile.username || '-');
   document.getElementById('profileProfession').textContent = profile.profession || '-';
@@ -6275,12 +6385,6 @@ function renderProfile(){
   document.getElementById('viewCreatedAt').textContent = profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('tr-TR') : '-';
 
   const t = computeTotals(entries);
-  document.getElementById('profileStats').innerHTML = `
-    <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">📅</div><div class="val">${t.workDays}</div><div class="lbl">Çalışma Günü</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-brass);">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">Toplam Kazanç</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-rust);">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">Toplam Avans</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">🧾</div><div class="val">${fmt(t.alacak)}</div><div class="lbl">Toplam Alacak</div></div>`;
-
   renderBadges(t);
   syncPublicBadges(t);
   renderOwnFollowers();
@@ -6492,6 +6596,7 @@ document.getElementById('editPhotoInput').addEventListener('change', async (e)=>
 document.getElementById('pfSave').addEventListener('click', async ()=>{
   const fullName = document.getElementById('pfFullName').value.trim();
   const newUsername = document.getElementById('pfUsername').value.trim();
+  if(newUsername.length > 16){ showToast('Kullanıcı adı en fazla 16 karakter olabilir'); return; }
   const profession = document.getElementById('pfProfession').value;
   const city = document.getElementById('pfCity').value.trim();
   if(!fullName){ showToast('Ad soyad boş olamaz'); return; }
@@ -6616,9 +6721,13 @@ document.getElementById('navSearchBtn').addEventListener('click', ()=>{
   document.getElementById('searchInput').value = '';
   document.getElementById('searchResults').innerHTML = '';
   document.getElementById('searchOverlay').classList.add('show');
+  document.getElementById('navSearchBtn').classList.add('active');
   setTimeout(()=> document.getElementById('searchInput').focus(), 150);
 });
-document.getElementById('searchClose').addEventListener('click', ()=> document.getElementById('searchOverlay').classList.remove('show'));
+document.getElementById('searchClose').addEventListener('click', ()=>{
+  document.getElementById('searchOverlay').classList.remove('show');
+  document.getElementById('navSearchBtn').classList.remove('active');
+});
 
 document.getElementById('searchInput').addEventListener('input', (e)=>{
   const q = e.target.value.trim().toLowerCase();
@@ -7135,6 +7244,8 @@ async function enterApp(){
   calYear = now.getFullYear(); calMonth = now.getMonth();
   yearForOzet = now.getFullYear();
   renderQuote();
+  updateHeaderAvatar();
+  updateHeaderTitle('ana');
   renderHome();
   refreshSiteList();
   checkReminder();
