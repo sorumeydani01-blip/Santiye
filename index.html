@@ -89,14 +89,12 @@
 </div>
 
 <div id="appRoot" style="display:none;">
-<div id="roleBadgeWrap" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140;">
-  <div id="roleBadgeExpand" style="display:flex; align-items:center; flex-direction:row-reverse; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); border-radius:15px; box-shadow:var(--shadow-md); overflow:hidden; height:44px; width:44px; transition:width .28s ease;">
-    <button id="roleBadgeToggleBtn" style="width:44px;height:44px;flex-shrink:0; border:none; background:none; color:#fff; font-family:'Manrope'; font-weight:800; font-size:19px; cursor:pointer; position:relative;">
-      <span id="roleBadgeLetter"></span>
-      <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
-    </button>
-    <div id="roleBadgeMenuItems" style="display:flex; align-items:center; gap:16px; padding-right:16px; white-space:nowrap; opacity:0; transition:opacity .18s ease;"></div>
-  </div>
+<div id="roleBadgeWrap" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140; flex-direction:column; align-items:flex-end; gap:8px;">
+  <div id="roleBadgeMenuItems" style="display:flex; flex-direction:column; width:0; max-height:0; overflow:hidden; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); opacity:0; transition:all .25s ease;"></div>
+  <button id="roleBadgeToggleBtn" style="width:44px;height:44px;flex-shrink:0; border-radius:15px; border:none; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:19px; cursor:pointer; position:relative; box-shadow:var(--shadow-md);">
+    <span id="roleBadgeLetter"></span>
+    <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
+  </button>
 </div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
@@ -2259,28 +2257,29 @@ function updateAdminModButtons(){
   }
 }
 const ROLE_BADGE_LINKS = [
-  {label:'Kullanıcılar', id:'permManageUsers'},
-  {label:'Şikayetler', id:'permReports'},
-  {label:'İtirazlar', id:'permAppeals'},
-  {label:'Öneriler', id:'permSuggestions'},
-  {label:'Moderatörler', id:'permModerators'},
+  {label:'👥 Kullanıcılar', id:'permManageUsers'},
+  {label:'🚩 Şikayetler', id:'permReports'},
+  {label:'✉️ İtirazlar', id:'permAppeals'},
+  {label:'💡 Öneriler', id:'permSuggestions'},
+  {label:'🛡️ Moderatörler', id:'permModerators'},
 ];
 let roleBadgeOpen = false;
 function closeRoleBadgeMenu(){
   roleBadgeOpen = false;
-  document.getElementById('roleBadgeExpand').style.width = '44px';
-  document.getElementById('roleBadgeMenuItems').style.opacity = '0';
+  const menuBox = document.getElementById('roleBadgeMenuItems');
+  menuBox.style.width = '0';
+  menuBox.style.maxHeight = '0';
+  menuBox.style.opacity = '0';
 }
-document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
-  e.stopPropagation();
-  if(roleBadgeOpen){ closeRoleBadgeMenu(); return; }
+function openRoleBadgeMenu(){
   roleBadgeOpen = true;
   const menuBox = document.getElementById('roleBadgeMenuItems');
-  menuBox.innerHTML = ROLE_BADGE_LINKS.map(l=>`<span data-role-link="${l.id}" style="font-size:12.5px; font-weight:700; color:#fff; cursor:pointer;">${l.label}</span>`).join('');
-  const width = 60 + ROLE_BADGE_LINKS.length * 78;
-  document.getElementById('roleBadgeExpand').style.width = width + 'px';
+  menuBox.innerHTML = ROLE_BADGE_LINKS.map(l=>`<span data-role-link="${l.id}" style="display:block; padding:12px 16px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; border-bottom:1px solid var(--line); white-space:nowrap;">${l.label}</span>`).join('');
+  menuBox.style.width = '170px';
+  menuBox.style.maxHeight = '300px';
   menuBox.style.opacity = '1';
-  menuBox.querySelectorAll('[data-role-link]').forEach(el=>{
+  menuBox.querySelectorAll('[data-role-link]').forEach((el,idx)=>{
+    if(idx===ROLE_BADGE_LINKS.length-1) el.style.borderBottom = 'none';
     el.addEventListener('click', (ev)=>{
       ev.stopPropagation();
       closeRoleBadgeMenu();
@@ -2291,6 +2290,11 @@ document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
       }, 80);
     });
   });
+}
+document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(roleBadgeOpen) closeRoleBadgeMenu();
+  else openRoleBadgeMenu();
 });
 document.addEventListener('click', (e)=>{
   if(roleBadgeOpen && !document.getElementById('roleBadgeWrap').contains(e.target)) closeRoleBadgeMenu();
