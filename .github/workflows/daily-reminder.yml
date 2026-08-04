@@ -2,9 +2,9 @@ name: Günlük Yevmiye Hatırlatması
 
 on:
   schedule:
-    # 14:00 UTC = 17:00 Türkiye saati (Türkiye sabit UTC+3, yaz saati uygulaması yok)
+    # 14:00 UTC = 17:00 Türkiye saati
     - cron: '0 14 * * *'
-  workflow_dispatch: {}   # GitHub'dan elle "Run workflow" ile test edebilmek için
+  workflow_dispatch:
 
 jobs:
   send-reminders:
@@ -25,3 +25,4 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/send-reminders.js
+        
