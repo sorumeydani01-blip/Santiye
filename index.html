@@ -90,7 +90,7 @@
 
 <div id="appRoot" style="display:none;">
 <div id="roleBadgeWrap" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140; flex-direction:column; align-items:flex-end; gap:8px;">
-  <div id="roleBadgeMenuItems" style="display:flex; flex-direction:column; width:0; max-height:0; overflow:hidden; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); opacity:0; transition:all .25s ease;"></div>
+  <div id="roleBadgeMenuItems" style="display:flex; flex-direction:column; width:0; max-height:0; overflow-y:auto; overflow-x:hidden; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); opacity:0; transition:width .25s ease, max-height .25s ease, opacity .25s ease;"></div>
   <button id="roleBadgeToggleBtn" style="width:44px;height:44px;flex-shrink:0; border-radius:15px; border:none; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:19px; cursor:pointer; position:relative; box-shadow:var(--shadow-md);">
     <span id="roleBadgeLetter"></span>
     <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
@@ -970,6 +970,7 @@
 
     <details class="card" id="permStats" open>
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📊 Genel İstatistikler</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permStats">‹</button><span>📊 Genel İstatistikler</span></div>
       <div style="margin-top:14px;">
         <div class="stat-grid3" id="adminStats"></div>
         <button class="submit-btn secondary" id="adminCalcStats">🔄 Tüm Kullanıcı Verilerini Hesapla</button>
@@ -978,6 +979,7 @@
 
     <details class="card" id="permManageUsers">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">👥 Kullanıcılar <span id="adminUserCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permManageUsers">‹</button><span>👥 Kullanıcılar</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Bir kullanıcıya dokunarak profiline git — düzenleme, silme, sıfırlama gibi işlemler oradan yapılır.</div>
         <div class="search-box"><input type="text" id="adminUserSearch" placeholder="İsim, kullanıcı adı, e-posta ara..."></div>
@@ -987,31 +989,37 @@
 
     <details class="card" id="permDeactivated">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚫 Devre Dışı Bırakılan Hesaplar</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permDeactivated">‹</button><span>🚫 Devre Dışı Bırakılan Hesaplar</span></div>
       <div style="margin-top:14px;" id="adminDeactivatedList"></div>
     </details>
 
     <details class="card" id="permAppeals">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">✉️ İtirazlar <span id="appealsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permAppeals">‹</button><span>✉️ İtirazlar</span></div>
       <div style="margin-top:14px;" id="adminAppealsList"></div>
     </details>
 
     <details class="card" id="permReports">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚩 Mesaj Şikayetleri <span id="reportsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permReports">‹</button><span>🚩 Mesaj Şikayetleri</span></div>
       <div style="margin-top:14px;" id="adminReportsList"></div>
     </details>
 
     <details class="card" id="permSuggestions">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">💡 Kullanıcı Önerileri <span id="suggestionsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permSuggestions">‹</button><span>💡 Kullanıcı Önerileri</span></div>
       <div style="margin-top:14px;" id="adminSuggestionsList"></div>
     </details>
 
     <details class="card" id="permSuggestionHistory">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 Öneriler Geçmişi</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permSuggestionHistory">‹</button><span>📜 Öneriler Geçmişi</span></div>
       <div style="margin-top:14px;" id="adminSuggestionHistoryList"></div>
     </details>
 
     <details class="card" id="permModLog">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 İşlem Geçmişi</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permModLog">‹</button><span>📜 İşlem Geçmişi</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Son 4 işlem burada, aramak/filtrelemek için "Tümünü Gör"e bas.</div>
         <div id="modLogList"></div>
@@ -1020,6 +1028,7 @@
 
     <details class="card" id="permBroadcast">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Toplu Bildirim Gönder</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBroadcast">‹</button><span>📢 Toplu Bildirim Gönder</span></div>
       <div style="margin-top:14px;">
         <div class="field">
           <label>Kime Gönderilsin?</label>
@@ -1042,6 +1051,7 @@
 
     <details class="card" id="permAnnouncements">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Duyuru Bandı</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permAnnouncements">‹</button><span>📢 Duyuru Bandı</span></div>
       <div style="margin-top:14px;">
         <div class="field">
           <label>Ana Sayfa Duyuru Bandı (boş bırakırsan görünmez)</label>
@@ -1063,6 +1073,7 @@
 
     <details class="card" id="permQuotes">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📖 Günün Ayeti</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permQuotes">‹</button><span>📖 Günün Ayeti</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Ana sayfada rastgele gösterilecek ayet/söz listesi.</div>
         <div id="quoteListDisplay" style="margin:10px 0;"></div>
@@ -1075,6 +1086,7 @@
 
     <details class="card" id="permProfessions">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">👷 Meslek Listesi</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permProfessions">‹</button><span>👷 Meslek Listesi</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Kayıt sırasında kullanıcılara gösterilecek meslekler.</div>
         <div id="professionListDisplay" style="margin:10px 0;"></div>
@@ -1087,6 +1099,7 @@
 
     <details class="card" id="permRanks">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🎖️ Moderatör Rütbeleri</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permRanks">‹</button><span>🎖️ Moderatör Rütbeleri</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Moderatörlere atanabilecek rütbe isimleri, en düşükten en yükseğe.</div>
         <div id="modRankDisplay" style="margin:12px 0;"></div>
@@ -1099,6 +1112,7 @@
 
     <details class="card" id="permTenureRanks">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌱 Üyelik Rütbeleri (Kıdem)</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permTenureRanks">‹</button><span>🌱 Üyelik Rütbeleri (Kıdem)</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Kullanıcıların hesap yaşına göre otomatik kazandığı rütbeler.</div>
         <div id="tenureRankDisplay" style="margin:12px 0;"></div>
@@ -1119,6 +1133,7 @@
 
     <details class="card" id="permIpBan">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌐 IP Engelleme</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permIpBan">‹</button><span>🌐 IP Engelleme</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">IP engelleme tek başına güçlü bir güvenlik önlemi değildir; IP değişebilir/gizlenebilir (VPN vb.). Ek bir katman olarak düşün.</div>
         <div class="field" style="margin-top:10px;">
@@ -1133,6 +1148,7 @@
 
     <details class="card" id="permModerators">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">🛡️ Moderatörler</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permModerators">‹</button><span>🛡️ Moderatörler</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Yeni moderatör atamak için ilgili kullanıcının profiline git → Yönetici Araçları → Moderatörlük.</div>
         <div id="modList" style="margin-top:10px;"></div>
@@ -1141,6 +1157,7 @@
 
     <details class="card" id="permBaseModManage">
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">✅ Temel Moderatör Yetkisi İçeriği</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBaseModManage">‹</button><span>✅ Temel Moderatör Yetkisi İçeriği</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">"Temel Moderatör Yetkisi"ni açık olan tüm moderatörlerin sahip olacağı yetkileri buradan belirle. İşaretlediklerin bu paketin içinde olur.</div>
         <div id="baseModPermList" style="margin-top:10px;"></div>
@@ -1150,6 +1167,7 @@
 
     <details class="card" id="permBulk" style="border-color:var(--danger);">
       <summary id="permBulkSummary" style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
+      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBulk">‹</button><span>⚠️ Tehlikeli Toplu İşlemler</span></div>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlemler TÜM kullanıcıları etkiler ve dikkatli kullanılmalı. Onay için özel bir metin yazman istenecek.</div>
         <button class="submit-btn danger" id="adminBulkDeactivate" style="margin-top:12px; margin-bottom:10px;">🚫 Tüm Kullanıcıları Devre Dışı Bırak</button>
@@ -2275,11 +2293,24 @@ function updateAdminModButtons(){
   }
 }
 const ROLE_BADGE_LINKS = [
+  {label:'📊 İstatistikler', id:'permStats'},
   {label:'👥 Kullanıcılar', id:'permManageUsers'},
-  {label:'🚩 Şikayetler', id:'permReports'},
+  {label:'🚫 Devre Dışı Bırakılanlar', id:'permDeactivated'},
   {label:'✉️ İtirazlar', id:'permAppeals'},
+  {label:'🚩 Şikayetler', id:'permReports'},
   {label:'💡 Öneriler', id:'permSuggestions'},
+  {label:'📜 Öneriler Geçmişi', id:'permSuggestionHistory'},
+  {label:'📜 İşlem Geçmişi', id:'permModLog'},
+  {label:'📢 Toplu Bildirim', id:'permBroadcast'},
+  {label:'📢 Duyuru Bandı', id:'permAnnouncements'},
+  {label:'📖 Günün Ayeti', id:'permQuotes'},
+  {label:'👷 Meslek Listesi', id:'permProfessions'},
+  {label:'🎖️ Moderatör Rütbeleri', id:'permRanks'},
+  {label:'🌱 Kıdem Rütbeleri', id:'permTenureRanks'},
+  {label:'🌐 IP Engelleme', id:'permIpBan'},
   {label:'🛡️ Moderatörler', id:'permModerators'},
+  {label:'✅ Temel Yetki İçeriği', id:'permBaseModManage'},
+  {label:'⚠️ Tehlikeli İşlemler', id:'permBulk'},
 ];
 let roleBadgeOpen = false;
 function closeRoleBadgeMenu(){
@@ -2294,7 +2325,7 @@ function openRoleBadgeMenu(){
   const menuBox = document.getElementById('roleBadgeMenuItems');
   menuBox.innerHTML = ROLE_BADGE_LINKS.map(l=>`<span data-role-link="${l.id}" style="display:block; padding:12px 16px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; border-bottom:1px solid var(--line); white-space:nowrap;">${l.label}</span>`).join('');
   menuBox.style.width = '170px';
-  menuBox.style.maxHeight = '300px';
+  menuBox.style.maxHeight = '360px';
   menuBox.style.opacity = '1';
   menuBox.querySelectorAll('[data-role-link]').forEach((el,idx)=>{
     if(idx===ROLE_BADGE_LINKS.length-1) el.style.borderBottom = 'none';
@@ -2303,12 +2334,58 @@ function openRoleBadgeMenu(){
       closeRoleBadgeMenu();
       openAdminPanel();
       setTimeout(()=>{
-        const target = document.getElementById(el.dataset.roleLink);
-        if(target){ target.open = true; target.scrollIntoView({behavior:'smooth', block:'start'}); }
+        const id = el.dataset.roleLink;
+        if(id==='permBulk'){
+          if(!canBulkActions()) return;
+          if(!dangerZoneUnlocked){
+            const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
+            if(typed !== 'TEHLİKELİ'){ showToast('Onay metni yanlış, işlem iptal edildi'); return; }
+            dangerZoneUnlocked = true;
+          }
+        }
+        openAdminSectionFullscreen(id);
       }, 80);
     });
   });
 }
+// ---------- ADMİN BÖLÜMLERİ: TAM EKRAN AÇILMA ----------
+const ADMIN_FULLSCREEN_IDS = ['permStats','permManageUsers','permDeactivated','permAppeals','permReports','permSuggestions',
+  'permSuggestionHistory','permModLog','permBroadcast','permAnnouncements','permQuotes',
+  'permProfessions','permRanks','permTenureRanks','permIpBan','permModerators','permBaseModManage','permBulk'];
+function openAdminSectionFullscreen(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.open = true;
+  el.classList.add('admin-fullscreen');
+  window.scrollTo(0,0);
+}
+function closeAdminSectionFullscreen(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('admin-fullscreen');
+}
+document.addEventListener('click', (e)=>{
+  const closeBtn = e.target.closest('[data-close-fullscreen]');
+  if(closeBtn){ closeAdminSectionFullscreen(closeBtn.dataset.closeFullscreen); }
+});
+(function wireAdminSummaryFullscreen(){
+  ADMIN_FULLSCREEN_IDS.forEach(id=>{
+    const details = document.getElementById(id);
+    if(!details) return;
+    const summary = details.querySelector('summary');
+    if(!summary) return;
+    summary.addEventListener('click', (e)=>{
+      e.preventDefault();
+      if(id==='permBulk' && !canBulkActions()) return;
+      if(id==='permBulk' && !dangerZoneUnlocked){
+        const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
+        if(typed !== 'TEHLİKELİ'){ showToast('Onay metni yanlış, işlem iptal edildi'); return; }
+        dangerZoneUnlocked = true;
+      }
+      openAdminSectionFullscreen(id);
+    });
+  });
+})();
 document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
   e.stopPropagation();
   if(roleBadgeOpen) closeRoleBadgeMenu();
@@ -3727,17 +3804,6 @@ document.getElementById('adminManualIpAdd').addEventListener('click', async ()=>
 
 // ---------- TEHLİKELİ TOPLU İŞLEMLER ----------
 let dangerZoneUnlocked = false;
-document.getElementById('permBulkSummary').addEventListener('click', (e)=>{
-  if(dangerZoneUnlocked) return;
-  e.preventDefault();
-  const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
-  if(typed === 'TEHLİKELİ'){
-    dangerZoneUnlocked = true;
-    document.getElementById('permBulk').open = true;
-  } else {
-    showToast('Onay metni yanlış, işlem iptal edildi');
-  }
-});
 document.getElementById('adminBulkDeactivate').addEventListener('click', async ()=>{
   const confirmText = prompt('TÜM normal kullanıcıları devre dışı bırakmak üzeresin (yönetici/moderatör hesapları hariç tutulacak). Onaylamak için aşağıya tam olarak "HEPSINI DEVRE DISI BIRAK" yaz:');
   if(confirmText !== 'HEPSINI DEVRE DISI BIRAK'){ showToast('İşlem iptal edildi'); return; }
