@@ -796,21 +796,17 @@
       <span style="width:36px;"></span>
     </div>
     <div id="vpWarningBanner" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:14px; padding:14px; margin-bottom:14px; font-size:12.5px; font-weight:700; line-height:1.5;"></div>
-    <div class="card vp-card">
+    <div class="card">
       <div style="display:flex; align-items:center; gap:14px;">
-        <div class="vp-avatar-ring">
-          <div id="vpAvatar">-</div>
-          <span class="vp-online-dot" id="vpOnlineDot" style="display:none;"></span>
-          <span class="vp-avatar-badge" id="vpAvatarBadge">-</span>
-        </div>
+        <div id="vpAvatar" style="width:62px;height:62px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:20px; flex-shrink:0;">-</div>
         <div style="flex:1; min-width:0;">
-          <div class="vp-name" id="vpName">-</div>
-          <div class="vp-username" id="vpUsername">-</div>
-          <div class="vp-meta" id="vpMeta">-</div>
-          <div class="vp-lastactive" id="vpLastActive"></div>
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpName">-</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;" id="vpLastActive"></div>
           <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpCreatedAtStaffOnly"></div>
           <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpEmailStaffOnly"></div>
           <div id="vpWarningCountRow" style="display:none; margin-top:4px; cursor:pointer;"><span style="color:var(--danger); font-weight:800; font-size:11.5px;" id="vpWarningCountText"></span></div>
+          <div style="font-size:12px; color:var(--ink-soft);" id="vpUsername">-</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;" id="vpMeta">-</div>
           <div id="vpRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="vpTenureBadge" style="margin-top:6px; display:inline-block;"></span>
           <span id="vpSameIpBadge" style="display:none; margin-top:6px; margin-left:6px; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-rust); color:var(--danger); cursor:pointer;"></span>
@@ -818,9 +814,9 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:8px; margin-top:16px;" id="vpFollowRow">
-        <button id="vpFollowBtn" class="vp-btn-follow">🤍 Takip Et</button>
-        <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
-        <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
+        <button id="vpFollowBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:none; background:var(--asphalt); color:#fff; font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease; box-shadow:var(--shadow-sm);">🤍 Takip Et</button>
+        <button id="vpMessageBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease;">💬 Mesaj</button>
+        <button id="vpBlockBtn" style="flex:0 0 44px; padding:11px 0; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--danger); font-size:15px; cursor:pointer; transition:transform .12s ease;">🚫</button>
       </div>
       <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);" id="vpFollowerCount">0 takipçi</div>
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
@@ -1410,11 +1406,26 @@
 </div>
 
 <nav class="tabs">
-  <button class="active" data-screen="ana"><span class="ic">🏠</span>Ana Sayfa</button>
-  <button data-screen="kayitlar"><span class="ic">📋</span>Geçmiş</button>
-  <button id="navSearchBtn"><span class="ic">🔍</span></button>
-  <button data-screen="istatistik"><span class="ic">📊</span>İstatistik</button>
-  <button data-screen="notlarim"><span class="ic">📝</span>Notlar</button>
+  <button class="active" data-screen="ana">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.8V19a1 1 0 0 0 1 1H9.5a.5.5 0 0 0 .5-.5V15a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4.5a.5.5 0 0 0 .5.5h3a1 1 0 0 0 1-1V9.8"/></svg></span>
+    <span class="lbl">Ana Sayfa</span>
+  </button>
+  <button data-screen="kayitlar">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="3" width="9" height="4" rx="1"/><path d="M7.5 5H6a1.5 1.5 0 0 0-1.5 1.5V19A1.5 1.5 0 0 0 6 20.5h12A1.5 1.5 0 0 0 19.5 19V6.5A1.5 1.5 0 0 0 18 5h-1.5"/><path d="M8.5 12h7M8.5 15.5h7"/></svg></span>
+    <span class="lbl">Geçmiş</span>
+  </button>
+  <button id="navSearchBtn">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.4-4.4"/></svg></span>
+    <span class="lbl">ARA</span>
+  </button>
+  <button data-screen="istatistik">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 20V11M10 20V4M15.5 20v-7.5M21 20H3.2"/></svg></span>
+    <span class="lbl">İstatistik</span>
+  </button>
+  <button data-screen="notlarim">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h8"/><path d="M16.4 3.6a2 2 0 0 1 2.8 2.8L7.5 18.1 4 19l.9-3.5Z"/></svg></span>
+    <span class="lbl">Notlar</span>
+  </button>
 </nav>
 
 </div><!-- /appRoot -->
@@ -1709,14 +1720,6 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 <script>
-// ---------- GÜVENLİK: SAYFA HER AÇILDIĞINDA TAKILI KALMIŞ SOHBET EKRANINI TEMİZLE ----------
-// (Sohbet ekranı tam ekran kaplayan bir katmandır; herhangi bir sebeple "chat-open"/"active"
-// durumu düzgün temizlenmeden sayfa yeniden yüklenirse, bu satır onu baştan sıfırlar ki
-// görünmez bir katman kalanı sayfanın geri kalanına dokunuşları engellemesin.)
-document.body.classList.remove('chat-open');
-const _screenChatSafety = document.getElementById('screen-chat');
-if(_screenChatSafety) _screenChatSafety.classList.remove('active');
-
 // ---------- RÜTBE ROZETİ AÇIKLAMA PENCERESİ ----------
 document.addEventListener('click', (e)=>{
   const badge = e.target.closest('.rank-badge-clickable');
@@ -2169,12 +2172,6 @@ async function openViewProfile(uid){
 
   const p = profileByUid(uid);
   document.getElementById('vpAvatar').textContent = getInitials(p ? p.fullName : '?');
-  document.getElementById('vpAvatar').style.background = avatarGradient(uid);
-  const vpBadgeEl = document.getElementById('vpAvatarBadge');
-  vpBadgeEl.textContent = getInitials(p ? p.fullName : '?');
-  vpBadgeEl.style.background = avatarGradient(uid);
-  const vpIsOnline = !!(p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000);
-  document.getElementById('vpOnlineDot').style.display = vpIsOnline ? 'block' : 'none';
   document.getElementById('vpName').textContent = getDisplayName(p);
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
   const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
@@ -4537,24 +4534,31 @@ async function refreshChatPinState(cid){
 // ---------- SÜRÜKLEYEREK YENİLEME ----------
 (function initPullToRefresh(){
   const indicator = document.getElementById('globalPullRefreshIndicator');
-  let startY = 0, pulling = false;
+  let startY = 0, startX = 0, pulling = false, confirmed = false;
   document.addEventListener('touchstart', (e)=>{
-    if(window.scrollY > 0) return;
+    pulling = false; confirmed = false;
+    const mainEl0 = document.querySelector('main'); if(mainEl0 && mainEl0.scrollTop > 0) return;
     if(document.querySelector('.modal-overlay.show') || document.body.classList.contains('chat-open')) return;
     startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
     pulling = true;
   }, {passive:true});
   document.addEventListener('touchmove', (e)=>{
     if(!pulling) return;
-    const diff = e.touches[0].clientY - startY;
-    if(diff > 0 && window.scrollY <= 0){
-      e.preventDefault();
-      indicator.style.height = Math.min(diff/2, 50) + 'px';
+    const mainEl1 = document.querySelector('main'); if(mainEl1 && mainEl1.scrollTop > 0){ pulling = false; confirmed = false; indicator.style.height = '0px'; return; }
+    const diffY = e.touches[0].clientY - startY;
+    const diffX = Math.abs(e.touches[0].clientX - startX);
+    if(!confirmed){
+      if(diffY < 12 || diffX > diffY){ return; }
+      confirmed = true;
     }
-  }, {passive:false});
+    if(diffY > 0){
+      indicator.style.height = Math.min(diffY/2, 50) + 'px';
+    }
+  }, {passive:true});
   document.addEventListener('touchend', ()=>{
     if(!pulling) return;
-    pulling = false;
+    pulling = false; confirmed = false;
     const h = parseInt(indicator.style.height,10) || 0;
     indicator.style.height = '0px';
     if(h >= 40) refreshCurrentScreenData();
@@ -5987,6 +5991,8 @@ function updateHeaderAvatar(){
 }
 function switchScreen(name){
   document.body.classList.remove('chat-open');
+  const mainScrollEl = document.querySelector('main');
+  if(mainScrollEl) mainScrollEl.scrollTop = 0;
   updateHeaderTitle(name);
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
