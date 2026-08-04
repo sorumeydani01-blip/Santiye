@@ -193,6 +193,7 @@
 
     <div class="section-title">Uygulama</div>
     <div class="card">
+      <button class="submit-btn secondary" id="footerPermGuideAna" style="display:none; margin-bottom:10px; border-color:var(--asphalt); color:var(--asphalt); font-weight:800;">🔑 Yetkilerim</button>
       <button class="submit-btn secondary" id="footerHelpAna" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
       <button class="submit-btn secondary" id="footerStaffAna" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
       <div class="btn-row" style="margin-bottom:10px;">
@@ -750,6 +751,16 @@
   </section>
 
   <!-- RÜTBELER -->
+  <section class="screen" id="screen-permguide">
+    <div class="cal-nav">
+      <button id="btnBackFromPermGuide">‹</button>
+      <span class="cal-title">🔑 Yetkilerim</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin:0 0 16px;">Aşağıda sadece SENDE olan yetkiler ve ne işe yaradıkları listeleniyor.</div>
+    <div class="card" id="permGuideList"></div>
+  </section>
+
   <section class="screen" id="screen-ranks-info">
     <div class="cal-nav">
       <button id="btnBackFromRanksInfo">‹</button>
@@ -967,70 +978,210 @@
       <span class="cal-title" id="adminPanelTitle">Admin Paneli</span>
       <span style="width:36px;"></span>
     </div>
+    <div class="hint" style="margin:0 0 16px;">Bir bölüme dokunarak o sayfayı aç.</div>
+    <div class="admin-menu-list">
+      <button class="admin-menu-row" data-admin-nav="adminstats" id="adminMenuRow_adminstats" >
+        <span class="admin-menu-title">📊 Genel İstatistikler</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminusers" id="adminMenuRow_adminusers" >
+        <span class="admin-menu-title">👥 Kullanıcılar</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="admindeactivated" id="adminMenuRow_admindeactivated" >
+        <span class="admin-menu-title">🚫 Devre Dışı Bırakılan Hesaplar</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminappeals" id="adminMenuRow_adminappeals" >
+        <span class="admin-menu-title">✉️ İtirazlar</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminreports" id="adminMenuRow_adminreports" >
+        <span class="admin-menu-title">🚩 Mesaj Şikayetleri</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminsuggestions" id="adminMenuRow_adminsuggestions" >
+        <span class="admin-menu-title">💡 Kullanıcı Önerileri</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminsuggesthist" id="adminMenuRow_adminsuggesthist" >
+        <span class="admin-menu-title">📜 Öneriler Geçmişi</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminmodlog" id="adminMenuRow_adminmodlog" >
+        <span class="admin-menu-title">📜 İşlem Geçmişi</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminbroadcast" id="adminMenuRow_adminbroadcast" >
+        <span class="admin-menu-title">📢 Toplu Bildirim Gönder</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminannouncements" id="adminMenuRow_adminannouncements" >
+        <span class="admin-menu-title">📢 Duyuru Bandı</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminquotes" id="adminMenuRow_adminquotes" >
+        <span class="admin-menu-title">📖 Günün Ayeti</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminprofessions" id="adminMenuRow_adminprofessions" >
+        <span class="admin-menu-title">👷 Meslek Listesi</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminranks" id="adminMenuRow_adminranks" >
+        <span class="admin-menu-title">🎖️ Moderatör Rütbeleri</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="admintenureranks" id="adminMenuRow_admintenureranks" >
+        <span class="admin-menu-title">🌱 Üyelik Rütbeleri (Kıdem)</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminipban" id="adminMenuRow_adminipban" >
+        <span class="admin-menu-title">🌐 IP Engelleme</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminmoderators" id="adminMenuRow_adminmoderators" >
+        <span class="admin-menu-title">🛡️ Moderatörler</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminbasemod" id="adminMenuRow_adminbasemod" >
+        <span class="admin-menu-title">✅ Temel Moderatör Yetkisi İçeriği</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminbulk" id="adminMenuRow_adminbulk" style="border-color:var(--danger); color:var(--danger);">
+        <span class="admin-menu-title">⚠️ Tehlikeli Toplu İşlemler</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+    </div>
+  </section>
 
-    <details class="card" id="permStats" open>
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📊 Genel İstatistikler</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permStats">‹</button><span>📊 Genel İstatistikler</span></div>
+  <section class="screen" id="screen-adminstats">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminstats">‹</button>
+      <span class="cal-title">📊 Genel İstatistikler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Platform genelindeki toplam rakamlar. Sayfayı her açtığında otomatik güncellenir.</div>
         <div class="stat-grid3" id="adminQuickStats" style="margin-bottom:14px;"></div>
         <div class="stat-grid3" id="adminStats"></div>
         <button class="submit-btn secondary" id="adminCalcStats" style="margin-top:10px;">🔄 Tüm Kullanıcı Verilerini Yeniden Hesapla</button>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permManageUsers">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">👥 Kullanıcılar <span id="adminUserCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permManageUsers">‹</button><span>👥 Kullanıcılar</span></div>
+  <section class="screen" id="screen-adminusers">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminusers">‹</button>
+      <span class="cal-title">👥 Kullanıcılar <span id="adminUserCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Bir kullanıcıya dokunarak profiline git — düzenleme, silme, sıfırlama gibi işlemler oradan yapılır.</div>
         <div class="search-box"><input type="text" id="adminUserSearch" placeholder="İsim, kullanıcı adı, e-posta ara..."></div>
+        <button class="month-chip" id="adminUserStaffToggle" style="margin-bottom:14px;">🛡️ Sadece Yönetim Ekibi</button>
         <div id="adminUserList"></div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permDeactivated">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚫 Devre Dışı Bırakılan Hesaplar</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permDeactivated">‹</button><span>🚫 Devre Dışı Bırakılan Hesaplar</span></div>
+  <section class="screen" id="screen-admindeactivated">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="admindeactivated">‹</button>
+      <span class="cal-title">🚫 Devre Dışı Bırakılan Hesaplar</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;" id="adminDeactivatedList"></div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permAppeals">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">✉️ İtirazlar <span id="appealsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permAppeals">‹</button><span>✉️ İtirazlar</span></div>
-      <div style="margin-top:14px;" id="adminAppealsList"></div>
-    </details>
-
-    <details class="card" id="permReports">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🚩 Mesaj Şikayetleri <span id="reportsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permReports">‹</button><span>🚩 Mesaj Şikayetleri</span></div>
-      <div style="margin-top:14px;" id="adminReportsList"></div>
-    </details>
-
-    <details class="card" id="permSuggestions">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">💡 Kullanıcı Önerileri <span id="suggestionsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permSuggestions">‹</button><span>💡 Kullanıcı Önerileri</span></div>
-      <div style="margin-top:14px;" id="adminSuggestionsList"></div>
-    </details>
-
-    <details class="card" id="permSuggestionHistory">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 Öneriler Geçmişi</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permSuggestionHistory">‹</button><span>📜 Öneriler Geçmişi</span></div>
-      <div style="margin-top:14px;" id="adminSuggestionHistoryList"></div>
-    </details>
-
-    <details class="card" id="permModLog">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📜 İşlem Geçmişi</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permModLog">‹</button><span>📜 İşlem Geçmişi</span></div>
+  <section class="screen" id="screen-adminappeals">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminappeals">‹</button>
+      <span class="cal-title">✉️ İtirazlar <span id="appealsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
-        <div class="hint" style="margin-top:0;">Son 4 işlem burada, aramak/filtrelemek için "Tümünü Gör"e bas.</div>
+        <div class="search-box"><input type="text" id="appealsSearchInput" placeholder="Kullanıcı adı veya metin ara..."></div>
+        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:14px; padding-bottom:2px;">
+          <button class="month-chip active" data-appeals-filter="pending" style="flex-shrink:0;">⏳ Bekleyen</button>
+          <button class="month-chip" data-appeals-filter="approved" style="flex-shrink:0;">✅ Onaylanan</button>
+          <button class="month-chip" data-appeals-filter="rejected" style="flex-shrink:0;">❌ Reddedilen</button>
+          <button class="month-chip" data-appeals-filter="all" style="flex-shrink:0;">Hepsi</button>
+        </div>
+        <div id="adminAppealsList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-adminreports">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminreports">‹</button>
+      <span class="cal-title">🚩 Mesaj Şikayetleri <span id="reportsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div style="margin-top:14px;">
+        <div class="search-box"><input type="text" id="reportsSearchInput" placeholder="Kullanıcı adı veya sebep ara..."></div>
+        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:14px; padding-bottom:2px;" id="reportsFilterBar">
+          <button class="month-chip active" data-reports-filter="pending" style="flex-shrink:0;">⏳ Bekleyen</button>
+          <button class="month-chip" data-reports-filter="resolved" style="flex-shrink:0;">✅ İşlem Yapılan</button>
+          <button class="month-chip" data-reports-filter="dismissed" style="flex-shrink:0;">❌ Reddedilen</button>
+          <button class="month-chip" data-reports-filter="all" style="flex-shrink:0;">Hepsi</button>
+        </div>
+        <div id="adminReportsList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-adminsuggestions">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminsuggestions">‹</button>
+      <span class="cal-title">💡 Kullanıcı Önerileri <span id="suggestionsCount" style="font-size:11px; font-weight:600; color:var(--ink-soft);"></span></span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div style="margin-top:14px;" id="adminSuggestionsList"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-adminsuggesthist">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminsuggesthist">‹</button>
+      <span class="cal-title">📜 Öneriler Geçmişi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div style="margin-top:14px;" id="adminSuggestionHistoryList"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-adminmodlog">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminmodlog">‹</button>
+      <span class="cal-title">📜 İşlem Geçmişi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
+      <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Son 300 işlem listelenir.</div>
+        <div class="search-box"><input type="text" id="modLogSearchInput" placeholder="Kullanıcı adı veya detay ara..."></div>
         <div id="modLogList"></div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permBroadcast">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Toplu Bildirim Gönder</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBroadcast">‹</button><span>📢 Toplu Bildirim Gönder</span></div>
+  <section class="screen" id="screen-adminbroadcast">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminbroadcast">‹</button>
+      <span class="cal-title">📢 Toplu Bildirim Gönder</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="field">
           <label>Kime Gönderilsin?</label>
@@ -1049,11 +1200,16 @@
         <div class="field"><label>Mesaj</label><textarea id="adminBroadcastText" placeholder="Gönderilecek duyuru..."></textarea></div>
         <button class="submit-btn" id="adminBroadcastSend">📢 Gönder</button>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permAnnouncements">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📢 Duyuru Bandı</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permAnnouncements">‹</button><span>📢 Duyuru Bandı</span></div>
+  <section class="screen" id="screen-adminannouncements">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminannouncements">‹</button>
+      <span class="cal-title">📢 Duyuru Bandı</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="field">
           <label>Ana Sayfa Duyuru Bandı (boş bırakırsan görünmez)</label>
@@ -1071,11 +1227,16 @@
         </div>
         <button class="submit-btn secondary" id="adminBannerSave">Duyuru Bandını Kaydet</button>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permQuotes">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">📖 Günün Ayeti</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permQuotes">‹</button><span>📖 Günün Ayeti</span></div>
+  <section class="screen" id="screen-adminquotes">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminquotes">‹</button>
+      <span class="cal-title">📖 Günün Ayeti</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Ana sayfada rastgele gösterilecek ayet/söz listesi.</div>
         <div id="quoteListDisplay" style="margin:10px 0;"></div>
@@ -1084,11 +1245,16 @@
           <button class="submit-btn secondary" id="adminQuoteAddBtn">➕ Ekle</button>
         </div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permProfessions">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">👷 Meslek Listesi</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permProfessions">‹</button><span>👷 Meslek Listesi</span></div>
+  <section class="screen" id="screen-adminprofessions">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminprofessions">‹</button>
+      <span class="cal-title">👷 Meslek Listesi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Kayıt sırasında kullanıcılara gösterilecek meslekler.</div>
         <div id="professionListDisplay" style="margin:10px 0;"></div>
@@ -1097,11 +1263,16 @@
           <button class="submit-btn secondary" id="adminProfessionAddBtn">➕ Ekle</button>
         </div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permRanks">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🎖️ Moderatör Rütbeleri</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permRanks">‹</button><span>🎖️ Moderatör Rütbeleri</span></div>
+  <section class="screen" id="screen-adminranks">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminranks">‹</button>
+      <span class="cal-title">🎖️ Moderatör Rütbeleri</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Moderatörlere atanabilecek rütbe isimleri, en düşükten en yükseğe.</div>
         <div id="modRankDisplay" style="margin:12px 0;"></div>
@@ -1110,11 +1281,16 @@
           <button class="submit-btn secondary" id="adminRankAddBtn">➕ Ekle</button>
         </div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permTenureRanks">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌱 Üyelik Rütbeleri (Kıdem)</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permTenureRanks">‹</button><span>🌱 Üyelik Rütbeleri (Kıdem)</span></div>
+  <section class="screen" id="screen-admintenureranks">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="admintenureranks">‹</button>
+      <span class="cal-title">🌱 Üyelik Rütbeleri (Kıdem)</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Kullanıcıların hesap yaşına göre otomatik kazandığı rütbeler.</div>
         <div id="tenureRankDisplay" style="margin:12px 0;"></div>
@@ -1131,11 +1307,16 @@
           <button class="submit-btn secondary" id="tenureRankAddRow">➕ Ekle</button>
         </div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permIpBan">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🌐 IP Engelleme</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permIpBan">‹</button><span>🌐 IP Engelleme</span></div>
+  <section class="screen" id="screen-adminipban">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminipban">‹</button>
+      <span class="cal-title">🌐 IP Engelleme</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">IP engelleme tek başına güçlü bir güvenlik önlemi değildir; IP değişebilir/gizlenebilir (VPN vb.). Ek bir katman olarak düşün.</div>
         <div class="field" style="margin-top:10px;">
@@ -1146,30 +1327,45 @@
         <div class="section-title" style="margin:16px 0 8px;">Engelli IP'ler</div>
         <div id="adminBannedIpList"></div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permModerators">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">🛡️ Moderatörler</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permModerators">‹</button><span>🛡️ Moderatörler</span></div>
+  <section class="screen" id="screen-adminmoderators">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminmoderators">‹</button>
+      <span class="cal-title">🛡️ Moderatörler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">Yeni moderatör atamak için ilgili kullanıcının profiline git → Yönetici Araçları → Moderatörlük.</div>
         <div id="modList" style="margin-top:10px;"></div>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permBaseModManage">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px;">✅ Temel Moderatör Yetkisi İçeriği</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBaseModManage">‹</button><span>✅ Temel Moderatör Yetkisi İçeriği</span></div>
+  <section class="screen" id="screen-adminbasemod">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminbasemod">‹</button>
+      <span class="cal-title">✅ Temel Moderatör Yetkisi İçeriği</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0;">"Temel Moderatör Yetkisi"ni açık olan tüm moderatörlerin sahip olacağı yetkileri buradan belirle. İşaretlediklerin bu paketin içinde olur.</div>
         <div id="baseModPermList" style="margin-top:10px;"></div>
         <button class="submit-btn" id="btnSaveBaseModPerms" style="margin-top:12px;">Kaydet</button>
       </div>
-    </details>
+    </div>
+  </section>
 
-    <details class="card" id="permBulk" style="border-color:var(--danger);">
-      <summary id="permBulkSummary" style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
-      <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permBulk">‹</button><span>⚠️ Tehlikeli Toplu İşlemler</span></div>
+  <section class="screen" id="screen-adminbulk">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminbulk">‹</button>
+      <span class="cal-title">⚠️ Tehlikeli Toplu İşlemler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card" style="border-color:var(--danger);">
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlemler TÜM kullanıcıları etkiler ve dikkatli kullanılmalı. Onay için özel bir metin yazman istenecek.</div>
         <button class="submit-btn danger" id="adminBulkDeactivate" style="margin-top:12px; margin-bottom:10px;">🚫 Tüm Kullanıcıları Devre Dışı Bırak</button>
@@ -1178,10 +1374,9 @@
         <div class="hint" style="color:var(--danger); margin-top:16px;">⚠️ Aşağıdaki buton TÜM kullanıcıların yevmiye/avans/alacak/not kayıtlarını kalıcı olarak siler (hesaplar ve girişler kalır, sadece veriler silinir). GERİ ALINAMAZ.</div>
         <button class="submit-btn danger" id="adminWipeAllData" style="margin-top:10px; background:#000;">☢️ Sistemdeki Tüm Verileri Temizle</button>
       </div>
-    </details>
-
-    <div class="hint" style="text-align:center; margin:6px 0 20px;">Not: Kullanıcıların gerçek para kayıtlarını (yevmiye/avans vb.) değiştirme özelliği bilinçli olarak eklenmedi — sadece profil/hesap yönetimi mümkün.</div>
+    </div>
   </section>
+
 
   <!-- TAKİPÇİ LİSTESİ -->
   <div class="modal-overlay" id="followerListOverlay">
@@ -1555,12 +1750,6 @@ window.addEventListener('popstate', ()=>{
     history.pushState({sdGuard:true}, '');
     return;
   }
-  const openAdminSection = document.querySelector('details.admin-fullscreen');
-  if(openAdminSection){
-    openAdminSection.classList.remove('admin-fullscreen');
-    history.pushState({sdGuard:true}, '');
-    return;
-  }
   const rankPopup = document.getElementById('rankInfoPopup');
   if(rankPopup && rankPopup.style.display === 'block'){
     rankPopup.style.display = 'none';
@@ -1575,6 +1764,12 @@ window.addEventListener('popstate', ()=>{
   if(document.body.classList.contains('chat-open')){
     document.body.classList.remove('chat-open');
     switchScreen('mesajlar');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  const activeScreenEl = document.querySelector('main > .screen.active');
+  if(activeScreenEl && activeScreenEl.id.startsWith('screen-admin') && activeScreenEl.id !== 'screen-admin'){
+    switchScreen('admin');
     history.pushState({sdGuard:true}, '');
     return;
   }
@@ -2297,39 +2492,43 @@ function updateAdminModButtons(){
   const hasAnyModPerm = Object.values(modPerms).some(v=>v===true);
   const badge = document.getElementById('roleBadgeWrap');
   const letterEl = document.getElementById('roleBadgeLetter');
+  const guideBtn = document.getElementById('footerPermGuideAna');
   if(isAdmin){
     badge.style.display = 'flex'; letterEl.textContent = 'A'; badge.title = 'Admin Paneli';
     startPendingAdminCountListener();
+    if(guideBtn) guideBtn.style.display = 'block';
   } else if(hasAnyModPerm){
     badge.style.display = 'flex'; letterEl.textContent = 'M'; badge.title = 'Moderatör Paneli';
     startPendingAdminCountListener();
+    if(guideBtn) guideBtn.style.display = 'block';
   } else {
     badge.style.display = 'none';
     stopPendingAdminCountListener();
+    if(guideBtn) guideBtn.style.display = 'none';
   }
   if(document.getElementById('screen-admin').classList.contains('active') && typeof applyAdminPermVisibility === 'function'){
     applyAdminPermVisibility();
   }
 }
 const ROLE_BADGE_LINKS = [
-  {label:'📊 İstatistikler', id:'permStats'},
-  {label:'👥 Kullanıcılar', id:'permManageUsers'},
-  {label:'🚫 Devre Dışı Bırakılanlar', id:'permDeactivated'},
-  {label:'✉️ İtirazlar', id:'permAppeals'},
-  {label:'🚩 Şikayetler', id:'permReports'},
-  {label:'💡 Öneriler', id:'permSuggestions'},
-  {label:'📜 Öneriler Geçmişi', id:'permSuggestionHistory'},
-  {label:'📜 İşlem Geçmişi', id:'permModLog'},
-  {label:'📢 Toplu Bildirim', id:'permBroadcast'},
-  {label:'📢 Duyuru Bandı', id:'permAnnouncements'},
-  {label:'📖 Günün Ayeti', id:'permQuotes'},
-  {label:'👷 Meslek Listesi', id:'permProfessions'},
-  {label:'🎖️ Moderatör Rütbeleri', id:'permRanks'},
-  {label:'🌱 Kıdem Rütbeleri', id:'permTenureRanks'},
-  {label:'🌐 IP Engelleme', id:'permIpBan'},
-  {label:'🛡️ Moderatörler', id:'permModerators'},
-  {label:'✅ Temel Yetki İçeriği', id:'permBaseModManage'},
-  {label:'⚠️ Tehlikeli İşlemler', id:'permBulk'},
+  {label:'📊 İstatistikler', id:'adminstats'},
+  {label:'👥 Kullanıcılar', id:'adminusers'},
+  {label:'🚫 Devre Dışı Bırakılanlar', id:'admindeactivated'},
+  {label:'✉️ İtirazlar', id:'adminappeals'},
+  {label:'🚩 Şikayetler', id:'adminreports'},
+  {label:'💡 Öneriler', id:'adminsuggestions'},
+  {label:'📜 Öneriler Geçmişi', id:'adminsuggesthist'},
+  {label:'📜 İşlem Geçmişi', id:'adminmodlog'},
+  {label:'📢 Toplu Bildirim', id:'adminbroadcast'},
+  {label:'📢 Duyuru Bandı', id:'adminannouncements'},
+  {label:'📖 Günün Ayeti', id:'adminquotes'},
+  {label:'👷 Meslek Listesi', id:'adminprofessions'},
+  {label:'🎖️ Moderatör Rütbeleri', id:'adminranks'},
+  {label:'🌱 Kıdem Rütbeleri', id:'admintenureranks'},
+  {label:'🌐 IP Engelleme', id:'adminipban'},
+  {label:'🛡️ Moderatörler', id:'adminmoderators'},
+  {label:'✅ Temel Yetki İçeriği', id:'adminbasemod'},
+  {label:'⚠️ Tehlikeli İşlemler', id:'adminbulk'},
 ];
 let roleBadgeOpen = false;
 function closeRoleBadgeMenu(){
@@ -2351,34 +2550,11 @@ function openRoleBadgeMenu(){
     el.addEventListener('click', (ev)=>{
       ev.stopPropagation();
       closeRoleBadgeMenu();
-      openAdminPanel();
-      setTimeout(()=>{
-        const id = el.dataset.roleLink;
-        if(id==='permBulk'){
-          if(!canBulkActions()) return;
-          if(!dangerZoneUnlocked){
-            const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
-            if(typed !== 'TEHLİKELİ'){ showToast('Onay metni yanlış, işlem iptal edildi'); return; }
-            dangerZoneUnlocked = true;
-          }
-        }
-        openAdminSectionFullscreen(id);
-      }, 80);
+      navigateToAdminSection(el.dataset.roleLink);
     });
   });
 }
-// ---------- ADMİN BÖLÜMLERİ: TAM EKRAN AÇILMA ----------
-const ADMIN_FULLSCREEN_IDS = ['permStats','permManageUsers','permDeactivated','permAppeals','permReports','permSuggestions',
-  'permSuggestionHistory','permModLog','permBroadcast','permAnnouncements','permQuotes',
-  'permProfessions','permRanks','permTenureRanks','permIpBan','permModerators','permBaseModManage','permBulk'];
-function openAdminSectionFullscreen(id){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.open = true;
-  el.classList.add('admin-fullscreen');
-  window.scrollTo(0,0);
-  if(id==='permStats'){ renderAdminQuickStats(); document.getElementById('adminCalcStats').click(); }
-}
+// ---------- ADMİN MENÜSÜ: SAYFA NAVİGASYONU ----------
 async function renderAdminQuickStats(){
   const box = document.getElementById('adminQuickStats');
   if(!box) return;
@@ -2398,33 +2574,25 @@ async function renderAdminQuickStats(){
     <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">✉️</div><div class="val">${pendingAppeals}</div><div class="lbl">Bekleyen İtiraz</div></div>
     <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">💡</div><div class="val">${pendingSuggestions}</div><div class="lbl">Bekleyen Öneri</div></div>`;
 }
-function closeAdminSectionFullscreen(id){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.classList.remove('admin-fullscreen');
+function navigateToAdminSection(sid){
+  if(sid==='adminbulk'){
+    if(!canBulkActions()) return;
+    if(!dangerZoneUnlocked){
+      const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
+      if(typed !== 'TEHLİKELİ'){ showToast('Onay metni yanlış, işlem iptal edildi'); return; }
+      dangerZoneUnlocked = true;
+    }
+  }
+  loadAllAdminData();
+  switchScreen(sid);
+  if(sid==='adminstats'){ renderAdminQuickStats(); const btn = document.getElementById('adminCalcStats'); if(btn) btn.click(); }
 }
 document.addEventListener('click', (e)=>{
-  const closeBtn = e.target.closest('[data-close-fullscreen]');
-  if(closeBtn){ closeAdminSectionFullscreen(closeBtn.dataset.closeFullscreen); }
+  const navBtn = e.target.closest('[data-admin-nav]');
+  if(navBtn){ navigateToAdminSection(navBtn.dataset.adminNav); return; }
+  const backBtn = e.target.closest('[data-admin-back]');
+  if(backBtn){ switchScreen('admin'); }
 });
-(function wireAdminSummaryFullscreen(){
-  ADMIN_FULLSCREEN_IDS.forEach(id=>{
-    const details = document.getElementById(id);
-    if(!details) return;
-    const summary = details.querySelector('summary');
-    if(!summary) return;
-    summary.addEventListener('click', (e)=>{
-      e.preventDefault();
-      if(id==='permBulk' && !canBulkActions()) return;
-      if(id==='permBulk' && !dangerZoneUnlocked){
-        const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
-        if(typed !== 'TEHLİKELİ'){ showToast('Onay metni yanlış, işlem iptal edildi'); return; }
-        dangerZoneUnlocked = true;
-      }
-      openAdminSectionFullscreen(id);
-    });
-  });
-})();
 document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
   e.stopPropagation();
   if(roleBadgeOpen) closeRoleBadgeMenu();
@@ -2536,32 +2704,28 @@ function canManageUsers(){ return canEditProfile()||canDeleteAccount()||canReact
 function hasAnyAdminTool(){ return isAdmin || Object.values(modPerms).some(v=>v===true); }
 function applyAdminPermVisibility(){
   document.getElementById('adminPanelTitle').textContent = isAdmin ? 'Admin Paneli' : 'Moderatör Paneli';
-  document.getElementById('permStats').style.display = canViewStats() ? 'block' : 'none';
-  document.getElementById('permManageUsers').style.display = canManageUsers() ? 'block' : 'none';
-  document.getElementById('permDeactivated').style.display = canReactivateAccount() ? 'block' : 'none';
-  document.getElementById('permAppeals').style.display = canViewAppeals() ? 'block' : 'none';
-  document.getElementById('permReports').style.display = canViewReports() ? 'block' : 'none';
-  document.getElementById('permSuggestions').style.display = canViewSuggestions() ? 'block' : 'none';
-  document.getElementById('permSuggestionHistory').style.display = canViewSuggestionHistory() ? 'block' : 'none';
-  document.getElementById('permModLog').style.display = canViewModLog() ? 'block' : 'none';
-  document.getElementById('permBroadcast').style.display = canBroadcast() ? 'block' : 'none';
-  document.getElementById('permAnnouncements').style.display = canEditAnnouncements() ? 'block' : 'none';
-  document.getElementById('permQuotes').style.display = canEditQuotes() ? 'block' : 'none';
-  document.getElementById('permProfessions').style.display = canEditProfessions() ? 'block' : 'none';
-  document.getElementById('permRanks').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('permIpBan').style.display = canBanIp() ? 'block' : 'none';
-  document.getElementById('permModerators').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('permBaseModManage').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('adminMenuRow_adminstats').style.display = canViewStats() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminusers').style.display = canManageUsers() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_admindeactivated').style.display = canReactivateAccount() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminappeals').style.display = canViewAppeals() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminreports').style.display = canViewReports() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminsuggestions').style.display = canViewSuggestions() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminsuggesthist').style.display = canViewSuggestionHistory() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminmodlog').style.display = canViewModLog() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminbroadcast').style.display = canBroadcast() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminannouncements').style.display = canEditAnnouncements() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminquotes').style.display = canEditQuotes() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminprofessions').style.display = canEditProfessions() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminranks').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_admintenureranks').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminipban').style.display = canBanIp() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminmoderators').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminbasemod').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminbulk').style.display = canBulkActions() ? 'flex' : 'none';
   if(isAdmin) renderBaseModPermList();
-  document.getElementById('permBulk').style.display = canBulkActions() ? 'block' : 'none';
 }
 
-function openAdminPanel(){
-  document.getElementById('settingsOverlay').classList.remove('show');
-  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-admin').classList.add('active');
-  updateFabVisibility();
-  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen==='admin'));
+function loadAllAdminData(){
   applyAdminPermVisibility();
   if(canManageUsers()) renderAdminUserList();
   if(canReactivateAccount()) renderDeactivatedUserList();
@@ -2573,6 +2737,14 @@ function openAdminPanel(){
   if(canEditAnnouncements() || canEditQuotes() || canEditProfessions()) loadAdminContentConfig();
   if(isAdmin){ renderModeratorsList(); loadRankConfig(); loadTenureRankConfig(); }
   if(canBanIp()) renderBannedIpList();
+}
+function openAdminPanel(){
+  document.getElementById('settingsOverlay').classList.remove('show');
+  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-admin').classList.add('active');
+  updateFabVisibility();
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen==='admin'));
+  loadAllAdminData();
 }
 
 document.getElementById('btnBackFromAdmin').addEventListener('click', ()=>{
@@ -2601,42 +2773,30 @@ function wireAdminUserRows(box){
     });
   });
 }
+let usersOnlyStaff = false;
 function renderAdminUserList(filter){
   const q = (filter||'').toLowerCase();
   const activeProfiles = allPublicProfiles.filter(u=>!u.deactivated);
-  const list = activeProfiles.filter(u=>{
+  let list = activeProfiles.filter(u=>{
     if(!q) return true;
     return (u.fullName||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.uid||'').toLowerCase().includes(q);
   });
+  if(usersOnlyStaff) list = list.filter(u=> u.role==='admin' || u.role==='moderator');
   document.getElementById('adminUserCount').textContent = '(' + activeProfiles.length + ' aktif kullanıcı)';
   const box = document.getElementById('adminUserList');
   if(list.length===0){
     box.innerHTML = `<div class="empty"><div class="icon">👤</div><div class="msg">Kullanıcı bulunamadı.</div></div>`;
     return;
   }
-  const preview = list.slice(0, 5);
-  box.innerHTML = preview.map(adminUserRowHtml).join('') + (list.length>5 ? seeAllBtnHtml('btnSeeAllUsers') : '');
+  box.innerHTML = list.map(adminUserRowHtml).join('');
   wireAdminUserRows(box);
-  const seeAllBtn = document.getElementById('btnSeeAllUsers');
-  if(seeAllBtn){
-    seeAllBtn.addEventListener('click', ()=>{
-      openAdminList('Tüm Kullanıcılar', activeProfiles, {
-        filters: [
-          {key:'all', label:'Herkes'},
-          {key:'moderator', label:'Yönetim Ekibi'}
-        ],
-        filterFn: (u, f)=>{
-          if(f==='moderator') return u.role==='admin' || u.role==='moderator';
-          return true;
-        },
-        searchFn: (u,q2)=> (u.fullName||'').toLowerCase().includes(q2) || (u.username||'').toLowerCase().includes(q2) || (u.uid||'').toLowerCase().includes(q2),
-        renderRowFn: adminUserRowHtml,
-        wireRows: wireAdminUserRows
-      });
-    });
-  }
 }
 document.getElementById('adminUserSearch').addEventListener('input', (e)=> renderAdminUserList(e.target.value));
+document.getElementById('adminUserStaffToggle').addEventListener('click', (e)=>{
+  usersOnlyStaff = !usersOnlyStaff;
+  e.target.classList.toggle('active', usersOnlyStaff);
+  renderAdminUserList(document.getElementById('adminUserSearch').value);
+});
 
 let pendingDeactivateUid = null;
 document.getElementById('deactivateClose').addEventListener('click', ()=> document.getElementById('deactivateOverlay').classList.remove('show'));
@@ -3063,18 +3223,8 @@ function renderDeactivatedUserList(){
     box.innerHTML = `<div class="empty"><div class="icon">🚫</div><div class="msg">Devre dışı bırakılmış hesap yok.</div></div>`;
     return;
   }
-  box.innerHTML = deactivated.slice(0,4).map(deactivatedRowHtml).join('') + (deactivated.length>4 ? seeAllBtnHtml('btnSeeAllDeactivated') : '');
+  box.innerHTML = deactivated.map(deactivatedRowHtml).join('');
   wireDeactivatedRows(box);
-  const seeAllBtn = document.getElementById('btnSeeAllDeactivated');
-  if(seeAllBtn){
-    seeAllBtn.addEventListener('click', ()=>{
-      openAdminList('Devre Dışı Bırakılan Hesaplar', deactivated, {
-        searchFn: (u,q)=> (u.fullName||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.deactivatedReason||'').toLowerCase().includes(q),
-        renderRowFn: deactivatedRowHtml,
-        wireRows: wireDeactivatedRows
-      });
-    });
-  }
 }
 
 // ---------- MESAJ ŞİKAYETLERİ ----------
@@ -3147,6 +3297,8 @@ function wireReportRows(box){
   });
 }
 let allReportsCache = [];
+let reportsCurrentFilter = 'pending';
+let reportsSearchQuery = '';
 async function renderReportsList(){
   const box = document.getElementById('adminReportsList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
@@ -3154,40 +3306,40 @@ async function renderReportsList(){
     const snap = await db.collection('reports').get();
     allReportsCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
     allReportsCache.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
-    const pending = allReportsCache.filter(r=>r.status==='pending');
-    document.getElementById('reportsCount').textContent = pending.length ? `(${pending.length} bekleyen)` : '';
-    if(pending.length===0){
-      box.innerHTML = `<div class="empty"><div class="icon">🚩</div><div class="msg">Bekleyen şikayet yok.</div></div>`;
-      if(allReportsCache.length>0) box.innerHTML += seeAllBtnHtml('btnSeeAllReports');
-    } else {
-      box.innerHTML = pending.slice(0,3).map(reportRowHtml).join('') + seeAllBtnHtml('btnSeeAllReports');
-      wireReportRows(box);
-    }
-    const seeAllBtn = document.getElementById('btnSeeAllReports');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Tüm Şikayetler', allReportsCache, {
-          filters: [
-            {key:'pending', label:'Bekleyen'},
-            {key:'resolved', label:'İşlem Yapılan'},
-            {key:'dismissed', label:'Reddedilen'},
-            {key:'all', label:'Hepsi'}
-          ],
-          filterFn: (r,f)=> f==='all' ? true : r.status===f,
-          searchFn: (r,q)=>{
-            const rp = profileByUid(r.reportedUid), rr = profileByUid(r.reporterUid);
-            return (rp&&rp.fullName||'').toLowerCase().includes(q) || (rr&&rr.fullName||'').toLowerCase().includes(q) || (r.reason||'').toLowerCase().includes(q);
-          },
-          renderRowFn: reportRowHtml,
-          wireRows: wireReportRows
-        });
-        adminListState.activeFilter = 'pending';
-        renderAdminListFilters(adminListState.filters);
-        renderAdminListBody();
-      });
-    }
+    const pendingCount = allReportsCache.filter(r=>r.status==='pending').length;
+    document.getElementById('reportsCount').textContent = pendingCount ? `(${pendingCount} bekleyen)` : '';
+    renderReportsFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
 }
+function renderReportsFiltered(){
+  const box = document.getElementById('adminReportsList');
+  let list = reportsCurrentFilter==='all' ? allReportsCache : allReportsCache.filter(r=>r.status===reportsCurrentFilter);
+  if(reportsSearchQuery){
+    const q = reportsSearchQuery;
+    list = list.filter(r=>{
+      const rp = profileByUid(r.reportedUid), rr = profileByUid(r.reporterUid);
+      return (usernameLabel(rp)||'').toLowerCase().includes(q) || (usernameLabel(rr)||'').toLowerCase().includes(q) || (r.reason||'').toLowerCase().includes(q);
+    });
+  }
+  if(list.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">🚩</div><div class="msg">Bu filtrede şikayet yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = list.map(reportRowHtml).join('');
+  wireReportRows(box);
+}
+document.getElementById('reportsSearchInput').addEventListener('input', (e)=>{
+  reportsSearchQuery = e.target.value.trim().toLowerCase();
+  renderReportsFiltered();
+});
+document.querySelectorAll('[data-reports-filter]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-reports-filter]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    reportsCurrentFilter = btn.dataset.reportsFilter;
+    renderReportsFiltered();
+  });
+});
 
 // ---------- KULLANICI ÖNERİLERİ (ADMİN) ----------
 function suggestionRowHtml(s){
@@ -3270,18 +3422,8 @@ async function renderSuggestionHistoryList(){
       box.innerHTML = `<div class="empty"><div class="icon">📜</div><div class="msg">Henüz yanıtlanan öneri yok.</div></div>`;
       return;
     }
-    box.innerHTML = responded.slice(0,3).map(suggestionRowHtml).join('') + (responded.length>3 ? seeAllBtnHtml('btnSeeAllSuggestionHistory') : '');
+    box.innerHTML = responded.map(suggestionRowHtml).join('');
     wireSuggestionRows(box);
-    const seeAllBtn = document.getElementById('btnSeeAllSuggestionHistory');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Öneriler Geçmişi', responded, {
-          searchFn: (s,q)=>{ const p=profileByUid(s.uid); return (p&&p.fullName||'').toLowerCase().includes(q) || (s.text||'').toLowerCase().includes(q) || (s.response||'').toLowerCase().includes(q); },
-          renderRowFn: suggestionRowHtml,
-          wireRows: wireSuggestionRows
-        });
-      });
-    }
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
 }
 
@@ -3335,6 +3477,34 @@ const PERM_LABELS = {
   viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
   viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme'
 };
+const PERM_DESCRIPTIONS = {
+  editProfile:'Herhangi bir kullanıcının profil bilgilerini (ad, meslek, şehir vb.) düzenleyebilirsin.',
+  deleteAccount:'Bir kullanıcının hesabını devre dışı bırakabilir, giriş yapmasını engelleyebilirsin.',
+  reactivateAccount:'Devre dışı bırakılmış bir hesabı tekrar aktif hale getirebilirsin.',
+  deletePhoto:'Bir kullanıcının profil fotoğrafını kaldırabilirsin.',
+  resetAccount:'Bir kullanıcının hesabını (kayıtları/notları) sıfırlayabilirsin.',
+  permanentDelete:'Bir hesabı geri dönüşü olmayacak şekilde kalıcı olarak silebilirsin.',
+  broadcast:'Tüm kullanıcılara veya belirli kişilere toplu bildirim gönderebilirsin.',
+  editAnnouncements:'Ana sayfadaki duyuru bandının metnini değiştirebilirsin.',
+  editQuotes:'"Günün Ayeti" bölümünde gösterilen sözleri ekleyip çıkarabilirsin.',
+  editProfessions:'Kayıt olurken seçilebilen meslek listesini düzenleyebilirsin.',
+  viewStats:'Platform genelindeki toplam kullanıcı/kayıt istatistiklerini görebilirsin.',
+  banIp:'Belirli bir IP adresinin uygulamaya erişimini engelleyebilirsin.',
+  viewPrivateInfo:'Kullanıcıların normalde gizli tuttuğu bilgilerini görebilirsin.',
+  viewAppeals:'Devre dışı bırakılan hesapların itirazlarını görüp karar verebilirsin.',
+  viewModLog:'Yönetim ekibinin geçmişte yaptığı tüm işlemlerin kaydını görebilirsin.',
+  viewReports:'Kullanıcıların birbirini şikayet ettiği mesajları inceleyip işlem yapabilirsin.',
+  viewSuggestions:'Kullanıcıların gönderdiği önerileri görüp yanıtlayabilirsin.',
+  viewSuggestionHistory:'Daha önce yanıtlanmış önerilerin geçmişini görebilirsin.',
+  viewIp:'Bir kullanıcının profilinde bilinen IP adresini görebilirsin.',
+  changeUsername:'Kullanıcıların 1 kerelik sınırına takılmadan kullanıcı adını değiştirebilirsin.',
+  viewFullMedia:'Tek seferlik veya süresi dolmuş fotoğraf/ses kayıtlarını sınırsız görebilirsin.',
+  deleteArchivedMedia:'Süresi dolmuş, arşivlenmiş medyayı kalıcı olarak silebilirsin.',
+  temelYetki:'Moderatörlüğün temel paketidir — birçok görüntüleme yetkisini tek seferde açar.',
+  manageWarnings:'Kullanıcılara süreli uyarı verip, uyarı geçmişlerini görebilirsin.',
+  viewUserNotifications:'Bir kullanıcının aldığı bildirimleri görebilirsin.',
+  viewLoginHistory:'Bir kullanıcının geçmiş giriş kayıtlarını (şüpheli giriş kontrolü için) görebilirsin.'
+};
 const MOD_ACTION_LABELS = {
   editProfile:'✏️ Profil düzenledi', deletePhoto:'🖼️ Fotoğraf sildi', resetAccount:'🔄 Hesabı sıfırladı',
   banIp:'🌐 IP engelledi', deactivateAccount:'🚫 Hesabı devre dışı bıraktı', reactivateAccount:'🔁 Hesabı aktifleştirdi',
@@ -3366,24 +3536,25 @@ async function renderModLog(){
   try{
     const snap = await db.collection('mod_actions').orderBy('createdAt','desc').limit(300).get();
     allModLogCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    if(allModLogCache.length===0){ box.innerHTML = `<div class="empty"><div class="icon">📜</div><div class="msg">Kayıt yok.</div></div>`; return; }
-    box.innerHTML = allModLogCache.slice(0,4).map(modLogRowHtml).join('') + seeAllBtnHtml('btnSeeAllModLog');
-    wireModLogRows(box);
-    document.getElementById('btnSeeAllModLog').addEventListener('click', ()=>{
-      const actionKeys = Array.from(new Set(allModLogCache.map(l=>l.action)));
-      openAdminList('Tüm İşlem Geçmişi', allModLogCache, {
-        filters: [{key:'all', label:'Hepsi'}, ...actionKeys.map(k=>({key:k, label:MOD_ACTION_LABELS[k]||k}))],
-        filterFn: (l,f)=> f==='all' ? true : l.action===f,
-        searchFn: (l,q)=>{
-          const actorP = profileByUid(l.actorUid), targetP = l.targetUid?profileByUid(l.targetUid):null;
-          return (actorP&&(actorP.username||'').toLowerCase().includes(q)) || (targetP&&(targetP.username||'').toLowerCase().includes(q)) || (l.details||'').toLowerCase().includes(q);
-        },
-        renderRowFn: modLogRowHtml,
-        wireRows: wireModLogRows
-      });
-    });
+    renderModLogFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
 }
+function renderModLogFiltered(){
+  const box = document.getElementById('modLogList');
+  const q = (document.getElementById('modLogSearchInput').value||'').trim().toLowerCase();
+  let list = allModLogCache;
+  if(q){
+    list = list.filter(l=>{
+      const actorP = profileByUid(l.actorUid), targetP = l.targetUid?profileByUid(l.targetUid):null;
+      return (actorP&&(actorP.username||'').toLowerCase().includes(q)) || (targetP&&(targetP.username||'').toLowerCase().includes(q)) || (l.details||'').toLowerCase().includes(q);
+    });
+  }
+  if(list.length===0){ box.innerHTML = `<div class="empty"><div class="icon">📜</div><div class="msg">Kayıt yok.</div></div>`; return; }
+  box.innerHTML = list.map(modLogRowHtml).join('');
+  wireModLogRows(box);
+}
+document.getElementById('modLogSearchInput').addEventListener('input', renderModLogFiltered);
+
 
 // ---------- İTİRAZLAR ----------
 function appealRowHtml(a){
@@ -3447,6 +3618,8 @@ function wireAppealRows(box){
   });
 }
 let allAppealsCache = [];
+let appealsCurrentFilter = 'pending';
+let appealsSearchQuery = '';
 async function renderAppealsList(){
   const box = document.getElementById('adminAppealsList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
@@ -3454,41 +3627,40 @@ async function renderAppealsList(){
     const snap = await db.collection('appeals').get();
     allAppealsCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
     allAppealsCache.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
-    const pending = allAppealsCache.filter(a=>a.status==='pending');
-    document.getElementById('appealsCount').textContent = pending.length ? `(${pending.length} bekleyen)` : '';
-    if(pending.length===0){
-      box.innerHTML = `<div class="empty"><div class="icon">✉️</div><div class="msg">Bekleyen itiraz yok.</div></div>`;
-      if(allAppealsCache.length>0) box.innerHTML += seeAllBtnHtml('btnSeeAllAppeals');
-    } else {
-      const preview = pending.slice(0,3);
-      box.innerHTML = preview.map(appealRowHtml).join('') + seeAllBtnHtml('btnSeeAllAppeals');
-      wireAppealRows(box);
-    }
-    const seeAllBtn = document.getElementById('btnSeeAllAppeals');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Tüm İtirazlar', allAppealsCache, {
-          filters: [
-            {key:'pending', label:'Bekleyen'},
-            {key:'approved', label:'Onaylanan'},
-            {key:'rejected', label:'Reddedilen'},
-            {key:'all', label:'Hepsi'}
-          ],
-          filterFn: (a,f)=> f==='all' ? true : a.status===f,
-          searchFn: (a,q)=>{
-            const p = profileByUid(a.uid);
-            return (p&&p.fullName||'').toLowerCase().includes(q) || (p&&p.username||'').toLowerCase().includes(q) || (a.appealText||'').toLowerCase().includes(q);
-          },
-          renderRowFn: appealRowHtml,
-          wireRows: wireAppealRows
-        });
-        adminListState.activeFilter = 'pending';
-        renderAdminListFilters(adminListState.filters);
-        renderAdminListBody();
-      });
-    }
+    const pendingCount = allAppealsCache.filter(a=>a.status==='pending').length;
+    document.getElementById('appealsCount').textContent = pendingCount ? `(${pendingCount} bekleyen)` : '';
+    renderAppealsFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
 }
+function renderAppealsFiltered(){
+  const box = document.getElementById('adminAppealsList');
+  let list = appealsCurrentFilter==='all' ? allAppealsCache : allAppealsCache.filter(a=>a.status===appealsCurrentFilter);
+  if(appealsSearchQuery){
+    const q = appealsSearchQuery;
+    list = list.filter(a=>{
+      const p = profileByUid(a.uid);
+      return (usernameLabel(p)||'').toLowerCase().includes(q) || (a.appealText||'').toLowerCase().includes(q);
+    });
+  }
+  if(list.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">✉️</div><div class="msg">Bu filtrede itiraz yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = list.map(appealRowHtml).join('');
+  wireAppealRows(box);
+}
+document.getElementById('appealsSearchInput').addEventListener('input', (e)=>{
+  appealsSearchQuery = e.target.value.trim().toLowerCase();
+  renderAppealsFiltered();
+});
+document.querySelectorAll('[data-appeals-filter]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-appeals-filter]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    appealsCurrentFilter = btn.dataset.appealsFilter;
+    renderAppealsFiltered();
+  });
+});
 
 document.getElementById('adminCalcStats').addEventListener('click', async ()=>{
   document.getElementById('adminStats').innerHTML = `<div class="hint" style="grid-column:span 3; text-align:center;">Hesaplanıyor...</div>`;
@@ -3810,18 +3982,8 @@ async function renderBannedIpList(){
       </div>`;
       return {id:d.id, ip, reason:data.reason||'', html};
     }));
-    box.innerHTML = allIpBansCache.slice(0,4).map(r=>r.html).join('') + (allIpBansCache.length>4 ? seeAllBtnHtml('btnSeeAllIpBans') : '');
+    box.innerHTML = allIpBansCache.map(r=>r.html).join('');
     wireIpBanRows(box);
-    const seeAllBtn = document.getElementById('btnSeeAllIpBans');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Engelli IP Adresleri', allIpBansCache, {
-          searchFn: (r,q)=> r.ip.toLowerCase().includes(q) || r.reason.toLowerCase().includes(q),
-          renderRowFn: (r)=> r.html,
-          wireRows: wireIpBanRows
-        });
-      });
-    }
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
 }
 document.getElementById('adminManualIpAdd').addEventListener('click', async ()=>{
@@ -4359,7 +4521,7 @@ async function refreshChatPinState(cid){
   let startY = 0, pulling = false;
   document.addEventListener('touchstart', (e)=>{
     if(window.scrollY > 0) return;
-    if(document.querySelector('.modal-overlay.show') || document.querySelector('details.admin-fullscreen') || document.body.classList.contains('chat-open')) return;
+    if(document.querySelector('.modal-overlay.show') || document.body.classList.contains('chat-open')) return;
     startY = e.touches[0].clientY;
     pulling = true;
   }, {passive:true});
@@ -4395,6 +4557,7 @@ async function refreshCurrentScreenData(){
     else if(name==='notlarim') renderNotes();
     else if(name==='mesajlar') await renderConversationList();
     else if(name==='view-profile' && currentViewedUid) openViewProfile(currentViewedUid);
+    else if(name.startsWith('admin') && name!=='admin') loadAllAdminData();
     showToast('Güncellendi');
   }catch(e){ showToast('Yenilenemedi'); }
   indicator.style.height = '0px';
@@ -5691,18 +5854,8 @@ async function renderModeratorsList(){
       return;
     }
     allModsCache = snap.docs.map(d=>({id:d.id, perms:d.data()}));
-    box.innerHTML = allModsCache.slice(0,4).map(modRowHtml).join('') + (allModsCache.length>4 ? seeAllBtnHtml('btnSeeAllMods') : '');
+    box.innerHTML = allModsCache.map(modRowHtml).join('');
     wireModRows(box);
-    const seeAllBtn = document.getElementById('btnSeeAllMods');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Tüm Moderatörler', allModsCache, {
-          searchFn: (d,q)=>{ const p=profileByUid(d.id); return (p&&p.fullName||'').toLowerCase().includes(q) || (p&&p.username||'').toLowerCase().includes(q) || (d.perms.rank||'').toLowerCase().includes(q); },
-          renderRowFn: modRowHtml,
-          wireRows: wireModRows
-        });
-      });
-    }
   }catch(e){ box.innerHTML = `<div class="hint">Liste yüklenemedi.</div>`; }
 }
 
@@ -5784,7 +5937,12 @@ const SCREEN_TITLES = {
   ana:null, kayitlar:'Geçmiş', istatistik:'İstatistik', notlarim:'Notlarım', mesajlar:'Mesajlar',
   profil:'Profil', ayarlar:'Ayarlar', staff:'Yönetim Ekibi', admin:'Panel', help:'Nasıl Kullanılır',
   privacy:'Gizlilik Politikası', terms:'Kullanım Koşulları', 'view-profile':'Profil', 'edit-profile':'Profili Düzenle',
-  'ranks-info':'Rütbeler', suggestions:'Öneriler'
+  'ranks-info':'Rütbeler', suggestions:'Öneriler', permguide:'Yetkilerim',
+  adminstats:'İstatistikler', adminusers:'Kullanıcılar', admindeactivated:'Devre Dışı', adminappeals:'İtirazlar',
+  adminreports:'Şikayetler', adminsuggestions:'Öneriler', adminsuggesthist:'Öneri Geçmişi', adminmodlog:'İşlem Geçmişi',
+  adminbroadcast:'Toplu Bildirim', adminannouncements:'Duyuru Bandı', adminquotes:'Günün Ayeti', adminprofessions:'Meslekler',
+  adminranks:'Mod. Rütbeleri', admintenureranks:'Kıdem Rütbeleri', adminipban:'IP Engelleme', adminmoderators:'Moderatörler',
+  adminbasemod:'Temel Yetki', adminbulk:'Tehlikeli İşlemler'
 };
 function updateHeaderTitle(name){
   const el = document.getElementById('headerTitleText');
@@ -6967,6 +7125,24 @@ document.getElementById('btnBackFromHelp').addEventListener('click', ()=>{
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen===helpReturnScreen));
   switchScreen(helpReturnScreen);
 });
+function renderPermGuide(){
+  const box = document.getElementById('permGuideList');
+  const keys = isAdmin ? Object.keys(PERM_LABELS) : Object.keys(PERM_LABELS).filter(k=>modPerms[k]===true);
+  if(keys.length===0){ box.innerHTML = `<div class="empty"><div class="icon">🔑</div><div class="msg">Henüz özel bir yetkin yok.</div></div>`; return; }
+  box.innerHTML = keys.map(k=>`
+    <div class="toggle-row" style="margin-bottom:12px; align-items:flex-start;">
+      <div>
+        <div class="tlbl">${PERM_LABELS[k]}</div>
+        <div class="tsub" style="margin-top:4px; line-height:1.5;">${PERM_DESCRIPTIONS[k]||'-'}</div>
+      </div>
+    </div>`).join('');
+}
+document.getElementById('footerPermGuideAna').addEventListener('click', ()=>{
+  renderPermGuide();
+  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-permguide').classList.add('active');
+});
+document.getElementById('btnBackFromPermGuide').addEventListener('click', ()=> switchScreen('ana'));
 ['footerHelpAna','footerHelpNotlar','footerHelpMsg','footerHelpKayitlar','footerHelpIstatistik'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('click', openHelpPage);
