@@ -198,7 +198,7 @@
 
     <div class="section-title">Uygulama</div>
     <div class="card">
-      <button class="submit-btn secondary" id="footerPermGuideAna" style="display:none; margin-bottom:10px; border-color:var(--asphalt); color:var(--asphalt); font-weight:800;">🔑 Yetkilerim</button>
+      <button class="submit-btn secondary" id="footerPermGuideAna" style="display:none; margin-bottom:10px;">🔑 Yetkilerim</button>
       <button class="submit-btn secondary" id="footerHelpAna" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
       <button class="submit-btn secondary" id="footerStaffAna" style="margin-bottom:10px;">👥 Yönetim Ekibi</button>
       <div class="btn-row" style="margin-bottom:10px;">
@@ -2242,6 +2242,28 @@ async function openViewProfile(uid){
   else { rankBadge.style.display='none'; }
   document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true);
 
+  // Katılım tarihi ve e-posta: yönetici araçları düğmesinden bağımsız, admin/mod ise her zaman görünür.
+  const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
+  if(hasAnyAdminTool() && p && p.createdAt){
+    createdAtStaffEl.style.display = 'block';
+    createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
+  } else {
+    createdAtStaffEl.style.display = 'none';
+  }
+  const emailStaffEl = document.getElementById('vpEmailStaffOnly');
+  if(hasAnyAdminTool()){
+    emailStaffEl.style.display = 'block';
+    emailStaffEl.textContent = '✉️ Yükleniyor...';
+    db.collection('users').doc(uid).get().then(userDoc=>{
+      if(userDoc.exists && currentViewedUid===uid){
+        const em = userDoc.data().profile && userDoc.data().profile.email;
+        emailStaffEl.textContent = em ? ('✉️ ' + em) : '✉️ E-posta bulunamadı';
+      }
+    }).catch(()=>{ emailStaffEl.textContent = '✉️ E-posta okunamadı'; });
+  } else {
+    emailStaffEl.style.display = 'none';
+  }
+
   await refreshVpAdminGatedUI(uid, p);
 
   const bypassPrivacy = canViewPrivateInfo();
@@ -2296,24 +2318,6 @@ async function refreshVpAdminGatedUI(uid, p){
     adminToggleBtn.style.display = 'none';
   }
 
-  const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
-  if(hasAnyAdminTool() && vpAdminToolsOpen && p && p.createdAt){
-    createdAtStaffEl.style.display = 'block';
-    createdAtStaffEl.classList.add('vp-fade-in');
-    createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
-  } else {
-    createdAtStaffEl.style.display = 'none';
-    createdAtStaffEl.classList.remove('vp-fade-in');
-  }
-  const emailStaffEl = document.getElementById('vpEmailStaffOnly');
-  if(hasAnyAdminTool() && vpAdminToolsOpen){
-    emailStaffEl.style.display = 'block';
-    emailStaffEl.classList.add('vp-fade-in');
-    emailStaffEl.textContent = '✉️ Yükleniyor...';
-  } else {
-    emailStaffEl.style.display = 'none';
-    emailStaffEl.classList.remove('vp-fade-in');
-  }
   const warnBanner = document.getElementById('vpWarningBanner');
   const warnCountRow = document.getElementById('vpWarningCountRow');
   const isWarned = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
@@ -2344,16 +2348,6 @@ async function refreshVpAdminGatedUI(uid, p){
   // Bağımsız ağ istekleri artık birbirini beklemeden AYNI ANDA gönderiliyor (önceden sırayla
   // bekleniyordu, bu da butonun/panelin gereksiz yavaş açılmasına sebep oluyordu).
   const tasks = [];
-  if(hasAnyAdminTool() && vpAdminToolsOpen){
-    tasks.push(
-      db.collection('users').doc(uid).get().then(userDoc=>{
-        if(userDoc.exists && currentViewedUid===uid){
-          const em = userDoc.data().profile && userDoc.data().profile.email;
-          emailStaffEl.textContent = em ? ('✉️ ' + em) : '✉️ E-posta bulunamadı';
-        }
-      }).catch(()=>{ emailStaffEl.textContent = '✉️ E-posta okunamadı'; })
-    );
-  }
   if(canViewIp() && vpAdminToolsOpen){
     tasks.push(
       db.collection('users').doc(uid).get().then(userDoc=>{
@@ -4269,7 +4263,7 @@ function activeMemberRowHtml(u){
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}
       </div>
       <div class="info">
-        <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${(u.role!=='admin'&&u.role!=='moderator')?tenureBadgeHtml(u.createdAt):''}</div>
+        <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${u.role==='admin'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">👑 Yönetici</span>':u.role==='moderator'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">🛡️ '+escapeHtml(u.rank||'Moderatör')+'</span>':tenureBadgeHtml(u.createdAt)}</div>
         <div class="note">${escapeHtml(formatLastActive(u.lastActive))}</div>
       </div>
     </div>`;
