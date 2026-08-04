@@ -27,9 +27,9 @@
   html[data-theme="dark"] input:disabled, html[data-theme="dark"] textarea:disabled, html[data-theme="dark"] select:disabled{background:#0E121C; color:#7C8499; opacity:1; -webkit-text-fill-color:#7C8499;}
   html[data-theme="dark"] .hint{color:#9CA6BD;}
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; max-width:100%;}
-  html,body{margin:0;padding:0; overflow-x:hidden; width:100%; max-width:100vw; overscroll-behavior-y:contain;}
+  html,body{margin:0;padding:0; width:100%; max-width:100vw; overscroll-behavior-y:contain; touch-action:pan-y; overflow-y:auto; -webkit-overflow-scrolling:touch;}
   img{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none; -webkit-user-drag:none;}
-  body{background:var(--concrete); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; padding-bottom:122px; min-height:100vh; transition:background .2s,color .2s;}
+  body{background:var(--concrete); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; padding-bottom:122px; min-height:100vh; transition:background .2s,color .2s; overflow-x:hidden;}
   h1,h2,h3,.display{font-family:'Manrope',sans-serif; letter-spacing:-0.01em;}
   main{padding:16px; padding-top:86px; max-width:520px; margin:0 auto; width:100%; overflow-x:hidden;}
   header.top{background:var(--paper); color:var(--ink); padding:18px 20px 16px; position:fixed; top:0; left:0; right:0; z-index:20; box-shadow:0 2px 10px rgba(17,24,39,0.05); border-bottom:none;}
@@ -44,7 +44,7 @@
 
   .screen{display:none;}
   .screen.active{display:block;}
-  #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));}
+  body.chat-open #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));}
   body.chat-open header.top{display:none !important;}
   body.chat-open main{padding-top:16px;}
   .card{background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow-sm); transition:box-shadow .2s ease;}
