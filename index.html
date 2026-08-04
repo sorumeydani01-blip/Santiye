@@ -313,10 +313,15 @@
           <span style="flex:1; font-size:12px; color:var(--ink-soft);">Kaydediliyor...</span>
           <button id="chatRecordCancel" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft);">✕</button>
         </div>
-        <button id="chatAttachBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
-        <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
-        <button id="chatCameraBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:17px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📷</button>
-        <input type="file" id="chatCameraInput" accept="image/*" capture="environment" style="display:none;">
+        <div style="position:relative; flex-shrink:0;">
+          <button id="chatAttachBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:22px; cursor:pointer; color:var(--ink-soft); line-height:1;">➕</button>
+          <div id="chatAttachMenu" style="display:none; position:absolute; bottom:38px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
+            <button id="chatAttachGalleryBtn" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink); white-space:nowrap;">🖼️ Galeriden Seç</button>
+            <button id="chatAttachCameraBtn" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink); white-space:nowrap;">📷 Kamera</button>
+          </div>
+          <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+          <input type="file" id="chatCameraInput" accept="image/*" capture="environment" style="display:none;">
+        </div>
       </div>
       <button id="chatMicBtn" style="width:46px;height:46px;border-radius:50%; background:var(--paper); border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft); box-shadow:var(--shadow-sm);">🎤</button>
       <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(79,70,229,0.35);">➤</button>
@@ -5192,11 +5197,19 @@ function closeChatEmojiPanel(){
 document.getElementById('chatMessages').addEventListener('click', closeChatEmojiPanel);
 document.getElementById('chatInput').addEventListener('focus', closeChatEmojiPanel);
 document.getElementById('chatSendBtn').addEventListener('click', closeChatEmojiPanel);
-document.getElementById('chatAttachBtn').addEventListener('click', ()=>{
+document.getElementById('chatAttachBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const menu = document.getElementById('chatAttachMenu');
+  menu.style.display = menu.style.display==='block' ? 'none' : 'block';
+});
+document.addEventListener('click', ()=>{ document.getElementById('chatAttachMenu').style.display = 'none'; });
+document.getElementById('chatAttachGalleryBtn').addEventListener('click', ()=>{
+  document.getElementById('chatAttachMenu').style.display = 'none';
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
   document.getElementById('chatImageInput').click();
 });
-document.getElementById('chatCameraBtn').addEventListener('click', ()=>{
+document.getElementById('chatAttachCameraBtn').addEventListener('click', ()=>{
+  document.getElementById('chatAttachMenu').style.display = 'none';
   if(currentChatBlockStatus.byMe || currentChatBlockStatus.byThem){ showToast('Mesaj gönderilemiyor'); return; }
   document.getElementById('chatCameraInput').click();
 });
