@@ -89,10 +89,15 @@
 </div>
 
 <div id="appRoot" style="display:none;">
-<button id="roleBadgeHeader" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140; width:44px;height:44px;border-radius:15px; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; box-shadow:var(--shadow-md); align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:19px; border:none; cursor:pointer;">
-  <span id="roleBadgeLetter"></span>
-  <span id="roleBadgePendingCount" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
-</button>
+<div id="roleBadgeWrap" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140;">
+  <div id="roleBadgeExpand" style="display:flex; align-items:center; flex-direction:row-reverse; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); border-radius:15px; box-shadow:var(--shadow-md); overflow:hidden; height:44px; width:44px; transition:width .28s ease;">
+    <button id="roleBadgeToggleBtn" style="width:44px;height:44px;flex-shrink:0; border:none; background:none; color:#fff; font-family:'Manrope'; font-weight:800; font-size:19px; cursor:pointer; position:relative;">
+      <span id="roleBadgeLetter"></span>
+      <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
+    </button>
+    <div id="roleBadgeMenuItems" style="display:flex; align-items:center; gap:16px; padding-right:16px; white-space:nowrap; opacity:0; transition:opacity .18s ease;"></div>
+  </div>
+</div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
 <!-- İLK KAYIT (ONBOARDING) -->
@@ -137,8 +142,8 @@
     </div>
 
     <div id="homeViewTabsWrap" style="display:flex; gap:8px; margin:14px 0 16px; background:var(--concrete); padding:4px; border-radius:16px;">
-      <button class="home-view-tab active" data-homeview="data" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft);">📊 Veriler</button>
-      <button class="home-view-tab" data-homeview="calendar" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft);">🗓️ Takvim</button>
+      <button class="home-view-tab active" data-homeview="data" style="flex:1; border:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer;">📊 Veriler</button>
+      <button class="home-view-tab" data-homeview="calendar" style="flex:1; border:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer;">🗓️ Takvim</button>
     </div>
 
     <div id="homeDataSection">
@@ -780,6 +785,7 @@
       <span class="cal-title">Profil</span>
       <span style="width:36px;"></span>
     </div>
+    <div id="vpWarningBanner" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:14px; padding:14px; margin-bottom:14px; font-size:12.5px; font-weight:700; line-height:1.5;"></div>
     <div class="card">
       <div style="display:flex; align-items:center; gap:14px;">
         <div id="vpAvatar" style="width:62px;height:62px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:20px; flex-shrink:0;">-</div>
@@ -787,6 +793,8 @@
           <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpName">-</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;" id="vpLastActive"></div>
           <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpCreatedAtStaffOnly"></div>
+          <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpEmailStaffOnly"></div>
+          <div id="vpWarningCountRow" style="display:none; margin-top:4px; cursor:pointer;"><span style="color:var(--danger); font-weight:800; font-size:11.5px;" id="vpWarningCountText"></span></div>
           <div style="font-size:12px; color:var(--ink-soft);" id="vpUsername">-</div>
           <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;" id="vpMeta">-</div>
           <div id="vpRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
@@ -1143,7 +1151,7 @@
     </details>
 
     <details class="card" id="permBulk" style="border-color:var(--danger);">
-      <summary style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
+      <summary id="permBulkSummary" style="font-weight:800; cursor:pointer; font-size:15px; color:var(--danger);">⚠️ Tehlikeli Toplu İşlemler</summary>
       <div style="margin-top:14px;">
         <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlemler TÜM kullanıcıları etkiler ve dikkatli kullanılmalı. Onay için özel bir metin yazman istenecek.</div>
         <button class="submit-btn danger" id="adminBulkDeactivate" style="margin-top:12px; margin-bottom:10px;">🚫 Tüm Kullanıcıları Devre Dışı Bırak</button>
@@ -1381,7 +1389,7 @@
 <div class="modal-overlay" id="searchOverlay" style="align-items:flex-start;">
   <div class="modal-sheet" style="border-radius:0 0 22px 22px; max-height:100vh; padding-top:calc(18px + env(safe-area-inset-top));">
     <div class="modal-title"><span>Ara</span><button class="close" id="searchClose">✕</button></div>
-    <input type="text" id="searchInput" placeholder="Tarih, not, işveren veya tutar ara...">
+    <input type="text" id="searchInput" placeholder="Tarih, not, işveren veya tutar ara..." style="border:1.5px solid var(--asphalt); box-shadow:inset 0 1px 4px rgba(17,24,39,0.08); background:var(--concrete);">
     <div id="searchResults" style="margin-top:16px;"></div>
   </div>
 </div>
@@ -1685,6 +1693,10 @@ async function loadCloudData(){
       notes = Array.isArray(data.notes) ? data.notes : [];
       settings = Object.assign(settings, data.settings || {});
       profile = data.profile || null;
+      if(profile && currentUser.email && profile.email !== currentUser.email){
+        profile.email = currentUser.email;
+        try{ userDocRef.set({profile:{email: currentUser.email}}, {merge:true}); }catch(e){}
+      }
       if(profile && (profile.pendingDeletion || profile.selfPaused)){
         const clearMeta = {};
         let msg = '';
@@ -1904,6 +1916,41 @@ async function openViewProfile(uid){
     createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
   } else {
     createdAtStaffEl.style.display = 'none';
+  }
+  const emailStaffEl = document.getElementById('vpEmailStaffOnly');
+  if(hasAnyAdminTool()){
+    emailStaffEl.style.display = 'block';
+    emailStaffEl.textContent = '✉️ Yükleniyor...';
+    db.collection('users').doc(uid).get().then(userDoc=>{
+      if(userDoc.exists && currentViewedUid===uid){
+        const em = userDoc.data().profile && userDoc.data().profile.email;
+        emailStaffEl.textContent = em ? ('✉️ ' + em) : '✉️ E-posta bulunamadı';
+      }
+    }).catch(()=>{ emailStaffEl.textContent = '✉️ E-posta okunamadı'; });
+  } else {
+    emailStaffEl.style.display = 'none';
+  }
+  const warnBanner = document.getElementById('vpWarningBanner');
+  const warnCountRow = document.getElementById('vpWarningCountRow');
+  const isWarned = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
+  if(canManageWarnings() && isWarned){
+    const issuerRecord = Array.isArray(p.warningHistory) ? p.warningHistory.slice().reverse().find(w=>w.expiresAt===p.activeWarningUntil) : null;
+    const issuer = issuerRecord ? profileByUid(issuerRecord.issuedBy) : null;
+    warnBanner.style.display = 'block';
+    warnBanner.innerHTML = `⚠️ Bu hesap uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(p.activeWarningReason||'-')}<br>Bitiş: ${new Date(p.activeWarningUntil).toLocaleString('tr-TR')}${issuer?('<br>Veren: '+escapeHtml(usernameLabel(issuer))):''}</span>`;
+  } else {
+    warnBanner.style.display = 'none';
+  }
+  if(canManageWarnings()){
+    const count = Array.isArray(p && p.warningHistory) ? p.warningHistory.length : 0;
+    if(count > 0){
+      warnCountRow.style.display = 'block';
+      document.getElementById('vpWarningCountText').textContent = `⚠️ ${count} uyarı — geçmişi gör`;
+    } else {
+      warnCountRow.style.display = 'none';
+    }
+  } else {
+    warnCountRow.style.display = 'none';
   }
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
@@ -2195,7 +2242,7 @@ let modPerms = {};
 let adminStatusUnsub = null, modStatusUnsub = null;
 function updateAdminModButtons(){
   const hasAnyModPerm = Object.values(modPerms).some(v=>v===true);
-  const badge = document.getElementById('roleBadgeHeader');
+  const badge = document.getElementById('roleBadgeWrap');
   const letterEl = document.getElementById('roleBadgeLetter');
   if(isAdmin){
     badge.style.display = 'flex'; letterEl.textContent = 'A'; badge.title = 'Admin Paneli';
@@ -2211,10 +2258,42 @@ function updateAdminModButtons(){
     applyAdminPermVisibility();
   }
 }
-document.getElementById('roleBadgeHeader').addEventListener('click', ()=>{
-  const isOpen = document.getElementById('screen-admin').classList.contains('active');
-  if(isOpen) switchScreen('ana');
-  else openAdminPanel();
+const ROLE_BADGE_LINKS = [
+  {label:'Kullanıcılar', id:'permManageUsers'},
+  {label:'Şikayetler', id:'permReports'},
+  {label:'İtirazlar', id:'permAppeals'},
+  {label:'Öneriler', id:'permSuggestions'},
+  {label:'Moderatörler', id:'permModerators'},
+];
+let roleBadgeOpen = false;
+function closeRoleBadgeMenu(){
+  roleBadgeOpen = false;
+  document.getElementById('roleBadgeExpand').style.width = '44px';
+  document.getElementById('roleBadgeMenuItems').style.opacity = '0';
+}
+document.getElementById('roleBadgeToggleBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(roleBadgeOpen){ closeRoleBadgeMenu(); return; }
+  roleBadgeOpen = true;
+  const menuBox = document.getElementById('roleBadgeMenuItems');
+  menuBox.innerHTML = ROLE_BADGE_LINKS.map(l=>`<span data-role-link="${l.id}" style="font-size:12.5px; font-weight:700; color:#fff; cursor:pointer;">${l.label}</span>`).join('');
+  const width = 60 + ROLE_BADGE_LINKS.length * 78;
+  document.getElementById('roleBadgeExpand').style.width = width + 'px';
+  menuBox.style.opacity = '1';
+  menuBox.querySelectorAll('[data-role-link]').forEach(el=>{
+    el.addEventListener('click', (ev)=>{
+      ev.stopPropagation();
+      closeRoleBadgeMenu();
+      openAdminPanel();
+      setTimeout(()=>{
+        const target = document.getElementById(el.dataset.roleLink);
+        if(target){ target.open = true; target.scrollIntoView({behavior:'smooth', block:'start'}); }
+      }, 80);
+    });
+  });
+});
+document.addEventListener('click', (e)=>{
+  if(roleBadgeOpen && !document.getElementById('roleBadgeWrap').contains(e.target)) closeRoleBadgeMenu();
 });
 
 // ---------- ROZET ÜZERİNDE BEKLEYEN SAYISI ----------
@@ -2289,7 +2368,7 @@ function canBanIp(){ return isAdmin || !!modPerms.banIp; }
 function canManageWarnings(){ return isAdmin || !!modPerms.manageWarnings; }
 function canViewPrivateInfo(){ return isAdmin || !!modPerms.viewPrivateInfo; }
 function canViewAppeals(){ return isAdmin || !!modPerms.viewAppeals || hasTemelPerm('viewAppeals'); }
-function canBulkActions(){ return isAdmin; }
+function canBulkActions(){ return isAdmin && currentUser && currentUser.uid === MAIN_ADMIN_UID; }
 function canViewModLog(){ return isAdmin || !!modPerms.viewModLog; }
 function canPermanentDelete(){ return isAdmin || !!modPerms.permanentDelete; }
 function canViewReports(){ return isAdmin || !!modPerms.viewReports || hasTemelPerm('viewReports'); }
@@ -2569,6 +2648,11 @@ function renderWarningTool(p, uid){
     </div>`;
   }).join('') : `<div class="hint" style="margin:0;">Hiç uyarı geçmişi yok.</div>`;
 }
+document.getElementById('vpWarningCountRow').addEventListener('click', ()=>{
+  const details = document.getElementById('vpToolWarning');
+  details.open = true;
+  details.scrollIntoView({behavior:'smooth', block:'start'});
+});
 document.getElementById('vpWarningIssue').addEventListener('click', async ()=>{
   const uid = currentViewedUid;
   const reason = document.getElementById('vpWarningReason').value.trim();
@@ -3569,6 +3653,18 @@ document.getElementById('adminManualIpAdd').addEventListener('click', async ()=>
 });
 
 // ---------- TEHLİKELİ TOPLU İŞLEMLER ----------
+let dangerZoneUnlocked = false;
+document.getElementById('permBulkSummary').addEventListener('click', (e)=>{
+  if(dangerZoneUnlocked) return;
+  e.preventDefault();
+  const typed = prompt('Bu bölüm, tüm kullanıcıları etkileyen geri alınamaz işlemler içerir. Devam etmek için tam olarak "TEHLİKELİ" yaz:');
+  if(typed === 'TEHLİKELİ'){
+    dangerZoneUnlocked = true;
+    document.getElementById('permBulk').open = true;
+  } else {
+    showToast('Onay metni yanlış, işlem iptal edildi');
+  }
+});
 document.getElementById('adminBulkDeactivate').addEventListener('click', async ()=>{
   const confirmText = prompt('TÜM normal kullanıcıları devre dışı bırakmak üzeresin (yönetici/moderatör hesapları hariç tutulacak). Onaylamak için aşağıya tam olarak "HEPSINI DEVRE DISI BIRAK" yaz:');
   if(confirmText !== 'HEPSINI DEVRE DISI BIRAK'){ showToast('İşlem iptal edildi'); return; }
