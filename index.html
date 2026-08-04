@@ -4553,10 +4553,9 @@ async function refreshChatPinState(cid){
       confirmed = true;
     }
     if(diffY > 0){
-      e.preventDefault();
       indicator.style.height = Math.min(diffY/2, 50) + 'px';
     }
-  }, {passive:false});
+  }, {passive:true});
   document.addEventListener('touchend', ()=>{
     if(!pulling) return;
     pulling = false; confirmed = false;
