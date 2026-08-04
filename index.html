@@ -96,6 +96,7 @@
     <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
   </button>
 </div>
+<div id="globalPullRefreshIndicator" style="height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700; position:fixed; top:86px; left:0; right:0; z-index:25; background:var(--bg);"></div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
 <!-- İLK KAYIT (ONBOARDING) -->
@@ -251,7 +252,6 @@
       <button class="msg-tab" data-msgtab="groups" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👥 Gruplar <span id="msgTabGroupsCount" class="msg-tab-count"></span></button>
     </div>
     <div id="conversationListWrap" style="overscroll-behavior-y:contain;">
-      <div id="pullRefreshIndicator" style="text-align:center; height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700;">↓ Yenilemek için bırak</div>
       <div id="conversationList"></div>
       <div id="archiveLinkRow" style="display:none; text-align:center; padding:14px 0;">
         <button id="btnOpenArchive" style="border:1.5px solid var(--line); background:var(--paper); border-radius:14px; padding:9px 16px; font-size:12.5px; font-weight:700; color:var(--ink-soft); cursor:pointer;">📥 Arşivlenenler (<span id="archiveCount">0</span>)</button>
@@ -972,8 +972,10 @@
       <summary style="font-weight:800; cursor:pointer; font-size:15px;">📊 Genel İstatistikler</summary>
       <div class="admin-fullscreen-backbar"><button class="admin-fullscreen-close" data-close-fullscreen="permStats">‹</button><span>📊 Genel İstatistikler</span></div>
       <div style="margin-top:14px;">
+        <div class="hint" style="margin-top:0;">Platform genelindeki toplam rakamlar. Sayfayı her açtığında otomatik güncellenir.</div>
+        <div class="stat-grid3" id="adminQuickStats" style="margin-bottom:14px;"></div>
         <div class="stat-grid3" id="adminStats"></div>
-        <button class="submit-btn secondary" id="adminCalcStats">🔄 Tüm Kullanıcı Verilerini Hesapla</button>
+        <button class="submit-btn secondary" id="adminCalcStats" style="margin-top:10px;">🔄 Tüm Kullanıcı Verilerini Yeniden Hesapla</button>
       </div>
     </details>
 
@@ -1550,6 +1552,23 @@ window.addEventListener('popstate', ()=>{
   const openOverlay = document.querySelector('.modal-overlay.show');
   if(openOverlay){
     openOverlay.classList.remove('show');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  const openAdminSection = document.querySelector('details.admin-fullscreen');
+  if(openAdminSection){
+    openAdminSection.classList.remove('admin-fullscreen');
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  const rankPopup = document.getElementById('rankInfoPopup');
+  if(rankPopup && rankPopup.style.display === 'block'){
+    rankPopup.style.display = 'none';
+    history.pushState({sdGuard:true}, '');
+    return;
+  }
+  if(typeof roleBadgeOpen !== 'undefined' && roleBadgeOpen){
+    closeRoleBadgeMenu();
     history.pushState({sdGuard:true}, '');
     return;
   }
@@ -2358,6 +2377,26 @@ function openAdminSectionFullscreen(id){
   el.open = true;
   el.classList.add('admin-fullscreen');
   window.scrollTo(0,0);
+  if(id==='permStats'){ renderAdminQuickStats(); document.getElementById('adminCalcStats').click(); }
+}
+async function renderAdminQuickStats(){
+  const box = document.getElementById('adminQuickStats');
+  if(!box) return;
+  const modCount = allPublicProfiles.filter(u=>u.role==='moderator').length;
+  const adminCount = allPublicProfiles.filter(u=>u.role==='admin').length;
+  const warnedCount = allPublicProfiles.filter(u=> u.activeWarningUntil && new Date(u.activeWarningUntil).getTime()>Date.now()).length;
+  const deactivatedCount = allPublicProfiles.filter(u=>u.deactivated).length;
+  let pendingReports = 0, pendingAppeals = 0, pendingSuggestions = 0;
+  try{ pendingReports = (await db.collection('reports').where('status','==','pending').get()).size; }catch(e){}
+  try{ pendingAppeals = (await db.collection('appeals').where('status','==','pending').get()).size; }catch(e){}
+  try{ pendingSuggestions = (await db.collection('suggestions').get()).docs.filter(d=>d.data().status!=='responded').length; }catch(e){}
+  box.innerHTML = `
+    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">🛡️</div><div class="val">${adminCount+modCount}</div><div class="lbl">Yönetim Ekibi</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-rust);">⚠️</div><div class="val">${warnedCount}</div><div class="lbl">Uyarılı Hesap</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--danger); color:#fff;">🚫</div><div class="val">${deactivatedCount}</div><div class="lbl">Devre Dışı</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-brass);">🚩</div><div class="val">${pendingReports}</div><div class="lbl">Bekleyen Şikayet</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">✉️</div><div class="val">${pendingAppeals}</div><div class="lbl">Bekleyen İtiraz</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">💡</div><div class="val">${pendingSuggestions}</div><div class="lbl">Bekleyen Öneri</div></div>`;
 }
 function closeAdminSectionFullscreen(id){
   const el = document.getElementById(id);
@@ -4316,33 +4355,50 @@ async function refreshChatPinState(cid){
 }
 // ---------- SÜRÜKLEYEREK YENİLEME ----------
 (function initPullToRefresh(){
-  const wrap = document.getElementById('conversationListWrap');
-  const indicator = document.getElementById('pullRefreshIndicator');
+  const indicator = document.getElementById('globalPullRefreshIndicator');
   let startY = 0, pulling = false;
-  wrap.addEventListener('touchstart', (e)=>{
-    if(wrap.scrollTop > 0) return;
+  document.addEventListener('touchstart', (e)=>{
+    if(window.scrollY > 0) return;
+    if(document.querySelector('.modal-overlay.show') || document.querySelector('details.admin-fullscreen') || document.body.classList.contains('chat-open')) return;
     startY = e.touches[0].clientY;
     pulling = true;
   }, {passive:true});
-  wrap.addEventListener('touchmove', (e)=>{
+  document.addEventListener('touchmove', (e)=>{
     if(!pulling) return;
     const diff = e.touches[0].clientY - startY;
-    if(diff > 0 && wrap.scrollTop <= 0){
+    if(diff > 0 && window.scrollY <= 0){
       e.preventDefault();
       indicator.style.height = Math.min(diff/2, 50) + 'px';
     }
   }, {passive:false});
-  wrap.addEventListener('touchend', ()=>{
+  document.addEventListener('touchend', ()=>{
     if(!pulling) return;
     pulling = false;
     const h = parseInt(indicator.style.height,10) || 0;
     indicator.style.height = '0px';
-    if(h >= 40){
-      indicator.textContent = '🔄 Yenileniyor...';
-      renderConversationList().then(()=>{ indicator.textContent = '↓ Yenilemek için bırak'; });
-    }
+    if(h >= 40) refreshCurrentScreenData();
   });
 })();
+async function refreshCurrentScreenData(){
+  const indicator = document.getElementById('globalPullRefreshIndicator');
+  indicator.style.height = '46px';
+  indicator.textContent = '🔄 Yenileniyor...';
+  const active = document.querySelector('main > .screen.active');
+  const name = active ? active.id.replace('screen-','') : 'ana';
+  try{
+    await loadCloudData();
+    await loadPublicProfiles();
+    if(name==='ana') renderHome();
+    else if(name==='kayitlar') renderKayitlar();
+    else if(name==='istatistik') renderLifetimeStats();
+    else if(name==='profil') renderProfile();
+    else if(name==='notlarim') renderNotes();
+    else if(name==='mesajlar') await renderConversationList();
+    else if(name==='view-profile' && currentViewedUid) openViewProfile(currentViewedUid);
+    showToast('Güncellendi');
+  }catch(e){ showToast('Yenilenemedi'); }
+  indicator.style.height = '0px';
+}
 document.getElementById('btnOpenArchive').addEventListener('click', ()=>{
   const isArchived = c => Array.isArray(c.archivedFor) && c.archivedFor.includes(currentUser.uid);
   const archived = allConvsCache.filter(isArchived);
