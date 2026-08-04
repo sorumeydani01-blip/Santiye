@@ -96,7 +96,7 @@
     <span id="roleBadgePendingCount" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px; font-family:'Inter',sans-serif;">0</span>
   </button>
 </div>
-<div id="globalPullRefreshIndicator" style="height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700; position:fixed; top:86px; left:0; right:0; z-index:25; background:var(--bg);"></div>
+<div id="globalPullRefreshIndicator" style="height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700; position:fixed; top:86px; left:0; right:0; z-index:25; background:var(--paper);"></div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
 <!-- İLK KAYIT (ONBOARDING) -->
@@ -303,7 +303,7 @@
       <button id="chatReplyCancel" style="border:none; background:none; font-size:16px; cursor:pointer; color:var(--ink-soft);">✕</button>
     </div>
     <div id="chatEmojiPanel" style="display:none; flex-wrap:wrap; gap:6px; padding:10px 12px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0; max-height:150px; overflow-y:auto;"></div>
-    <div style="display:flex; gap:8px; align-items:flex-end; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--bg);">
+    <div style="display:flex; gap:8px; align-items:flex-end; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--paper);">
       <div style="flex:1; display:flex; align-items:center; gap:4px; background:var(--paper); border-radius:26px; padding:5px 6px 5px 10px; box-shadow:var(--shadow-sm); min-height:44px; box-sizing:border-box;">
         <button id="chatEmojiBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">😀</button>
         <input type="text" id="chatInput" placeholder="Mesaj" style="flex:1; border-radius:20px; padding:8px 4px; background:transparent; border:none; font-size:15px; min-width:0;">
@@ -328,6 +328,8 @@
     </div>
   </section>
   <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  @keyframes vpFadeIn{from{opacity:0; transform:translateY(-4px);}to{opacity:1; transform:translateY(0);}}
+  .vp-fade-in{animation:vpFadeIn .22s ease;}
   @keyframes shimmerMove{0%{background-position:-200px 0;}100%{background-position:200px 0;}}
   .skeleton-shimmer{background:linear-gradient(90deg,var(--concrete) 25%,var(--line) 50%,var(--concrete) 75%); background-size:400px 100%; animation:shimmerMove 1.4s infinite linear;}
   </style>
@@ -1742,6 +1744,26 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
 <script>
+// ---------- GÜVENLİK: HANGİ EKRAN AÇILIRSA AÇILSIN SAYFAYI EN ÜSTTEN BAŞLAT ----------
+// Ekran değiştiren pek çok farklı kod yolu var (switchScreen, openViewProfile, admin panel,
+// yardım/gizlilik ekranları vs). Her birine ayrı ayrı "en üste kaydır" eklemek yerine, hangi
+// .screen aktif olursa olsun otomatik yakalayan tek bir gözlemci kullanıyoruz.
+(function(){
+  let lastActiveScreen = null;
+  const mainEl = document.querySelector('main');
+  if(mainEl){
+    const screenScrollObserver = new MutationObserver(()=>{
+      const activeScreen = mainEl.querySelector(':scope > .screen.active');
+      if(activeScreen && activeScreen !== lastActiveScreen){
+        lastActiveScreen = activeScreen;
+        mainEl.scrollTop = 0;
+        window.scrollTo(0, 0);
+      }
+    });
+    screenScrollObserver.observe(mainEl, {attributes:true, attributeFilter:['class'], subtree:true});
+  }
+})();
+
 // ---------- RÜTBE ROZETİ AÇIKLAMA PENCERESİ ----------
 document.addEventListener('click', (e)=>{
   const badge = e.target.closest('.rank-badge-clickable');
@@ -2192,6 +2214,9 @@ async function openViewProfile(uid){
   refreshVpBlockBtn(uid);
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-view-profile').classList.add('active');
+  const mainScrollEl0 = document.querySelector('main');
+  if(mainScrollEl0) mainScrollEl0.scrollTop = 0;
+  window.scrollTo(0, 0);
   updateFabVisibility();
 
   const p = profileByUid(uid);
@@ -2204,48 +2229,6 @@ async function openViewProfile(uid){
   document.getElementById('vpOnlineDot').style.display = vpIsOnline ? 'block' : 'none';
   document.getElementById('vpName').textContent = getDisplayName(p);
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
-  const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
-  if(hasAnyAdminTool() && vpAdminToolsOpen && p && p.createdAt){
-    createdAtStaffEl.style.display = 'block';
-    createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
-  } else {
-    createdAtStaffEl.style.display = 'none';
-  }
-  const emailStaffEl = document.getElementById('vpEmailStaffOnly');
-  if(hasAnyAdminTool() && vpAdminToolsOpen){
-    emailStaffEl.style.display = 'block';
-    emailStaffEl.textContent = '✉️ Yükleniyor...';
-    db.collection('users').doc(uid).get().then(userDoc=>{
-      if(userDoc.exists && currentViewedUid===uid){
-        const em = userDoc.data().profile && userDoc.data().profile.email;
-        emailStaffEl.textContent = em ? ('✉️ ' + em) : '✉️ E-posta bulunamadı';
-      }
-    }).catch(()=>{ emailStaffEl.textContent = '✉️ E-posta okunamadı'; });
-  } else {
-    emailStaffEl.style.display = 'none';
-  }
-  const warnBanner = document.getElementById('vpWarningBanner');
-  const warnCountRow = document.getElementById('vpWarningCountRow');
-  const isWarned = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
-  if(canManageWarnings() && vpAdminToolsOpen && isWarned){
-    const issuerRecord = Array.isArray(p.warningHistory) ? p.warningHistory.slice().reverse().find(w=>w.expiresAt===p.activeWarningUntil) : null;
-    const issuer = issuerRecord ? profileByUid(issuerRecord.issuedBy) : null;
-    warnBanner.style.display = 'block';
-    warnBanner.innerHTML = `⚠️ Bu hesap uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(p.activeWarningReason||'-')}<br>Bitiş: ${new Date(p.activeWarningUntil).toLocaleString('tr-TR')}${issuer?('<br>Veren: '+escapeHtml(usernameLabel(issuer))):''}</span>`;
-  } else {
-    warnBanner.style.display = 'none';
-  }
-  if(canManageWarnings() && vpAdminToolsOpen){
-    const count = Array.isArray(p && p.warningHistory) ? p.warningHistory.length : 0;
-    if(count > 0){
-      warnCountRow.style.display = 'block';
-      document.getElementById('vpWarningCountText').textContent = `⚠️ ${count} uyarı — geçmişi gör`;
-    } else {
-      warnCountRow.style.display = 'none';
-    }
-  } else {
-    warnCountRow.style.display = 'none';
-  }
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
@@ -2258,32 +2241,8 @@ async function openViewProfile(uid){
   else if(p && p.role==='moderator'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '🛡️ ' + (p.rank || 'Moderatör'); }
   else { rankBadge.style.display='none'; }
   document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true);
-  const sameIpBadge = document.getElementById('vpSameIpBadge');
-  const ipRow = document.getElementById('vpIpAddressRow');
-  if(canViewIp() && vpAdminToolsOpen){
-    try{
-      const userDoc = await db.collection('users').doc(uid).get();
-      const ip = userDoc.exists ? userDoc.data().lastKnownIp : null;
-      if(ip){ ipRow.style.display = 'block'; document.getElementById('vpIpAddressVal').textContent = ip; }
-      else { ipRow.style.display = 'none'; }
-    }catch(e){ ipRow.style.display = 'none'; }
-  } else { ipRow.style.display = 'none'; }
-  if(canBanIp() && vpAdminToolsOpen){
-    const sameIpCount = await getSameIpAccountCount(uid);
-    if(sameIpCount>0){
-      sameIpBadge.style.display = 'inline-block';
-      sameIpBadge.textContent = `⚠️ ${sameIpCount} hesap aynı IP`;
-      sameIpBadge.onclick = ()=>{
-        document.querySelectorAll('#vpAdminToolsSection details').forEach(d=>{ if(d.id==='vpToolIp') d.open = true; });
-        document.getElementById('vpToolIp').scrollIntoView({behavior:'smooth', block:'center'});
-      };
-    } else { sameIpBadge.style.display = 'none'; }
-  } else { sameIpBadge.style.display = 'none'; }
-  let isTargetAdmin = (p && p.role==='admin');
-  let targetModDoc = null;
-  if(isAdmin){
-    try{ const md = await db.collection('moderators').doc(uid).get(); if(md.exists) targetModDoc = md.data(); }catch(e){}
-  }
+
+  await refreshVpAdminGatedUI(uid, p);
 
   const bypassPrivacy = canViewPrivateInfo();
   const visibility = bypassPrivacy ? 'everyone' : ((p && p.followersVisibility) || 'everyone');
@@ -2316,7 +2275,13 @@ async function openViewProfile(uid){
       renderFollowerAvatarsInto('vpFollowerAvatars', followerUids, 9);
     }
   }
+}
 
+// Yönetici/moderatör alanlarını (e-posta, IP, katılım tarihi, uyarılar, araç paneli) çizer.
+// Ağdan sadece gerçekten açıksa (vpAdminToolsOpen) ve gerçekten gerekliyse veri çeker — bu yüzden
+// aç/kapa butonu tam profili yeniden yüklemek zorunda kalmadan hızlı çalışır.
+async function refreshVpAdminGatedUI(uid, p){
+  // Buton önce (ağ isteklerini beklemeden) güncellenir ki dokunuşa anında tepki versin.
   const adminToggleBtn = document.getElementById('vpAdminToolsToggle');
   if(hasAnyAdminTool()){
     adminToggleBtn.style.display = 'block';
@@ -2330,11 +2295,101 @@ async function openViewProfile(uid){
   } else {
     adminToggleBtn.style.display = 'none';
   }
+
+  const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
+  if(hasAnyAdminTool() && vpAdminToolsOpen && p && p.createdAt){
+    createdAtStaffEl.style.display = 'block';
+    createdAtStaffEl.classList.add('vp-fade-in');
+    createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
+  } else {
+    createdAtStaffEl.style.display = 'none';
+    createdAtStaffEl.classList.remove('vp-fade-in');
+  }
+  const emailStaffEl = document.getElementById('vpEmailStaffOnly');
+  if(hasAnyAdminTool() && vpAdminToolsOpen){
+    emailStaffEl.style.display = 'block';
+    emailStaffEl.classList.add('vp-fade-in');
+    emailStaffEl.textContent = '✉️ Yükleniyor...';
+  } else {
+    emailStaffEl.style.display = 'none';
+    emailStaffEl.classList.remove('vp-fade-in');
+  }
+  const warnBanner = document.getElementById('vpWarningBanner');
+  const warnCountRow = document.getElementById('vpWarningCountRow');
+  const isWarned = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
+  if(canManageWarnings() && vpAdminToolsOpen && isWarned){
+    const issuerRecord = Array.isArray(p.warningHistory) ? p.warningHistory.slice().reverse().find(w=>w.expiresAt===p.activeWarningUntil) : null;
+    const issuer = issuerRecord ? profileByUid(issuerRecord.issuedBy) : null;
+    warnBanner.style.display = 'block';
+    warnBanner.innerHTML = `⚠️ Bu hesap uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(p.activeWarningReason||'-')}<br>Bitiş: ${new Date(p.activeWarningUntil).toLocaleString('tr-TR')}${issuer?('<br>Veren: '+escapeHtml(usernameLabel(issuer))):''}</span>`;
+  } else {
+    warnBanner.style.display = 'none';
+  }
+  if(canManageWarnings() && vpAdminToolsOpen){
+    const count = Array.isArray(p && p.warningHistory) ? p.warningHistory.length : 0;
+    if(count > 0){
+      warnCountRow.style.display = 'block';
+      document.getElementById('vpWarningCountText').textContent = `⚠️ ${count} uyarı — geçmişi gör`;
+    } else {
+      warnCountRow.style.display = 'none';
+    }
+  } else {
+    warnCountRow.style.display = 'none';
+  }
+  const sameIpBadge = document.getElementById('vpSameIpBadge');
+  const ipRow = document.getElementById('vpIpAddressRow');
+  if(!(canViewIp() && vpAdminToolsOpen)) ipRow.style.display = 'none';
+  if(!(canBanIp() && vpAdminToolsOpen)) sameIpBadge.style.display = 'none';
+
+  // Bağımsız ağ istekleri artık birbirini beklemeden AYNI ANDA gönderiliyor (önceden sırayla
+  // bekleniyordu, bu da butonun/panelin gereksiz yavaş açılmasına sebep oluyordu).
+  const tasks = [];
+  if(hasAnyAdminTool() && vpAdminToolsOpen){
+    tasks.push(
+      db.collection('users').doc(uid).get().then(userDoc=>{
+        if(userDoc.exists && currentViewedUid===uid){
+          const em = userDoc.data().profile && userDoc.data().profile.email;
+          emailStaffEl.textContent = em ? ('✉️ ' + em) : '✉️ E-posta bulunamadı';
+        }
+      }).catch(()=>{ emailStaffEl.textContent = '✉️ E-posta okunamadı'; })
+    );
+  }
+  if(canViewIp() && vpAdminToolsOpen){
+    tasks.push(
+      db.collection('users').doc(uid).get().then(userDoc=>{
+        const ip = userDoc.exists ? userDoc.data().lastKnownIp : null;
+        if(ip){ ipRow.style.display = 'block'; document.getElementById('vpIpAddressVal').textContent = ip; }
+        else { ipRow.style.display = 'none'; }
+      }).catch(()=>{ ipRow.style.display = 'none'; })
+    );
+  }
+  if(canBanIp() && vpAdminToolsOpen){
+    tasks.push(
+      getSameIpAccountCount(uid).then(sameIpCount=>{
+        if(sameIpCount>0){
+          sameIpBadge.style.display = 'inline-block';
+          sameIpBadge.textContent = `⚠️ ${sameIpCount} hesap aynı IP`;
+          sameIpBadge.onclick = ()=>{
+            document.querySelectorAll('#vpAdminToolsSection details').forEach(d=>{ if(d.id==='vpToolIp') d.open = true; });
+            document.getElementById('vpToolIp').scrollIntoView({behavior:'smooth', block:'center'});
+          };
+        } else { sameIpBadge.style.display = 'none'; }
+      })
+    );
+  }
+  let targetModDoc = null;
+  if(isAdmin && vpAdminToolsOpen){
+    tasks.push(
+      db.collection('moderators').doc(uid).get().then(md=>{ if(md.exists) targetModDoc = md.data(); }).catch(()=>{})
+    );
+  }
+  await Promise.all(tasks);
   await setupAdminToolsForProfile(uid, p, targetModDoc);
 }
 document.getElementById('vpAdminToolsToggle').addEventListener('click', ()=>{
-  vpAdminToolsOpen = true;
-  if(currentViewedUid) openViewProfile(currentViewedUid);
+  vpAdminToolsOpen = !vpAdminToolsOpen;
+  const p = profileByUid(currentViewedUid);
+  refreshVpAdminGatedUI(currentViewedUid, p);
 });
 
 async function getSameIpAccountCount(uid){
@@ -2366,8 +2421,9 @@ async function checkSameIpAccounts(ip, excludeUid){
 }
 async function setupAdminToolsForProfile(uid, p, targetModDoc){
   const section = document.getElementById('vpAdminToolsSection');
-  if(!hasAnyAdminTool() || !vpAdminToolsOpen){ section.style.display = 'none'; return; }
+  if(!hasAnyAdminTool() || !vpAdminToolsOpen){ section.style.display = 'none'; section.classList.remove('vp-fade-in'); return; }
   section.style.display = 'block';
+  section.classList.add('vp-fade-in');
 
   // Ayrıcalıklı hesap koruması: moderatör, admin'e veya başka bir moderatöre dokunamaz — sadece admin yönetebilir
   const targetIsPrivileged = !!(p && (p.role==='admin' || p.role==='moderator'));
@@ -4210,7 +4266,7 @@ function activeMemberRowHtml(u){
   return `<div class="entry" data-view-member="${escapeHtml(u.uid)}">
       <div style="position:relative; flex-shrink:0;">
         <div style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px;">${escapeHtml(getInitials(u.fullName))}</div>
-        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--bg);"></span>':''}
+        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}
       </div>
       <div class="info">
         <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${(u.role!=='admin'&&u.role!=='moderator')?tenureBadgeHtml(u.createdAt):''}</div>
@@ -5381,7 +5437,7 @@ function convRowHtml(c, today){
       <input type="checkbox" class="conv-select-box" data-select-conv="${escapeHtml(c.id)}" style="display:none; width:19px;height:19px; flex-shrink:0;">
       <div style="position:relative; flex-shrink:0;">
         <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:${avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm);">${avatarInitials}</div>
-        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--bg);"></span>':''}
+        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--paper);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
         <div style="font-weight:${unread?800:700}; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${(Array.isArray(c.mutedFor)&&c.mutedFor.includes(currentUser.uid))?'🔕 ':''}${name}</div>
@@ -6048,6 +6104,7 @@ function switchScreen(name){
   document.body.classList.remove('chat-open');
   const mainScrollEl = document.querySelector('main');
   if(mainScrollEl) mainScrollEl.scrollTop = 0;
+  window.scrollTo(0, 0);
   updateHeaderTitle(name);
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
@@ -6091,7 +6148,7 @@ function updateFabVisibility(){
   if(!el) return;
   const active = document.querySelector('main > .screen.active');
   const name = active ? active.id.replace('screen-','') : 'ana';
-  document.getElementById('fabAdd').style.display = (name==='ana') ? 'flex' : 'none';
+  el.style.display = (name==='ana') ? 'flex' : 'none';
 }
 
 // ---------- SON EKRANI HATIRLA ----------
