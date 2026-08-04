@@ -1,5 +1,30 @@
-const CACHE_NAME = 'santiye-defteri-v4';
-const CORE_ASSETS = ['./', './index.html', './stil.css', './manifest.json', './icon-192.png', './icon-512.png'];
+// ---------- UYGULAMA KAPALIYKEN DE BİLDİRİM (Firebase Cloud Messaging) ----------
+importScripts('https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js');
+firebase.initializeApp({
+  apiKey: "AIzaSyD_HgqaB1bQgLuwduTL8lIXKMwK9-HZWZk",
+  authDomain: "defterim-bf5a9.firebaseapp.com",
+  projectId: "defterim-bf5a9",
+  storageBucket: "defterim-bf5a9.firebasestorage.app",
+  messagingSenderId: "504570577849",
+  appId: "1:504570577849:web:93021a43e37dbce84d6c68"
+});
+const messaging = firebase.messaging();
+// Sunucudan (GitHub Actions) gelen bildirim, uygulama/tarayıcı kapalıyken burada gösterilir.
+// Tıklanınca aşağıdaki mevcut 'notificationclick' dinleyicisi devreye girip uygulamayı açar.
+messaging.onBackgroundMessage((payload) => {
+  const title = (payload.data && payload.data.title) || 'Şantiye Defteri';
+  const body = (payload.data && payload.data.body) || '';
+  self.registration.showNotification(title, {
+    body,
+    icon: 'icon-192.png',
+    badge: 'icon-192.png',
+    data: { openEntry: true }
+  });
+});
+
+const CACHE_NAME = 'santiye-defteri-v3';
+const CORE_ASSETS = ['./', './index.html', './stil.css', './script.js', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
