@@ -1743,6 +1743,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js"></script>
 <script>
 // ---------- GÜVENLİK: HANGİ EKRAN AÇILIRSA AÇILSIN SAYFAYI EN ÜSTTEN BAŞLAT ----------
 // Ekran değiştiren pek çok farklı kod yolu var (switchScreen, openViewProfile, admin panel,
@@ -7764,6 +7765,35 @@ async function ensureNotificationPermission(){
   try{ const perm = await Notification.requestPermission(); return perm === 'granted'; }
   catch(e){ return false; }
 }
+
+// ---------- UYGULAMA KAPALIYKEN DE BİLDİRİM (FCM) ----------
+// Firebase konsolundan alınacak Web Push (VAPID) anahtarını buraya yapıştır:
+// Firebase Console > Proje Ayarları > Cloud Messaging > Web Push sertifikaları > "Anahtar çifti oluştur"
+const FCM_VAPID_KEY = 'BIlkmL0XjsikZsIxJWzkXGBN65ubUptEOjWpw9oCSTwX8bB_fVeHydLqLlzBeaqop8T631qAEi0ChAHODxayIbY';
+async function setupFcmToken(){
+  try{
+    if(typeof firebase === 'undefined' || !firebase.messaging || !(await firebase.messaging.isSupported())) return;
+    if(Notification.permission !== 'granted') return;
+    if(!userDocRef || !('serviceWorker' in navigator)) return;
+    const reg = await navigator.serviceWorker.getRegistration();
+    if(!reg) return;
+    const messaging = firebase.messaging();
+    const token = await messaging.getToken({vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg});
+    if(token){
+      await userDocRef.set({fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)}, {merge:true});
+    }
+  }catch(e){ console.error('FCM token alınamadı', e); }
+}
+(async function setupFcmForegroundHandler(){
+  try{
+    if(typeof firebase === 'undefined' || !firebase.messaging || !(await firebase.messaging.isSupported())) return;
+    firebase.messaging().onMessage((payload)=>{
+      const title = (payload.data && payload.data.title) || '📋 Şantiye Defteri';
+      const body = (payload.data && payload.data.body) || '';
+      fireLocalNotification(title, body);
+    });
+  }catch(e){}
+})();
 function fireLocalNotification(title, body){
   if(typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
   try{
@@ -8079,6 +8109,7 @@ async function enterApp(){
   loadPublicProfiles();
   startReminderScheduler();
   try{ requestNotificationPermissionOnce(); }catch(e){ console.error('bildirim izni hatasi', e); }
+  setupFcmToken();
   startNotificationListener();
   startConversationsListener();
   startPresenceHeartbeat();
