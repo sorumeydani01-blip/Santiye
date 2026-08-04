@@ -1264,6 +1264,24 @@
 </div>
 
 <!-- MEDYA GALERİSİ -->
+<!-- HIZLI UYARI VER (profile girmeden) -->
+<div class="modal-overlay" id="quickWarningOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>⚠️ Uyarı Ver — <span id="quickWarningTargetName"></span></span><button class="close" id="quickWarningClose">✕</button></div>
+    <div class="field"><label>Uyarı Sebebi</label><textarea id="quickWarningReason" placeholder="Örn: Küfür/hakaret içeren mesaj"></textarea></div>
+    <div class="field">
+      <label>Süre</label>
+      <select id="quickWarningDuration">
+        <option value="1">1 Gün</option>
+        <option value="3" selected>3 Gün</option>
+        <option value="7">7 Gün</option>
+        <option value="30">30 Gün</option>
+      </select>
+    </div>
+    <button class="submit-btn danger" id="quickWarningIssue">Uyarı Ver</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="mediaGalleryOverlay">
   <div class="modal-sheet">
     <div class="modal-title"><span>📷 Paylaşılan Fotoğraflar</span><button class="close" id="mediaGalleryClose">✕</button></div>
@@ -2657,6 +2675,37 @@ document.getElementById('vpWarningCountRow').addEventListener('click', ()=>{
   details.open = true;
   details.scrollIntoView({behavior:'smooth', block:'start'});
 });
+let quickWarningTargetUid = null;
+function openQuickWarningModal(targetUid){
+  quickWarningTargetUid = targetUid;
+  const p = profileByUid(targetUid);
+  document.getElementById('quickWarningTargetName').textContent = usernameLabel(p);
+  document.getElementById('quickWarningReason').value = '';
+  document.getElementById('quickWarningDuration').value = '3';
+  document.getElementById('quickWarningOverlay').classList.add('show');
+}
+document.getElementById('quickWarningClose').addEventListener('click', ()=> document.getElementById('quickWarningOverlay').classList.remove('show'));
+document.getElementById('quickWarningIssue').addEventListener('click', async ()=>{
+  const uid = quickWarningTargetUid;
+  const reason = document.getElementById('quickWarningReason').value.trim();
+  const days = parseInt(document.getElementById('quickWarningDuration').value, 10);
+  if(!reason){ showToast('Uyarı sebebi yaz'); return; }
+  if(!confirm(`Bu kullanıcıya ${days} gün süreyle uyarı vermek istediğine emin misin? Bu süre boyunca mesaj gönderemeyecek/yeni sohbet başlatamayacak.`)) return;
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + days*24*60*60*1000).toISOString();
+  const record = {reason, durationDays: days, issuedAt: now.toISOString(), expiresAt, issuedBy: currentUser.uid};
+  try{
+    await db.collection('public_profiles').doc(uid).set({
+      activeWarningUntil: expiresAt, activeWarningReason: reason,
+      warningHistory: firebase.firestore.FieldValue.arrayUnion(record)
+    }, {merge:true});
+    await logModAction('issueWarning', uid, `${days} gün — ${reason}`);
+    await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'mod_update', message:`⚠️ Hesabına ${days} günlük uyarı verildi. Sebep: ${reason}. Bu süre içinde mesaj gönderemez/yeni sohbet başlatamazsın.`, read:false, createdAt:new Date().toISOString()});
+    showToast('Uyarı verildi');
+    await loadPublicProfiles();
+    document.getElementById('quickWarningOverlay').classList.remove('show');
+  }catch(e){ showToast('Uyarı verilemedi: '+(e.message||'')); }
+});
 document.getElementById('vpWarningIssue').addEventListener('click', async ()=>{
   const uid = currentViewedUid;
   const reason = document.getElementById('vpWarningReason').value.trim();
@@ -2918,8 +2967,9 @@ function reportRowHtml(r){
   const reporter = profileByUid(r.reporterUid);
   const time = r.createdAt ? new Date(r.createdAt).toLocaleString('tr-TR') : '';
   const statusBadge = r.status==='resolved' ? '✅ İşlem yapıldı' : (r.status==='dismissed' ? '❌ Reddedildi' : '⏳ Bekliyor');
-  const actionsHtml = r.status==='pending' ? `<div class="btn-row">
+  const actionsHtml = r.status==='pending' ? `<div class="btn-row" style="flex-wrap:wrap;">
       <button class="submit-btn danger" data-report-deactivate="${escapeHtml(r.id)}" data-report-target="${escapeHtml(r.reportedUid)}" data-report-reporter="${escapeHtml(r.reporterUid)}" style="flex:1; font-size:12px; padding:10px 4px;">🚫 Hesabı Devre Dışı Bırak</button>
+      ${canManageWarnings() ? `<button class="submit-btn secondary" data-report-warn="${escapeHtml(r.id)}" data-report-target="${escapeHtml(r.reportedUid)}" style="flex:1; font-size:12px; padding:10px 4px; border-color:var(--danger); color:var(--danger);">⚠️ Uyarı Ver</button>` : ''}
       <button class="submit-btn secondary" data-report-dismiss="${escapeHtml(r.id)}" data-report-reporter="${escapeHtml(r.reporterUid)}" style="flex:1; font-size:12px; padding:10px 4px;">Reddet</button>
     </div>` : '';
   return `<div class="card" style="padding:14px;">
@@ -2928,12 +2978,27 @@ function reportRowHtml(r){
       Şikayet eden: <span style="font-weight:700; color:var(--asphalt); cursor:pointer; text-decoration:underline;" data-view-report-user="${escapeHtml(r.reporterUid)}">${escapeHtml(usernameLabel(reporter))}${rankSuffixHtml(reporter)}</span>
     </div>
     <div style="font-size:11px; color:var(--ink-soft); margin-bottom:8px;">Sebep: ${escapeHtml(r.reason||'-')}${r.note?(' — '+escapeHtml(r.note)):''} · ${time} · ${statusBadge}</div>
+    <div style="font-size:11px; font-weight:800; color:var(--ink-soft); margin-bottom:4px;">📌 KANIT — Şikayet edilen içerik:</div>
     <div style="font-size:13px; background:var(--concrete); border-radius:10px; padding:10px; margin-bottom:12px; white-space:pre-wrap;">"${escapeHtml(r.messageText||'')}"</div>
+    <div data-evidence-img-slot="${escapeHtml(r.id)}"></div>
     ${actionsHtml}
   </div>`;
 }
 function wireReportRows(box){
   box.querySelectorAll('[data-view-report-user]').forEach(el=> el.addEventListener('click', ()=> openViewProfile(el.dataset.viewReportUser)));
+  box.querySelectorAll('[data-evidence-img-slot]').forEach(slot=>{
+    const report = allReportsCache.find(r=>r.id===slot.dataset.evidenceImgSlot);
+    if(!report || !report.messageId) return;
+    db.collection('messages').doc(report.messageId).get().then(doc=>{
+      if(!doc.exists) return;
+      const m = doc.data();
+      const img = m.imageData || ((canViewFullMedia()) ? m.imageDataArchived : null);
+      if(img) slot.innerHTML = `<div style="margin-bottom:12px;"><img src="${img}" style="max-width:100%; border-radius:10px; display:block;"></div>`;
+    }).catch(()=>{});
+  });
+  box.querySelectorAll('[data-report-warn]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openQuickWarningModal(btn.dataset.reportTarget));
+  });
   box.querySelectorAll('[data-report-deactivate]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       if(!canDeleteAccount()){ showToast('Hesap devre dışı bırakma yetkin yok'); return; }
@@ -3210,9 +3275,10 @@ function appealRowHtml(a){
   const name = escapeHtml(usernameLabel(p)) + rankSuffixHtml(p);
   const time = a.createdAt ? new Date(a.createdAt).toLocaleDateString('tr-TR') : '';
   const statusBadge = a.status==='approved' ? '✅ Onaylandı' : (a.status==='rejected' ? '❌ Reddedildi' : '⏳ Bekliyor');
-  const actionsHtml = a.status==='pending' ? `<div class="btn-row">
+  const actionsHtml = a.status==='pending' ? `<div class="btn-row" style="flex-wrap:wrap;">
       <button class="submit-btn" data-appeal-approve="${escapeHtml(a.id)}" data-appeal-uid="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px;">✅ Aktifleştir</button>
       <button class="submit-btn danger" data-appeal-reject="${escapeHtml(a.id)}" data-appeal-uid="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px;">❌ Reddet</button>
+      ${canManageWarnings() ? `<button class="submit-btn secondary" data-appeal-warn="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px; border-color:var(--danger); color:var(--danger);">⚠️ Uyarı Ver</button>` : ''}
     </div>` : '';
   return `<div class="card" style="padding:14px;">
     <div style="font-weight:700; font-size:13.5px; cursor:pointer;" data-view-appeal-user="${escapeHtml(a.uid)}">${name} ›</div>
@@ -3224,6 +3290,9 @@ function appealRowHtml(a){
 function wireAppealRows(box){
   box.querySelectorAll('[data-view-appeal-user]').forEach(el=>{
     el.addEventListener('click', ()=> openViewProfile(el.dataset.viewAppealUser));
+  });
+  box.querySelectorAll('[data-appeal-warn]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openQuickWarningModal(btn.dataset.appealWarn));
   });
   box.querySelectorAll('[data-appeal-approve]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
@@ -4305,8 +4374,11 @@ document.getElementById('btnChatMediaGallery').addEventListener('click', async (
   }catch(e){ document.getElementById('mediaGalleryGrid').innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
 });
 document.getElementById('mediaGalleryClose').addEventListener('click', ()=> document.getElementById('mediaGalleryOverlay').classList.remove('show'));
-document.getElementById('mediaGalleryOverlay').addEventListener('click', (e)=>{
-  if(e.target.id === 'mediaGalleryOverlay') document.getElementById('mediaGalleryOverlay').classList.remove('show');
+// ---------- TÜM PENCERELER: BOŞ ALANA TIKLAYINCA KAPAT ----------
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click', (e)=>{
+    if(e.target === overlay) overlay.classList.remove('show');
+  });
 });
 async function refreshChatBlockState(otherUid){
   currentChatBlockStatus = hasAnyAdminTool() ? {byMe:false,byThem:false} : await isBlockedEitherWay(otherUid);
