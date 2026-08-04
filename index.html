@@ -842,6 +842,8 @@
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
     </div>
 
+    <button id="vpAdminToolsToggle" style="display:none; width:100%; margin-top:8px; padding:12px; border-radius:14px; border:1.5px dashed var(--danger); background:var(--tint-rust); color:var(--danger); font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; cursor:pointer;">🛠️ Yönetici Araçlarını Göster</button>
+
     <div id="vpAdminToolsSection" style="display:none; margin-top:8px; padding-top:18px; border-top:2px dashed var(--line);">
       <div class="section-title" style="border-left-color:var(--danger); color:var(--danger);">🛠️ Yönetici Araçları</div>
 
@@ -2157,6 +2159,7 @@ document.getElementById('ownSeeAllFollowers').addEventListener('click', async ()
 });
 
 let currentViewedUid = null;
+let vpAdminToolsOpen = false;
 function renderBadgesFromFlags(containerId, badges, profession){
   const defs = [
     {key:'b100days', label:'100 Gün Çalıştı', icon:'🏆', tint:'var(--tint-brass)'},
@@ -2176,6 +2179,7 @@ function renderBadgesFromFlags(containerId, badges, profession){
 
 async function openViewProfile(uid){
   if(uid===currentUser.uid){ switchScreen('profil'); return; }
+  if(currentViewedUid !== uid) vpAdminToolsOpen = false;
   currentViewedUid = uid;
   try{
     const freshDoc = await db.collection('public_profiles').doc(uid).get();
@@ -2201,14 +2205,14 @@ async function openViewProfile(uid){
   document.getElementById('vpName').textContent = getDisplayName(p);
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
   const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
-  if(hasAnyAdminTool() && p && p.createdAt){
+  if(hasAnyAdminTool() && vpAdminToolsOpen && p && p.createdAt){
     createdAtStaffEl.style.display = 'block';
     createdAtStaffEl.textContent = '📅 Katılım: ' + new Date(p.createdAt).toLocaleDateString('tr-TR');
   } else {
     createdAtStaffEl.style.display = 'none';
   }
   const emailStaffEl = document.getElementById('vpEmailStaffOnly');
-  if(hasAnyAdminTool()){
+  if(hasAnyAdminTool() && vpAdminToolsOpen){
     emailStaffEl.style.display = 'block';
     emailStaffEl.textContent = '✉️ Yükleniyor...';
     db.collection('users').doc(uid).get().then(userDoc=>{
@@ -2223,7 +2227,7 @@ async function openViewProfile(uid){
   const warnBanner = document.getElementById('vpWarningBanner');
   const warnCountRow = document.getElementById('vpWarningCountRow');
   const isWarned = p && p.activeWarningUntil && new Date(p.activeWarningUntil).getTime() > Date.now();
-  if(canManageWarnings() && isWarned){
+  if(canManageWarnings() && vpAdminToolsOpen && isWarned){
     const issuerRecord = Array.isArray(p.warningHistory) ? p.warningHistory.slice().reverse().find(w=>w.expiresAt===p.activeWarningUntil) : null;
     const issuer = issuerRecord ? profileByUid(issuerRecord.issuedBy) : null;
     warnBanner.style.display = 'block';
@@ -2231,7 +2235,7 @@ async function openViewProfile(uid){
   } else {
     warnBanner.style.display = 'none';
   }
-  if(canManageWarnings()){
+  if(canManageWarnings() && vpAdminToolsOpen){
     const count = Array.isArray(p && p.warningHistory) ? p.warningHistory.length : 0;
     if(count > 0){
       warnCountRow.style.display = 'block';
@@ -2256,7 +2260,7 @@ async function openViewProfile(uid){
   document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true);
   const sameIpBadge = document.getElementById('vpSameIpBadge');
   const ipRow = document.getElementById('vpIpAddressRow');
-  if(canViewIp()){
+  if(canViewIp() && vpAdminToolsOpen){
     try{
       const userDoc = await db.collection('users').doc(uid).get();
       const ip = userDoc.exists ? userDoc.data().lastKnownIp : null;
@@ -2264,7 +2268,7 @@ async function openViewProfile(uid){
       else { ipRow.style.display = 'none'; }
     }catch(e){ ipRow.style.display = 'none'; }
   } else { ipRow.style.display = 'none'; }
-  if(canBanIp()){
+  if(canBanIp() && vpAdminToolsOpen){
     const sameIpCount = await getSameIpAccountCount(uid);
     if(sameIpCount>0){
       sameIpBadge.style.display = 'inline-block';
@@ -2313,8 +2317,18 @@ async function openViewProfile(uid){
     }
   }
 
+  const adminToggleBtn = document.getElementById('vpAdminToolsToggle');
+  if(hasAnyAdminTool()){
+    adminToggleBtn.style.display = vpAdminToolsOpen ? 'none' : 'block';
+  } else {
+    adminToggleBtn.style.display = 'none';
+  }
   await setupAdminToolsForProfile(uid, p, targetModDoc);
 }
+document.getElementById('vpAdminToolsToggle').addEventListener('click', ()=>{
+  vpAdminToolsOpen = true;
+  if(currentViewedUid) openViewProfile(currentViewedUid);
+});
 
 async function getSameIpAccountCount(uid){
   try{
@@ -2345,7 +2359,7 @@ async function checkSameIpAccounts(ip, excludeUid){
 }
 async function setupAdminToolsForProfile(uid, p, targetModDoc){
   const section = document.getElementById('vpAdminToolsSection');
-  if(!hasAnyAdminTool()){ section.style.display = 'none'; return; }
+  if(!hasAnyAdminTool() || !vpAdminToolsOpen){ section.style.display = 'none'; return; }
   section.style.display = 'block';
 
   // Ayrıcalıklı hesap koruması: moderatör, admin'e veya başka bir moderatöre dokunamaz — sadece admin yönetebilir
