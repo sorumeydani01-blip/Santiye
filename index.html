@@ -121,8 +121,13 @@
     <div style="display:flex; gap:8px; flex-shrink:0;">
       <button class="gear-btn" id="btnHeaderMessages" aria-label="Mesajlar" style="position:relative;">💬<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
-      <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
-      <button class="gear-btn" id="btnSettings" aria-label="Ayarlar">⚙️</button>
+      <div style="position:relative; flex-shrink:0;">
+        <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
+        <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
+          <button id="btnHeaderMenuProfile" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
+          <button id="btnHeaderMenuSettings" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
+        </div>
+      </div>
     </div>
   </div>
 </header>
@@ -298,21 +303,23 @@
       <button id="chatReplyCancel" style="border:none; background:none; font-size:16px; cursor:pointer; color:var(--ink-soft);">✕</button>
     </div>
     <div id="chatEmojiPanel" style="display:none; flex-wrap:wrap; gap:6px; padding:10px 12px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0; max-height:150px; overflow-y:auto;"></div>
-    <div style="display:flex; gap:8px; align-items:center; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--paper); border-top:1px solid var(--line);">
-      <button id="chatAttachBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:22px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
-      <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
-      <button id="chatCameraBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📷</button>
-      <input type="file" id="chatCameraInput" accept="image/*" capture="environment" style="display:none;">
-      <button id="chatEmojiBtn" style="width:38px;height:38px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">😀</button>
-      <input type="text" id="chatInput" placeholder="Mesaj yaz" style="flex:1; border-radius:24px; padding:11px 18px; background:var(--concrete); border:none; font-size:15px;">
-      <div id="chatRecordingBar" style="display:none; flex:1; align-items:center; gap:10px; padding:0 14px; height:44px; border-radius:24px; background:var(--tint-rust);">
-        <span style="width:9px;height:9px;border-radius:50%; background:var(--danger); animation:recBlink 1s infinite;"></span>
-        <span id="chatRecordTimer" style="font-weight:700; font-size:13px; color:var(--danger);">0:00</span>
-        <span style="flex:1; font-size:12px; color:var(--ink-soft);">Kaydediliyor...</span>
-        <button id="chatRecordCancel" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft);">✕</button>
+    <div style="display:flex; gap:8px; align-items:flex-end; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); flex-shrink:0; background:var(--bg);">
+      <div style="flex:1; display:flex; align-items:center; gap:4px; background:var(--paper); border-radius:26px; padding:5px 6px 5px 10px; box-shadow:var(--shadow-sm); min-height:44px; box-sizing:border-box;">
+        <button id="chatEmojiBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">😀</button>
+        <input type="text" id="chatInput" placeholder="Mesaj" style="flex:1; border-radius:20px; padding:8px 4px; background:transparent; border:none; font-size:15px; min-width:0;">
+        <div id="chatRecordingBar" style="display:none; flex:1; align-items:center; gap:10px; padding:0 8px; height:34px; border-radius:20px; background:var(--tint-rust);">
+          <span style="width:9px;height:9px;border-radius:50%; background:var(--danger); animation:recBlink 1s infinite;"></span>
+          <span id="chatRecordTimer" style="font-weight:700; font-size:13px; color:var(--danger);">0:00</span>
+          <span style="flex:1; font-size:12px; color:var(--ink-soft);">Kaydediliyor...</span>
+          <button id="chatRecordCancel" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft);">✕</button>
+        </div>
+        <button id="chatAttachBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📎</button>
+        <input type="file" id="chatImageInput" accept="image/*" style="display:none;">
+        <button id="chatCameraBtn" style="width:30px;height:30px;border-radius:50%; background:none; border:none; font-size:17px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">📷</button>
+        <input type="file" id="chatCameraInput" accept="image/*" capture="environment" style="display:none;">
       </div>
-      <button id="chatMicBtn" style="width:42px;height:42px;border-radius:50%; background:none; border:none; font-size:20px; flex-shrink:0; cursor:pointer; color:var(--ink-soft);">🎤</button>
-      <button id="chatSendBtn" style="width:42px;height:42px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm);">➤</button>
+      <button id="chatMicBtn" style="width:46px;height:46px;border-radius:50%; background:var(--paper); border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft); box-shadow:var(--shadow-sm);">🎤</button>
+      <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(79,70,229,0.35);">➤</button>
     </div>
   </section>
   <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}
@@ -444,16 +451,20 @@
 
   <!-- PROFİL -->
   <section class="screen" id="screen-profil">
-    <div class="card">
+    <div class="card vp-card">
       <div style="display:flex; align-items:center; gap:13px;">
-        <div id="profileAvatarWrap" style="width:66px;height:66px;border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:22px; flex-shrink:0;">
-          <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover; display:none;">
-          <span id="profileAvatarInitials">-</span>
+        <div class="vp-avatar-ring">
+          <div id="profileAvatarWrap" style="width:100%;height:100%;border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:22px; flex-shrink:0;">
+            <img id="profileAvatarImg" src="" style="width:100%;height:100%;object-fit:cover; display:none;">
+            <span id="profileAvatarInitials">-</span>
+          </div>
+          <span class="vp-online-dot" style="display:block;"></span>
+          <span class="vp-avatar-badge" id="profileAvatarBadge">-</span>
         </div>
         <div style="flex:1; min-width:0;">
-          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="profileDisplayName">-</div>
-          <div style="font-size:12px; color:var(--ink-soft);" id="profileUsername">-</div>
-          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">👷 <span id="profileProfession">-</span></div>
+          <div class="vp-name" id="profileDisplayName">-</div>
+          <div class="vp-username" id="profileUsername">-</div>
+          <div class="vp-meta">👷 <span id="profileProfession">-</span></div>
           <div id="ownRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="ownTenureBadge" style="margin-top:6px; display:inline-block;"></span>
         </div>
@@ -796,17 +807,21 @@
       <span style="width:36px;"></span>
     </div>
     <div id="vpWarningBanner" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:14px; padding:14px; margin-bottom:14px; font-size:12.5px; font-weight:700; line-height:1.5;"></div>
-    <div class="card">
+    <div class="card vp-card">
       <div style="display:flex; align-items:center; gap:14px;">
-        <div id="vpAvatar" style="width:62px;height:62px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:20px; flex-shrink:0;">-</div>
+        <div class="vp-avatar-ring">
+          <div id="vpAvatar">-</div>
+          <span class="vp-online-dot" id="vpOnlineDot" style="display:none;"></span>
+          <span class="vp-avatar-badge" id="vpAvatarBadge">-</span>
+        </div>
         <div style="flex:1; min-width:0;">
-          <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpName">-</div>
-          <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;" id="vpLastActive"></div>
+          <div class="vp-name" id="vpName">-</div>
+          <div class="vp-username" id="vpUsername">-</div>
+          <div class="vp-meta" id="vpMeta">-</div>
+          <div class="vp-lastactive" id="vpLastActive"></div>
           <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpCreatedAtStaffOnly"></div>
           <div style="font-size:11px; color:var(--ink-soft); margin-top:2px; display:none;" id="vpEmailStaffOnly"></div>
           <div id="vpWarningCountRow" style="display:none; margin-top:4px; cursor:pointer;"><span style="color:var(--danger); font-weight:800; font-size:11.5px;" id="vpWarningCountText"></span></div>
-          <div style="font-size:12px; color:var(--ink-soft);" id="vpUsername">-</div>
-          <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;" id="vpMeta">-</div>
           <div id="vpRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="vpTenureBadge" style="margin-top:6px; display:inline-block;"></span>
           <span id="vpSameIpBadge" style="display:none; margin-top:6px; margin-left:6px; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-rust); color:var(--danger); cursor:pointer;"></span>
@@ -814,9 +829,9 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:8px; margin-top:16px;" id="vpFollowRow">
-        <button id="vpFollowBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:none; background:var(--asphalt); color:#fff; font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease; box-shadow:var(--shadow-sm);">🤍 Takip Et</button>
-        <button id="vpMessageBtn" style="flex:1; padding:11px 6px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; letter-spacing:-0.01em; cursor:pointer; transition:transform .12s ease;">💬 Mesaj</button>
-        <button id="vpBlockBtn" style="flex:0 0 44px; padding:11px 0; border-radius:12px; border:1.5px solid var(--line); background:var(--paper); color:var(--danger); font-size:15px; cursor:pointer; transition:transform .12s ease;">🚫</button>
+        <button id="vpFollowBtn" class="vp-btn-follow">🤍 Takip Et</button>
+        <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
+        <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
       <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);" id="vpFollowerCount">0 takipçi</div>
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
@@ -2172,6 +2187,12 @@ async function openViewProfile(uid){
 
   const p = profileByUid(uid);
   document.getElementById('vpAvatar').textContent = getInitials(p ? p.fullName : '?');
+  document.getElementById('vpAvatar').style.background = avatarGradient(uid);
+  const vpBadgeEl = document.getElementById('vpAvatarBadge');
+  vpBadgeEl.textContent = getInitials(p ? p.fullName : '?');
+  vpBadgeEl.style.background = avatarGradient(uid);
+  const vpIsOnline = !!(p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000);
+  document.getElementById('vpOnlineDot').style.display = vpIsOnline ? 'block' : 'none';
   document.getElementById('vpName').textContent = getDisplayName(p);
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
   const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
@@ -6019,7 +6040,16 @@ document.getElementById('brandHomeLink').addEventListener('click', ()=> switchSc
 
 // ---------- HEADER: MESAJLAR / PROFİL DOĞRUDAN ERİŞİM ----------
 document.getElementById('btnHeaderMessages').addEventListener('click', ()=> switchScreen('mesajlar'));
-document.getElementById('btnHeaderProfile').addEventListener('click', ()=> switchScreen('profil'));
+document.getElementById('btnHeaderProfile').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const menu = document.getElementById('headerProfileMenu');
+  menu.style.display = menu.style.display==='block' ? 'none' : 'block';
+});
+document.addEventListener('click', ()=>{ document.getElementById('headerProfileMenu').style.display = 'none'; });
+document.getElementById('btnHeaderMenuProfile').addEventListener('click', ()=>{
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  switchScreen('profil');
+});
 
 // ---------- FAB (+ butonu) SADECE ANA SAYFADA GÖRÜNSÜN ----------
 function updateFabVisibility(){
@@ -7056,6 +7086,8 @@ function renderProfile(){
 
   applyAvatar(document.getElementById('profileAvatarImg'), document.getElementById('profileAvatarInitials'));
   updateHeaderAvatar();
+  document.getElementById('profileAvatarBadge').textContent = getInitials(profile.fullName);
+  document.getElementById('profileAvatarBadge').style.background = avatarGradient(currentUser.uid);
   document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
   document.getElementById('profileUsername').textContent = (profile.username || '-');
   document.getElementById('profileProfession').textContent = profile.profession || '-';
@@ -7536,7 +7568,8 @@ document.getElementById('searchInput').addEventListener('input', (e)=>{
 });
 
 // ---------- SETTINGS ----------
-document.getElementById('btnSettings').addEventListener('click', ()=>{
+document.getElementById('btnHeaderMenuSettings').addEventListener('click', ()=>{
+  document.getElementById('headerProfileMenu').style.display = 'none';
   document.getElementById('inpDefaultWage').value = settings.defaultWage || '';
   document.getElementById('inpMonthlyGoal').value = settings.monthlyGoal || '';
   document.getElementById('inpCurrency').value = settings.currency || '₺';
