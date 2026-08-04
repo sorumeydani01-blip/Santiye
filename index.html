@@ -2319,7 +2319,14 @@ async function openViewProfile(uid){
 
   const adminToggleBtn = document.getElementById('vpAdminToolsToggle');
   if(hasAnyAdminTool()){
-    adminToggleBtn.style.display = vpAdminToolsOpen ? 'none' : 'block';
+    adminToggleBtn.style.display = 'block';
+    if(vpAdminToolsOpen){
+      adminToggleBtn.textContent = '🔒 Yönetici Araçlarını Gizle';
+      adminToggleBtn.style.borderStyle = 'solid';
+    } else {
+      adminToggleBtn.textContent = '🛠️ Yönetici Araçlarını Göster';
+      adminToggleBtn.style.borderStyle = 'dashed';
+    }
   } else {
     adminToggleBtn.style.display = 'none';
   }
