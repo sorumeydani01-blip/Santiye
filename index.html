@@ -137,6 +137,11 @@
 
   <!-- ANA SAYFA -->
   <section class="screen active" id="screen-ana">
+    <div id="notifPermBanner" style="display:none; align-items:center; gap:10px; background:var(--tint-slate); color:var(--asphalt); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; font-weight:600; line-height:1.4;">
+      <span style="flex:1;">🔔 Günlük yevmiye hatırlatmasını almak için bildirimlere izin ver.</span>
+      <button id="btnEnableNotifications" style="flex-shrink:0; padding:8px 14px; border:none; border-radius:10px; background:var(--asphalt); color:#fff; font-weight:800; font-size:12.5px; cursor:pointer;">Etkinleştir</button>
+      <button id="btnDismissNotifBanner" style="flex-shrink:0; width:26px;height:26px; border:none; background:none; color:var(--ink-soft); font-size:16px; cursor:pointer;">✕</button>
+    </div>
     <div id="homeBannerBox" style="display:none; background:var(--tint-brass); color:var(--text-brass); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; font-weight:600; line-height:1.5;"></div>
     <div id="receivableReminderBox" style="display:none; background:var(--tint-rust); color:var(--danger); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; font-weight:600; line-height:1.5; cursor:pointer;"></div>
 
@@ -7697,7 +7702,9 @@ document.getElementById('btnSaveSettings').addEventListener('click', async ()=>{
   settings.reminderMinute = isNaN(rm) ? 0 : rm;
   await persistSettings();
   if(settings.reminder){
-    await ensureNotificationPermission();
+    const granted = await requestNotificationPermissionOnce();
+    if(granted) await setupFcmToken();
+    updateNotifPermBanner();
   }
   startReminderScheduler();
   applyTheme();
@@ -7752,18 +7759,52 @@ document.getElementById('btnResetAll').addEventListener('click', async ()=>{
 // ---------- DAILY CHECK ("Bugün çalıştın mı?") ----------
 const dailyCheckOverlay = document.getElementById('dailyCheckOverlay');
 
+// Kullanıcının kendi isteğiyle (bir butona dokunarak) çağrılmalı. Tarayıcının otomatik
+// olarak "Quiet Notification UI"ya alıp izin penceresini tamamen gizlemesine sebep olan
+// "uygulama açılır açılmaz otomatik izin isteme" davranışı BİLEREK kaldırıldı.
+// true/false döndürür ki çağıran taraf token kurulumunu SIRAYLA (izin sonuçlanmadan
+// token istemeden) yapabilsin — önceki hata tam olarak buradaki yarış durumuydu.
 async function requestNotificationPermissionOnce(){
-  if(typeof Notification === 'undefined') return;
-  if(Notification.permission !== 'default') return; // zaten sorulmuş (izin verilmiş veya reddedilmiş), tekrar rahatsız etme
-  const granted = await ensureNotificationPermission();
-  if(granted) showToast('Bildirimler açıldı 🔔');
-}
-async function ensureNotificationPermission(){
   if(typeof Notification === 'undefined') return false;
   if(Notification.permission === 'granted') return true;
   if(Notification.permission === 'denied') return false;
-  try{ const perm = await Notification.requestPermission(); return perm === 'granted'; }
-  catch(e){ return false; }
+  try{
+    const perm = await Notification.requestPermission();
+    return perm === 'granted';
+  }catch(e){ console.error('Bildirim izni istenirken hata', e); return false; }
+}
+// Geriye dönük uyumluluk için (kodun başka yerlerinde hâlâ kullanılıyor).
+async function ensureNotificationPermission(){ return requestNotificationPermissionOnce(); }
+
+function updateNotifPermBanner(){
+  const banner = document.getElementById('notifPermBanner');
+  if(!banner) return;
+  const shouldShow = typeof Notification !== 'undefined' && Notification.permission === 'default' && !notifBannerDismissedThisSession;
+  banner.style.display = shouldShow ? 'flex' : 'none';
+}
+let notifBannerDismissedThisSession = false;
+document.getElementById('btnDismissNotifBanner').addEventListener('click', ()=>{
+  notifBannerDismissedThisSession = true;
+  updateNotifPermBanner();
+});
+document.getElementById('btnEnableNotifications').addEventListener('click', async ()=>{
+  const granted = await requestNotificationPermissionOnce();
+  updateNotifPermBanner();
+  if(granted){
+    showToast('Bildirimler açıldı 🔔');
+    await setupFcmToken();
+  } else if(Notification.permission === 'denied'){
+    showToast('İzin verilmedi. Telefon ayarlarından uygulamanın bildirim iznini açabilirsin.');
+  }
+});
+// Uygulama her açıldığında (giriş sonrası) çağrılır: OTOMATİK İZİN İSTEMEZ, sadece
+// banner'ın görünürlüğünü günceller ve — izin zaten (önceden) verilmişse — token'ı
+// sessizce tazeler (bu bir OS penceresi açtırmaz, sadece zaten var olan izni kullanır).
+async function initNotificationUI(){
+  updateNotifPermBanner();
+  if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+    await setupFcmToken();
+  }
 }
 
 // ---------- UYGULAMA KAPALIYKEN DE BİLDİRİM (FCM) ----------
@@ -7772,22 +7813,33 @@ async function ensureNotificationPermission(){
 const FCM_VAPID_KEY = 'BIlkmL0XjsikZsIxJWzkXGBN65ubUptEOjWpw9oCSTwX8bB_fVeHydLqLlzBeaqop8T631qAEi0ChAHODxayIbY';
 async function setupFcmToken(){
   try{
-    if(typeof firebase === 'undefined' || !firebase.messaging || !(await firebase.messaging.isSupported())) return;
-    if(Notification.permission !== 'granted') return;
-    if(!userDocRef || !('serviceWorker' in navigator)) return;
-    const reg = await navigator.serviceWorker.getRegistration();
-    if(!reg) return;
+    if(typeof firebase === 'undefined' || !firebase.messaging){ console.warn('[FCM] firebase.messaging mevcut değil'); return; }
+    if(!(await firebase.messaging.isSupported())){ console.warn('[FCM] Bu tarayıcı FCM desteklemiyor'); return; }
+    if(typeof Notification === 'undefined' || Notification.permission !== 'granted'){ console.warn('[FCM] Bildirim izni yok, token istenmeyecek'); return; }
+    if(!userDocRef){ console.warn('[FCM] userDocRef henüz hazır değil'); return; }
+    if(!('serviceWorker' in navigator)){ console.warn('[FCM] Bu tarayıcı service worker desteklemiyor'); return; }
+    // getRegistration() bazen kayıt henüz tamamlanmadan "undefined" dönebiliyor
+    // (window 'load' olayı ile bu fonksiyonun çalışma anı yarışabiliyor).
+    // navigator.serviceWorker.ready, kayıt gerçekten AKTİF olana kadar bekleyen
+    // standart ve güvenilir yöntemdir.
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg){ console.warn('[FCM] Service worker kaydı hazır değil'); return; }
     const messaging = firebase.messaging();
     const token = await messaging.getToken({vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg});
     if(token){
+      console.log('[FCM] Token alındı:', token.slice(0,12) + '…');
       await userDocRef.set({fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)}, {merge:true});
+      console.log('[FCM] Token Firestore\'a kaydedildi (users/'+userDocRef.id+'.fcmTokens)');
+    } else {
+      console.warn('[FCM] getToken() boş döndü — VAPID anahtarını ve tarayıcı iznini kontrol et');
     }
-  }catch(e){ console.error('FCM token alınamadı', e); }
+  }catch(e){ console.error('[FCM] Token alınamadı:', e); }
 }
 (async function setupFcmForegroundHandler(){
   try{
     if(typeof firebase === 'undefined' || !firebase.messaging || !(await firebase.messaging.isSupported())) return;
     firebase.messaging().onMessage((payload)=>{
+      console.log('[FCM] Ön planda mesaj alındı:', payload);
       const title = (payload.data && payload.data.title) || '📋 Şantiye Defteri';
       const body = (payload.data && payload.data.body) || '';
       fireLocalNotification(title, body);
@@ -7808,13 +7860,15 @@ function fireLocalNotification(title, body){
   }catch(e){}
 }
 document.getElementById('btnTestNotification').addEventListener('click', async ()=>{
-  const granted = await ensureNotificationPermission();
+  const granted = await requestNotificationPermissionOnce();
   if(!granted){ showToast('Bildirim izni verilmedi, telefon ayarlarından açman gerekebilir'); return; }
+  await setupFcmToken();
   fireLocalNotification('📋 Şantiye Defteri', 'Bugünkü yevmiyenizi henüz girmediniz. Kaydı tamamlamak için dokunun.');
   showToast('Test bildirimi gönderildi');
 });
 if('serviceWorker' in navigator && navigator.serviceWorker.addEventListener){
   navigator.serviceWorker.addEventListener('message', (event)=>{
+
     if(event.data && event.data.openEntry){
       setTimeout(()=>{ if(currentUser) openEntryModal(null, todayStr()); }, 500);
     }
@@ -8108,8 +8162,7 @@ async function enterApp(){
   checkReminder();
   loadPublicProfiles();
   startReminderScheduler();
-  try{ requestNotificationPermissionOnce(); }catch(e){ console.error('bildirim izni hatasi', e); }
-  setupFcmToken();
+  try{ await initNotificationUI(); }catch(e){ console.error('bildirim UI hatasi', e); }
   startNotificationListener();
   startConversationsListener();
   startPresenceHeartbeat();
