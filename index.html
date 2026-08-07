@@ -8008,25 +8008,34 @@ async function startVoiceCall(calleeUid){
   const theirInfo = callAvatarInit(calleeUid);
 
   showActiveCallScreen(theirInfo, 'Çalıyor…');
+  startRingTone(CALLER_RING_PATTERN);
 
-  const offer = await callPc.createOffer();
-  await callPc.setLocalDescription(offer);
+  try{
+    const offer = await callPc.createOffer();
+    await callPc.setLocalDescription(offer);
 
-  await callDocRef.set({
-    callerUid: currentUser.uid,
-    calleeUid: calleeUid,
-    callerName: myInfo.name,
-    calleeName: theirInfo.name,
-    status: 'ringing',
-    offer: { type: offer.type, sdp: offer.sdp },
-    createdAt: Date.now()
-  });
+    await callDocRef.set({
+      callerUid: currentUser.uid,
+      calleeUid: calleeUid,
+      callerName: myInfo.name,
+      calleeName: theirInfo.name,
+      status: 'ringing',
+      offer: { type: offer.type, sdp: offer.sdp },
+      createdAt: Date.now()
+    });
+  }catch(e){
+    console.error('[Arama] Başlatılamadı:', e);
+    showToast('Arama başlatılamadı: ' + (e.message || e.code || 'bilinmeyen hata'));
+    teardownCall();
+    return;
+  }
 
   // Karşı tarafın cevabını ve durum değişikliklerini dinle.
   callDocUnsub = callDocRef.onSnapshot(async (docSnap) => {
     const data = docSnap.data();
     if(!data) return;
     if(data.status === 'accepted' && data.answer && callPc && !callPc.currentRemoteDescription){
+      stopRingTone();
       await callPc.setRemoteDescription(new RTCSessionDescription(data.answer));
       document.getElementById('activeCallStatus').textContent = 'Bağlandı';
       startCallTimer();
@@ -8036,6 +8045,9 @@ async function startVoiceCall(calleeUid){
     } else if(data.status === 'ended'){
       teardownCall();
     }
+  }, (err) => {
+    console.error('[Arama] Doküman dinleyici hatası:', err);
+    showToast('Arama takip edilemiyor: ' + (err.message || err.code || ''));
   });
   // Karşı tarafın (callee) ICE candidate'larını dinle.
   callCandidatesUnsub = callDocRef.collection('calleeCandidates').onSnapshot((snap) => {
@@ -8044,7 +8056,7 @@ async function startVoiceCall(calleeUid){
         callPc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{});
       }
     });
-  });
+  }, (err) => { console.error('[Arama] ICE dinleyici hatası:', err); });
 
   // 45 saniyede kimse açmazsa çağrıyı otomatik kapat (cevapsız arama).
   setTimeout(async () => {
@@ -8089,6 +8101,7 @@ function showIncomingCall(callId, data){
   document.getElementById('incomingCallAvatar').style.background = info.color;
   document.getElementById('incomingCallName').textContent = data.callerName || info.name;
   document.getElementById('incomingCallScreen').style.display = 'flex';
+  startRingTone(CALLEE_RING_PATTERN);
 
   // Arayan kişi aramayı kendisi kapatırsa/vazgeçerse burada da kapanmalı.
   callDocUnsub = db.collection('calls').doc(callId).onSnapshot((docSnap) => {
@@ -8102,6 +8115,7 @@ function showIncomingCall(callId, data){
 async function acceptIncomingCall(){
   const callId = currentCallId;
   if(!callId) return;
+  stopRingTone();
   document.getElementById('incomingCallScreen').style.display = 'none';
   try{
     callLocalStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -8152,12 +8166,46 @@ async function acceptIncomingCall(){
 
 async function declineIncomingCall(){
   const callId = currentCallId;
+  stopRingTone();
   document.getElementById('incomingCallScreen').style.display = 'none';
   if(callId){
     try{ await db.collection('calls').doc(callId).set({ status: 'rejected' }, { merge: true }); }catch(e){}
   }
   teardownCall();
 }
+
+// ---------- ARAMA SESİ (çevirme sesi / zil sesi) ----------
+// Harici ses dosyası kullanmadan, Web Audio API ile basit bir ton üretiliyor.
+let ringAudioCtx = null;
+let ringIntervalId = null;
+function startRingTone(pattern){
+  stopRingTone();
+  try{ ringAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return; }
+  const playBeep = () => {
+    if(!ringAudioCtx) return;
+    try{
+      const osc = ringAudioCtx.createOscillator();
+      const gain = ringAudioCtx.createGain();
+      osc.frequency.value = pattern.freq;
+      gain.gain.value = 0.18;
+      osc.connect(gain); gain.connect(ringAudioCtx.destination);
+      osc.start();
+      setTimeout(()=>{ try{ osc.stop(); }catch(e){} }, pattern.beepMs);
+    }catch(e){}
+    if(pattern.vibrate && navigator.vibrate) navigator.vibrate(pattern.vibrate);
+  };
+  playBeep();
+  ringIntervalId = setInterval(playBeep, pattern.intervalMs);
+}
+function stopRingTone(){
+  if(ringIntervalId){ clearInterval(ringIntervalId); ringIntervalId = null; }
+  if(ringAudioCtx){ try{ ringAudioCtx.close(); }catch(e){} ringAudioCtx = null; }
+  if(navigator.vibrate) navigator.vibrate(0);
+}
+// Arayan taraf: klasik "tüt... tüt..." çevirme sesi (1 sn ses, aradaki boşluk sessiz)
+const CALLER_RING_PATTERN = { freq: 425, beepMs: 1000, intervalMs: 4000 };
+// Aranan taraf: daha canlı bir zil sesi + titreşim
+const CALLEE_RING_PATTERN = { freq: 900, beepMs: 700, intervalMs: 2200, vibrate: [500,300,500,300] };
 
 // ---------- ORTAK ----------
 function showActiveCallScreen(info, statusText){
@@ -8190,6 +8238,7 @@ async function endCall(){
   teardownCall();
 }
 function teardownCall(){
+  stopRingTone();
   if(callTimerInterval){ clearInterval(callTimerInterval); callTimerInterval = null; }
   if(callDocUnsub){ callDocUnsub(); callDocUnsub = null; }
   if(callCandidatesUnsub){ callCandidatesUnsub(); callCandidatesUnsub = null; }
