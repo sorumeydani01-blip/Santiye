@@ -114,10 +114,14 @@
   <div id="activeCallAvatar" style="width:110px;height:110px;border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:38px; margin-bottom:20px;"></div>
   <div id="activeCallName" style="font-family:'Manrope'; font-weight:800; font-size:22px; margin-bottom:6px;">-</div>
   <div id="activeCallTimer" style="font-size:14px; opacity:0.85; margin-bottom:60px; font-variant-numeric:tabular-nums;">00:00</div>
-  <div style="display:flex; gap:28px; align-items:center;">
+  <div style="display:flex; gap:22px; align-items:center;">
     <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
       <button id="btnToggleMute" style="width:56px;height:56px;border-radius:50%; border:none; background:rgba(255,255,255,0.15); color:#fff; font-size:22px; cursor:pointer;">🎤</button>
       <span id="btnToggleMuteLbl" style="font-size:11px; opacity:0.85;">Sustur</span>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <button id="btnToggleSpeaker" style="width:56px;height:56px;border-radius:50%; border:none; background:rgba(255,255,255,0.15); color:#fff; font-size:22px; cursor:pointer;">🔊</button>
+      <span id="btnToggleSpeakerLbl" style="font-size:11px; opacity:0.85;">Hoparlör</span>
     </div>
     <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
       <button id="btnEndCall" style="width:64px;height:64px;border-radius:50%; border:none; background:var(--danger); color:#fff; font-size:26px; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.3); transform:rotate(135deg);">📞</button>
@@ -7968,6 +7972,7 @@ let callCandidatesUnsub = null; // karşı tarafın ICE candidate'larını dinle
 let incomingCallsUnsub = null;  // gelen aramaları dinleyen global unsubscribe
 let callTimerInterval = null;
 let callMuted = false;
+let callSpeakerOn = true;
 let handledIncomingCallIds = new Set(); // aynı aramayı iki kez işlememek için
 
 function callAvatarInit(uid){
@@ -8181,8 +8186,15 @@ let ringIntervalId = null;
 function startRingTone(pattern){
   stopRingTone();
   try{ ringAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return; }
+  // Tarayıcılar, kullanıcı dokunuşu olmadan başlayan sesleri "duraklatılmış" (suspended)
+  // durumda açabiliyor (otomatik oynatma engeli). Gelen arama, Firestore'dan otomatik
+  // tetiklendiği için burada sesi açıkça "devam ettiriyoruz" (resume).
+  if(ringAudioCtx.state === 'suspended'){
+    ringAudioCtx.resume().catch(()=>{});
+  }
   const playBeep = () => {
     if(!ringAudioCtx) return;
+    if(ringAudioCtx.state === 'suspended'){ ringAudioCtx.resume().catch(()=>{}); }
     try{
       const osc = ringAudioCtx.createOscillator();
       const gain = ringAudioCtx.createGain();
@@ -8218,6 +8230,9 @@ function showActiveCallScreen(info, statusText){
   callMuted = false;
   document.getElementById('btnToggleMute').textContent = '🎤';
   document.getElementById('btnToggleMuteLbl').textContent = 'Sustur';
+  callSpeakerOn = true;
+  document.getElementById('btnToggleSpeaker').textContent = '🔊';
+  document.getElementById('btnToggleSpeakerLbl').textContent = 'Hoparlör';
 }
 function startCallTimer(){
   const startedAt = Date.now();
@@ -8266,6 +8281,42 @@ document.getElementById('btnToggleMute').addEventListener('click', () => {
   callLocalStream.getAudioTracks().forEach(t => t.enabled = !callMuted);
   document.getElementById('btnToggleMute').textContent = callMuted ? '🔇' : '🎤';
   document.getElementById('btnToggleMuteLbl').textContent = callMuted ? 'Aç' : 'Sustur';
+});
+document.getElementById('btnToggleSpeaker').addEventListener('click', async () => {
+  const audioEl = document.getElementById('remoteCallAudio');
+  // Not: telefon/hoparlör arası kesin geçiş, gerçek bir arama uygulaması kadar garantili
+  // değildir — bu, tarayıcıların web sayfalarına verdiği yetkiyle ilgili bir sınırdır.
+  // Cihaz/tarayıcı destekliyorsa gerçekten geçiş yapılır, desteklemiyorsa kullanıcıya
+  // haber verilir (sessizce "çalışıyormuş gibi" görünmez).
+  if(typeof audioEl.setSinkId !== 'function'){
+    showToast('Bu telefon/tarayıcı ses çıkışını değiştirmeyi desteklemiyor');
+    return;
+  }
+  try{
+    if(navigator.mediaDevices.getUserMedia){
+      // Bazı tarayıcılarda cihaz etiketleri, önce bir izin verilmeden boş gelir;
+      // mikrofon iznini zaten aldığımız için burada sorun olmamalı.
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const outputs = devices.filter(d => d.kind === 'audiooutput');
+    if(outputs.length <= 1){
+      showToast('Bu cihazda seçilebilir başka bir ses çıkışı bulunamadı');
+      return;
+    }
+    callSpeakerOn = !callSpeakerOn;
+    const speakerDevice = outputs.find(d => /speaker|hoparl/i.test(d.label));
+    const earpieceDevice = outputs.find(d => /earpiece|receiver|kulakl|ahize/i.test(d.label));
+    const target = callSpeakerOn
+      ? (speakerDevice || outputs[0])
+      : (earpieceDevice || outputs.find(d => d.deviceId === 'default') || outputs[outputs.length - 1]);
+    await audioEl.setSinkId(target.deviceId);
+    document.getElementById('btnToggleSpeaker').textContent = callSpeakerOn ? '🔊' : '📱';
+    document.getElementById('btnToggleSpeakerLbl').textContent = callSpeakerOn ? 'Hoparlör' : 'Telefon';
+    showToast(callSpeakerOn ? 'Hoparlöre geçildi' : 'Telefon hoparlörüne geçildi');
+  }catch(e){
+    console.error('[Arama] Ses çıkışı değiştirilemedi:', e);
+    showToast('Bu cihazda ses çıkışı değiştirilemedi');
+  }
 });
 
 function formatLastActive(lastActiveIso){
