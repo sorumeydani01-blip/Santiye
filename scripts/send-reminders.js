@@ -107,9 +107,6 @@ async function main() {
           const code = (r.error && r.error.code) || 'bilinmeyen-hata';
           const msg = (r.error && r.error.message) || '';
           console.warn(`  ✗ [${username}] token ${tokens[i].slice(0, 12)}… -> ${code} (${msg})`);
-          // Bu hata kodları, token'ın artık geçersiz olduğunu (uygulama kaldırılmış,
-          // izin geri alınmış, farklı bir Firebase projesine ait vb.) gösterir —
-          // bu tokenleri Firestore'dan temizliyoruz ki tekrar tekrar denenmesin.
           if (
             code === 'messaging/invalid-registration-token' ||
             code === 'messaging/registration-token-not-registered' ||
@@ -132,10 +129,6 @@ async function main() {
         usersFullyFailed++;
       }
 
-      // lastAsked'i SADECE en az bir cihaza gerçekten ulaştıysak güncelliyoruz.
-      // Hiçbir token'a ulaşamadıysak (örn. tüm tokenler geçersizse), kullanıcıyı
-      // "bugün bildirildi" olarak işaretlemek yanlış olur — bir dahaki çalıştırmada
-      // (ör. yeni bir token kaydettiğinde) tekrar denenebilmeli.
       const update = {};
       if (resp.successCount > 0) {
         update.lastAsked = today;
