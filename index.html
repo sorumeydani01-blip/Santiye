@@ -7724,6 +7724,8 @@ document.getElementById('btnHeaderMenuSettings').addEventListener('click', ()=>{
     }
   }
   settingsOverlay.classList.add('show');
+  if(typeof refreshUndoResetButton === 'function') refreshUndoResetButton();
+  if(typeof refreshUndoDeleteMonthButton === 'function') refreshUndoDeleteMonthButton();
 });
 document.getElementById('btnSignOut').addEventListener('click', async ()=>{
   if(confirm('Çıkış yapmak istediğine emin misin?')){
@@ -7793,14 +7795,207 @@ document.getElementById('importFile').addEventListener('change', ev=>{
 document.getElementById('btnResetAll').addEventListener('click', async ()=>{
   if(confirm('TÜM kayıtlar ve notlar kalıcı olarak silinecek. Emin misiniz?')){
     if(confirm('Bu işlem geri alınamaz. Onaylıyor musunuz?')){
+      // Silmeden önce 24 saatlik bir yedek bırakıyoruz ki yanlışlıkla silinirse geri alınabilsin.
+      try{
+        if(userDocRef){
+          await userDocRef.set({ deletedBackup: { entries: entries, notes: notes, deletedAt: Date.now() } }, {merge:true});
+        }
+      }catch(e){ console.error('Yedek alınamadı', e); }
       entries=[]; notes=[];
       await persistEntries(); await persistNotes();
       refreshSiteList(); refreshCurrentScreen();
       settingsOverlay.classList.remove('show');
-      showToast('Tüm veriler silindi');
+      showToast('Tüm veriler silindi (24 saat içinde geri alabilirsin)');
     }
   }
 });
+
+// ---------- BELİRLİ BİR AYIN VERİSİNİ SİL ----------
+(function addDeleteMonthFeature(){
+  const resetBtn = document.getElementById('btnResetAll');
+  if(!resetBtn) return;
+
+  const triggerBtn = document.createElement('button');
+  triggerBtn.className = 'submit-btn danger';
+  triggerBtn.id = 'btnDeleteMonth';
+  triggerBtn.style.marginBottom = '10px';
+  triggerBtn.textContent = '🗓 Belirli Bir Ayın Verisini Sil';
+  resetBtn.parentNode.insertBefore(triggerBtn, resetBtn);
+
+  const undoMonthBtn = document.createElement('button');
+  undoMonthBtn.className = 'submit-btn secondary';
+  undoMonthBtn.id = 'btnUndoDeleteMonth';
+  undoMonthBtn.style.marginBottom = '10px';
+  undoMonthBtn.style.display = 'none';
+  resetBtn.parentNode.insertBefore(undoMonthBtn, resetBtn);
+
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+  // Ayarlar ekranı her açıldığında, geri alınabilecek bir "ay silme" yedeği var mı diye bakılır.
+  window.refreshUndoDeleteMonthButton = async function(){
+    undoMonthBtn.style.display = 'none';
+    if(!userDocRef) return;
+    try{
+      const doc = await userDocRef.get();
+      const backup = doc.exists ? doc.data().deletedMonthBackup : null;
+      if(backup && backup.deletedAt && (Date.now() - backup.deletedAt) < ONE_DAY_MS){
+        const hoursLeft = Math.max(1, Math.ceil((ONE_DAY_MS - (Date.now() - backup.deletedAt)) / (60*60*1000)));
+        undoMonthBtn.textContent = '↩️ ' + monthLabel(backup.month) + ' Verisini Geri Getir (' + hoursLeft + ' saat kaldı)';
+        undoMonthBtn.style.display = 'block';
+      }
+    }catch(e){ console.error('Ay yedeği kontrol edilemedi', e); }
+  };
+  undoMonthBtn.addEventListener('click', async () => {
+    if(!userDocRef) return;
+    try{
+      const doc = await userDocRef.get();
+      const backup = doc.exists ? doc.data().deletedMonthBackup : null;
+      if(!backup || !backup.deletedAt || (Date.now() - backup.deletedAt) >= ONE_DAY_MS){
+        showToast('Geri alınabilecek bir yedek bulunamadı (24 saat geçmiş olabilir)');
+        undoMonthBtn.style.display = 'none';
+        return;
+      }
+      if(!confirm(monthLabel(backup.month) + ' ayına ait ' + backup.entries.length + ' kayıt geri getirilecek. Emin misin?')) return;
+      // Aynı id'li bir kayıt varsa tekrar eklenmesin diye önce çıkarılıyor, sonra yedek geri ekleniyor.
+      const backupIds = new Set(backup.entries.map(e => e.id));
+      entries = entries.filter(e => !backupIds.has(e.id)).concat(backup.entries);
+      await persistEntries();
+      await userDocRef.set({ deletedMonthBackup: firebase.firestore.FieldValue.delete() }, {merge:true});
+      refreshSiteList(); refreshCurrentScreen();
+      undoMonthBtn.style.display = 'none';
+      settingsOverlay.classList.remove('show');
+      showToast(monthLabel(backup.month) + ' verileri geri getirildi');
+    }catch(e){
+      console.error('Ay geri alma hatası', e);
+      showToast('Geri alınamadı: ' + (e.message||''));
+    }
+  });
+
+  // Küçük bir seçim penceresi dinamik olarak oluşturuluyor (mevcut kart/modal
+  // stiliyle uyumlu) — ayrı bir HTML düzenlemesi gerekmesin diye.
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'deleteMonthOverlay';
+  overlay.innerHTML =
+    '<div class="card" style="max-width:420px; margin:0 auto; width:100%;">' +
+      '<div class="section-title" style="border-left-color:var(--danger); color:var(--danger);">🗓 Ay Verisini Sil</div>' +
+      '<div class="field">' +
+        '<label>Hangi ayın kayıtları silinsin?</label>' +
+        '<select id="deleteMonthSelect" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;"></select>' +
+      '</div>' +
+      '<div id="deleteMonthCount" class="hint" style="margin-top:6px;"></div>' +
+      '<div class="btn-row" style="margin-top:16px; display:flex; gap:10px;">' +
+        '<button class="submit-btn secondary" id="deleteMonthCancel" style="flex:1;">Vazgeç</button>' +
+        '<button class="submit-btn danger" id="deleteMonthConfirm" style="flex:1;">Sil</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  function populateMonthOptions(){
+    const select = document.getElementById('deleteMonthSelect');
+    const months = Array.from(new Set(entries.map(e => e.date && e.date.slice(0,7)).filter(Boolean))).sort().reverse();
+    if(months.length === 0){
+      select.innerHTML = '<option value="">Hiç kayıt yok</option>';
+      document.getElementById('deleteMonthConfirm').disabled = true;
+      document.getElementById('deleteMonthCount').textContent = '';
+      return;
+    }
+    document.getElementById('deleteMonthConfirm').disabled = false;
+    select.innerHTML = months.map(mk => `<option value="${mk}">${monthLabel(mk)}</option>`).join('');
+    updateCount();
+  }
+  function updateCount(){
+    const mk = document.getElementById('deleteMonthSelect').value;
+    const count = entries.filter(e => e.date && e.date.slice(0,7) === mk).length;
+    document.getElementById('deleteMonthCount').textContent = count + ' kayıt silinecek.';
+  }
+
+  triggerBtn.addEventListener('click', () => {
+    populateMonthOptions();
+    overlay.classList.add('show');
+  });
+  document.getElementById('deleteMonthSelect').addEventListener('change', updateCount);
+  document.getElementById('deleteMonthCancel').addEventListener('click', () => {
+    overlay.classList.remove('show');
+  });
+  document.getElementById('deleteMonthConfirm').addEventListener('click', async () => {
+    const mk = document.getElementById('deleteMonthSelect').value;
+    if(!mk) return;
+    const label = monthLabel(mk);
+    const toDelete = entries.filter(e => e.date && e.date.slice(0,7) === mk);
+    if(toDelete.length === 0) return;
+    if(!confirm(label + ' ayına ait ' + toDelete.length + ' kayıt kalıcı olarak silinecek. Emin misiniz?')) return;
+    if(!confirm('Bu işlem geri alınamaz. Onaylıyor musunuz?')) return;
+    // Silmeden önce 24 saatlik bir yedek bırakılıyor ki yanlışlıkla silinirse geri alınabilsin.
+    try{
+      if(userDocRef){
+        await userDocRef.set({ deletedMonthBackup: { entries: toDelete, month: mk, deletedAt: Date.now() } }, {merge:true});
+      }
+    }catch(e){ console.error('Ay yedeği alınamadı', e); }
+    entries = entries.filter(e => !(e.date && e.date.slice(0,7) === mk));
+    await persistEntries();
+    refreshSiteList(); refreshCurrentScreen();
+    overlay.classList.remove('show');
+    if(typeof settingsOverlay !== 'undefined') settingsOverlay.classList.remove('show');
+    showToast(label + ' verileri silindi (' + toDelete.length + ' kayıt, 24 saat içinde geri alabilirsin)');
+  });
+})();
+
+// ---------- "TÜM VERİLERİ SİL" İÇİN 24 SAATLİK GERİ ALMA ----------
+(function addUndoResetFeature(){
+  const resetBtn = document.getElementById('btnResetAll');
+  if(!resetBtn) return;
+
+  const undoBtn = document.createElement('button');
+  undoBtn.className = 'submit-btn secondary';
+  undoBtn.id = 'btnUndoReset';
+  undoBtn.style.marginBottom = '10px';
+  undoBtn.style.display = 'none';
+  undoBtn.textContent = '↩️ Son Silineni Geri Getir';
+  resetBtn.parentNode.insertBefore(undoBtn, resetBtn);
+
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+  // Ayarlar ekranı her açıldığında, geri alınabilecek bir yedek olup olmadığına bakıyoruz.
+  window.refreshUndoResetButton = async function(){
+    undoBtn.style.display = 'none';
+    if(!userDocRef) return;
+    try{
+      const doc = await userDocRef.get();
+      const backup = doc.exists ? doc.data().deletedBackup : null;
+      if(backup && backup.deletedAt && (Date.now() - backup.deletedAt) < ONE_DAY_MS){
+        const hoursLeft = Math.max(1, Math.ceil((ONE_DAY_MS - (Date.now() - backup.deletedAt)) / (60*60*1000)));
+        undoBtn.textContent = '↩️ Son Silineni Geri Getir (' + hoursLeft + ' saat kaldı)';
+        undoBtn.style.display = 'block';
+      }
+    }catch(e){ console.error('Yedek kontrol edilemedi', e); }
+  };
+
+  undoBtn.addEventListener('click', async () => {
+    if(!userDocRef) return;
+    try{
+      const doc = await userDocRef.get();
+      const backup = doc.exists ? doc.data().deletedBackup : null;
+      if(!backup || !backup.deletedAt || (Date.now() - backup.deletedAt) >= ONE_DAY_MS){
+        showToast('Geri alınabilecek bir yedek bulunamadı (24 saat geçmiş olabilir)');
+        undoBtn.style.display = 'none';
+        return;
+      }
+      if(!confirm('Silinen kayıtlar ve notlar geri getirilecek. Şu anki (varsa) veriler bunların üzerine yazılacak. Emin misin?')) return;
+      entries = Array.isArray(backup.entries) ? backup.entries : [];
+      notes = Array.isArray(backup.notes) ? backup.notes : [];
+      await persistEntries(); await persistNotes();
+      await userDocRef.set({ deletedBackup: firebase.firestore.FieldValue.delete() }, {merge:true});
+      refreshSiteList(); refreshCurrentScreen();
+      undoBtn.style.display = 'none';
+      settingsOverlay.classList.remove('show');
+      showToast('Veriler geri getirildi');
+    }catch(e){
+      console.error('Geri alma hatası', e);
+      showToast('Geri alınamadı: ' + (e.message||''));
+    }
+  });
+})();
 
 // ---------- DAILY CHECK ("Bugün çalıştın mı?") ----------
 const dailyCheckOverlay = document.getElementById('dailyCheckOverlay');
