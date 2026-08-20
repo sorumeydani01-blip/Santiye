@@ -1,3 +1,0 @@
-name: Soru Havuzunu Yükle (Tek Seferlik)
-on: { workflow_dispatch: {} }
-jobs: { seed: { runs-on: ubuntu-latest, steps: [ { name: 'Kodu al', uses: 'actions/checkout@v4' }, { name: 'Node.js kur', uses: 'actions/setup-node@v4', with: { node-version: '20' } }, { name: 'Bagimliligi kur (firebase-admin)', run: 'npm install firebase-admin@12' }, { name: 'Sorulari yukle', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-questions.js' } ] } }
