@@ -975,7 +975,10 @@
           <span class="vp-avatar-badge" id="vpAvatarBadge">-</span>
         </div>
         <div style="flex:1; min-width:0;">
-          <div class="vp-name" id="vpName">-</div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div class="vp-name" id="vpName">-</div>
+            <span id="vpQuizScoreBadge" style="font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-rust); color:var(--danger); white-space:nowrap;">🧠 0 pn</span>
+          </div>
           <div class="vp-username" id="vpUsername">-</div>
           <div class="vp-meta" id="vpMeta">-</div>
           <div class="vp-lastactive" id="vpLastActive"></div>
@@ -994,9 +997,31 @@
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
       <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);">
-        <span id="vpFollowerCount">0 takipçi</span> · <span id="vpQuizScore" style="color:var(--danger);">0 pn</span>
+        <span id="vpFollowerCount">0 takipçi</span>
       </div>
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
+    </div>
+
+    <div class="card" id="vpQuizStatsCard" style="padding:14px; margin-bottom:14px;">
+      <div class="section-title" style="margin:0 0 10px; padding:0; border:none;">🧠 Soru Çöz İstatistikleri</div>
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1; text-align:center; background:var(--concrete); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="vpQuizStatTotal">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Çözülen Soru</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-forest); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:#16A34A;" id="vpQuizStatCorrect">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Doğru</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-rust); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:var(--danger);" id="vpQuizStatWrong">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Yanlış</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-slate); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:var(--asphalt);" id="vpQuizStatAccuracy">-</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Başarı</div>
+        </div>
+      </div>
     </div>
 
     <button id="vpAdminToolsToggle" style="display:none; width:100%; margin-top:8px; padding:12px; border-radius:14px; border:1.5px dashed var(--danger); background:var(--tint-rust); color:var(--danger); font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; cursor:pointer;">🛠️ Yönetici Araçlarını Göster</button>
@@ -2448,7 +2473,8 @@ async function openViewProfile(uid){
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
-  document.getElementById('vpQuizScore').textContent = (p && typeof p.quizScore==='number' ? p.quizScore : 0) + ' pn';
+  document.getElementById('vpQuizScoreBadge').textContent = '🧠 ' + (p && typeof p.quizScore==='number' ? p.quizScore : 0) + ' pn';
+  loadVpQuizStats(uid);
   document.getElementById('vpCreatedAt').textContent = p && p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '-';
   renderBadgesFromFlags('vpBadges', p ? p.badges : null, p ? p.profession : null);
 
@@ -8619,6 +8645,26 @@ async function loadQuizStats(){
   }catch(e){ console.error('Soru istatistikleri yüklenemedi', e); }
 }
 
+async function loadVpQuizStats(uid){
+  const totalEl = document.getElementById('vpQuizStatTotal');
+  if(!totalEl) return;
+  totalEl.textContent = '…';
+  try{
+    const snap = await db.collection('quiz_score_events').where('uid','==',uid).get();
+    let correct = 0, wrong = 0;
+    snap.docs.forEach(d=>{
+      const points = d.data().points;
+      if(points > 0) correct++; else if(points < 0) wrong++;
+    });
+    const total = correct + wrong;
+    const accuracy = total > 0 ? Math.round((correct/total)*100) + '%' : '-';
+    totalEl.textContent = total;
+    document.getElementById('vpQuizStatCorrect').textContent = correct;
+    document.getElementById('vpQuizStatWrong').textContent = wrong;
+    document.getElementById('vpQuizStatAccuracy').textContent = accuracy;
+  }catch(e){ console.error('Kullanıcının soru istatistikleri yüklenemedi', e); }
+}
+
 async function loadLeaderboard(){
   const listEl = document.getElementById('leaderboardList');
   if(!listEl) return;
@@ -8664,13 +8710,20 @@ function renderLeaderboardList(ranked){
     const initials = getInitials(name);
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
-    return '<div style="display:flex; align-items:center; gap:10px; padding:8px 0; '+borderStyle+'">'
+    return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; '+borderStyle+'">'
       + '<div style="width:24px; text-align:center; font-weight:800; font-size:13px;">'+medal+'</div>'
       + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarGradient(row.uid)+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0;">'+escapeHtml(initials)+'</div>'
       + '<div style="flex:1; font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(name)+'</div>'
       + '<div style="font-weight:800; font-size:13px; color:var(--asphalt);">'+row.score+' pn</div>'
       + '</div>';
   }).join('');
+  listEl.querySelectorAll('[data-lb-uid]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const uid = row.dataset.lbUid;
+      if(currentUser && uid === currentUser.uid) switchScreen('profil');
+      else openViewProfile(uid);
+    });
+  });
   expandBtn.style.display = (ranked.length > 7) ? 'block' : 'none';
   expandBtn.textContent = leaderboardExpanded ? 'Daralt' : 'Genişlet (14 kişi göster)';
 }
