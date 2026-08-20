@@ -1459,11 +1459,11 @@
       <div class="field">
         <label>Şıklar (doğru cevabın yanındaki daireyi işaretle)</label>
         <div id="quizAdminOptionsWrap">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="0" checked><input type="text" id="quizAdminOpt0" placeholder="Şık 1" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="1"><input type="text" id="quizAdminOpt1" placeholder="Şık 2" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="2"><input type="text" id="quizAdminOpt2" placeholder="Şık 3" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="3"><input type="text" id="quizAdminOpt3" placeholder="Şık 4" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
-          <div style="display:flex; align-items:center; gap:8px;"><input type="radio" name="quizAdminCorrect" value="4"><input type="text" id="quizAdminOpt4" placeholder="Şık 5 (opsiyonel)" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="0" style="width:20px; flex-shrink:0;" checked><input type="text" id="quizAdminOpt0" placeholder="Şık 1" style="flex:1; min-width:0; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="1" style="width:20px; flex-shrink:0;"><input type="text" id="quizAdminOpt1" placeholder="Şık 2" style="flex:1; min-width:0; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="2" style="width:20px; flex-shrink:0;"><input type="text" id="quizAdminOpt2" placeholder="Şık 3" style="flex:1; min-width:0; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="3" style="width:20px; flex-shrink:0;"><input type="text" id="quizAdminOpt3" placeholder="Şık 4" style="flex:1; min-width:0; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px;"><input type="radio" name="quizAdminCorrect" value="4" style="width:20px; flex-shrink:0;"><input type="text" id="quizAdminOpt4" placeholder="Şık 5 (opsiyonel)" style="flex:1; min-width:0; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
         </div>
       </div>
       <button class="submit-btn" id="quizAdminSaveBtn">💾 Kaydet</button>
@@ -2853,7 +2853,7 @@ function openRoleBadgeMenu(){
   const menuBox = document.getElementById('roleBadgeMenuItems');
   menuBox.innerHTML = ROLE_BADGE_LINKS.map(l=>`<span data-role-link="${l.id}" style="display:block; padding:12px 16px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; border-bottom:1px solid var(--line); white-space:nowrap;">${l.label}</span>`).join('');
   menuBox.style.width = '210px';
-  menuBox.style.maxHeight = 'calc(100vh - 180px)';
+  menuBox.style.maxHeight = 'calc(100vh - 320px)';
   menuBox.style.opacity = '1';
   menuBox.querySelectorAll('[data-role-link]').forEach((el,idx)=>{
     if(idx===ROLE_BADGE_LINKS.length-1) el.style.borderBottom = 'none';
