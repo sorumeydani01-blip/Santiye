@@ -1,3 +1,99 @@
 name: Soru Havuzunu Yükle (Tek Seferlik)
-on: { workflow_dispatch: {} }
-jobs: { seed: { runs-on: ubuntu-latest, steps: [ { name: 'Kodu al', uses: 'actions/checkout@v4' }, { name: 'Node.js kur', uses: 'actions/setup-node@v4', with: { node-version: '20' } }, { name: 'Bagimliligi kur (firebase-admin)', run: 'npm install firebase-admin@12' }, { name: '1. Paket: seed-quiz-questions.js (66 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-questions.js' }, { name: '2. Paket: seed-quiz-islami-100.js (99 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-islami-100.js' }, { name: '3. Paket: seed-quiz-genel-batch2.js (35 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-genel-batch2.js' }, { name: '4. Paket: seed-quiz-islami-5opt.js (100 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-islami-5opt.js' }, { name: '5. Paket: seed-quiz-genel-batch3.js (50 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-genel-batch3.js' }, { name: '6. Paket: seed-quiz-islami-batch2.js (48 soru)', env: { FIREBASE_SERVICE_ACCOUNT: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }, run: 'node scripts/seed-quiz-islami-batch2.js' } ] } }
+
+on:
+  workflow_dispatch:
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bagimliligi kur (firebase-admin)
+        run: npm install firebase-admin@12
+
+      - name: 'Paket: seed-quiz-genel-batch2.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-genel-batch2.js
+
+      - name: 'Paket: seed-quiz-genel-batch3.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-genel-batch3.js
+
+      - name: 'Paket: seed-quiz-islami-100.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-islami-100.js
+
+      - name: 'Paket: seed-quiz-islami-5opt.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-islami-5opt.js
+
+      - name: 'Paket: seed-quiz-islami-batch2.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-islami-batch2.js
+
+      - name: 'Paket: seed-quiz-part1-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part1-1000.js
+
+      - name: 'Paket: seed-quiz-part2-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part2-1000.js
+
+      - name: 'Paket: seed-quiz-part3-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part3-1000.js
+
+      - name: 'Paket: seed-quiz-part4-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part4-1000.js
+
+      - name: 'Paket: seed-quiz-part5-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part5-1000.js
+
+      - name: 'Paket: seed-quiz-part6-1000.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part6-1000.js
+
+      - name: 'Paket: seed-quiz-part7.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part7.js
+
+      - name: 'Paket: seed-quiz-part8.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part8.js
+
+      - name: 'Paket: seed-quiz-part9.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-part9.js
+
+      - name: 'Paket: seed-quiz-questions.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-questions.js
+
+      - name: 'Paket: seed-quiz.yml'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz.yml
