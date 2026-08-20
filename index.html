@@ -168,6 +168,7 @@
         <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
         <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
           <button id="btnHeaderMenuProfile" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
+          <button id="btnHeaderMenuQuiz" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
           <button id="btnHeaderMenuSettings" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
         </div>
       </div>
@@ -218,6 +219,19 @@
 
     <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
     <div id="recentList"></div>
+
+    <div class="section-title">🏆 Sıralama</div>
+    <div id="leaderboardTabsWrap" style="display:flex; gap:6px; margin-bottom:12px; background:var(--concrete); padding:4px; border-radius:16px;">
+      <button class="leaderboard-tab active" data-period="daily" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Günlük</button>
+      <button class="leaderboard-tab" data-period="weekly" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Haftalık</button>
+      <button class="leaderboard-tab" data-period="monthly" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Aylık</button>
+      <button class="leaderboard-tab" data-period="alltime" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Genel</button>
+    </div>
+    <div class="card" id="leaderboardCard">
+      <div id="leaderboardList" class="hint">Yükleniyor…</div>
+      <button class="see-all-btn" id="btnExpandLeaderboard" style="width:100%; margin-top:10px; text-align:center; display:none;">Genişlet (14 kişi göster)</button>
+    </div>
+    <button class="submit-btn" id="btnGoToQuiz" style="margin:12px 0 0;">🧠 Soru Çöz, Puan Kazan</button>
 
     <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
     <div id="activeMembersList"></div>
@@ -431,6 +445,69 @@
     </div>
   </section>
 
+  <!-- SORU ÇÖZ (Puan Kazan) -->
+  <section class="screen" id="screen-quiz">
+    <div id="quizCategoryStep">
+      <div class="section-title" style="margin-top:0;">🧠 Soru Çöz, Puan Kazan</div>
+      <div class="hint" style="margin-bottom:14px;">Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır. Her soruda bir kez 50/50 joker hakkın var.</div>
+      <div class="card" id="quizCategoryGenel" style="cursor:pointer; display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div style="width:52px;height:52px;border-radius:16px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌍</div>
+        <div style="flex:1;"><div style="font-weight:800; font-size:15px;">Genel Kültür</div><div class="hint" style="margin:2px 0 0;">Tarih, coğrafya, bilim, spor ve daha fazlası</div></div>
+        <div style="color:var(--ink-soft); font-size:18px;">›</div>
+      </div>
+      <div class="card" id="quizCategoryIslami" style="cursor:pointer; display:flex; align-items:center; gap:14px;">
+        <div style="width:52px;height:52px;border-radius:16px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🕌</div>
+        <div style="flex:1;"><div style="font-weight:800; font-size:15px;">İslami Bilgiler</div><div class="hint" style="margin:2px 0 0;">İbadetler, siyer, temel dini bilgiler</div></div>
+        <div style="color:var(--ink-soft); font-size:18px;">›</div>
+      </div>
+    </div>
+
+    <div id="quizPlayStep" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <button id="btnQuizQuit" style="border:none; background:none; color:var(--ink-soft); font-size:20px; cursor:pointer; padding:4px; line-height:1;">✕</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="background:var(--tint-rust); color:var(--danger); font-weight:800; font-size:12.5px; padding:6px 13px; border-radius:20px;">✕ <span id="quizWrongCount">0</span></span>
+          <span style="background:var(--tint-forest); color:#16A34A; font-weight:800; font-size:12.5px; padding:6px 13px; border-radius:20px;">✓ <span id="quizCorrectCount">0</span></span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <div style="flex:1; height:7px; border-radius:4px; background:var(--concrete); overflow:hidden;">
+          <div id="quizProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--asphalt),var(--asphalt-2)); border-radius:4px; transition:width .35s ease;"></div>
+        </div>
+        <div style="font-weight:800; font-size:12.5px; color:var(--ink-soft); white-space:nowrap;" id="quizProgressLbl">1/10</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div style="font-weight:800; font-size:13.5px; color:var(--asphalt);" id="quizQuestionNumLbl">1. Soru</div>
+        <div style="font-weight:800; font-size:13px; color:var(--ink-soft);" id="quizSessionScoreLbl">0 pn</div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div id="quizQuestionText" style="font-weight:700; font-size:17px; line-height:1.55; margin-bottom:10px;">-</div>
+        <div style="height:5px; border-radius:3px; background:var(--concrete); overflow:hidden;">
+          <div id="quizTimerBar" style="height:100%; width:100%; background:var(--asphalt); transition:width 1s linear;"></div>
+        </div>
+      </div>
+      <div id="quizOptionsWrap"></div>
+      <button id="btnQuizHintToggle" style="width:100%; margin-top:10px; padding:10px; border-radius:12px; border:none; background:none; color:var(--ink-soft); font-weight:700; font-size:12.5px; cursor:pointer; text-align:left; display:none;">💡 İpucu</button>
+      <div id="quizHintBox" class="hint" style="display:none; background:var(--tint-slate); padding:10px 12px; border-radius:10px; margin-top:4px;"></div>
+      <button id="btnQuizJoker" style="width:100%; margin-top:14px; padding:12px; border-radius:14px; border:1.5px dashed var(--asphalt); background:var(--tint-slate); color:var(--asphalt); font-weight:800; font-size:13.5px; cursor:pointer;">🃏 50/50 Joker Kullan (<span id="quizJokerCount">3</span> hakkın var)</button>
+      <div id="quizExplanationBox" style="display:none; margin-top:14px; padding:14px 16px; border-radius:14px; background:var(--tint-slate); border:1px solid var(--line);">
+        <div style="font-weight:800; font-size:12.5px; color:var(--asphalt); margin-bottom:6px;">📖 Açıklama</div>
+        <div id="quizExplanationText" style="font-size:13.5px; line-height:1.5; color:var(--ink);"></div>
+      </div>
+      <button id="btnQuizUnderstood" style="display:none; width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-weight:800; font-size:14px; cursor:pointer;">✅ Anladım, Devam Et</button>
+    </div>
+
+    <div id="quizResultStep" style="display:none; text-align:center; padding-top:20px;">
+      <div style="font-size:44px; margin-bottom:10px;">🏁</div>
+      <div style="font-weight:800; font-size:20px; margin-bottom:6px;">Tamamlandı!</div>
+      <div class="hint" style="margin-bottom:18px;" id="quizResultDetail">-</div>
+      <div style="font-family:'Manrope'; font-weight:800; font-size:32px; color:var(--asphalt); margin-bottom:24px;" id="quizResultScore">+0 pn</div>
+      <button class="submit-btn" id="btnQuizPlayAgain" style="margin-bottom:10px;">🔁 Diğer Teste Geç</button>
+      <button class="submit-btn secondary" id="btnQuizBackHome">Ana Sayfaya Dön</button>
+    </div>
+  </section>
+
+
   <!-- İSTATİSTİK (tüm zamanlar) -->
   <section class="screen" id="screen-istatistik">
     <div class="section-title" style="margin-top:0;">📅 Zaman Filtresi</div>
@@ -524,6 +601,10 @@
           <div class="vp-meta">👷 <span id="profileProfession">-</span></div>
           <div id="ownRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="ownTenureBadge" style="margin-top:6px; display:inline-block;"></span>
+        </div>
+        <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:19px; color:var(--danger);" id="ownQuizScore">0</div>
+          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">pn</div>
         </div>
         <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
           <div style="font-family:'Manrope'; font-weight:800; font-size:19px;" id="ownFollowerCount">0</div>
@@ -890,7 +971,9 @@
         <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
-      <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);" id="vpFollowerCount">0 takipçi</div>
+      <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);">
+        <span id="vpFollowerCount">0 takipçi</span> · <span id="vpQuizScore" style="color:var(--danger);">0 pn</span>
+      </div>
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
     </div>
 
@@ -1006,6 +1089,7 @@
           <div class="toggle-row"><div class="tlbl">📢 Duyuru Bandı Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditAnnouncements"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">📖 Günün Ayeti Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditQuotes"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🧠 Soru Bankası Yönetimi</div><label class="switch"><input type="checkbox" id="vpModManageQuizQuestions"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">⚠️ Uyarı Verme</div><label class="switch"><input type="checkbox" id="vpModManageWarnings"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
@@ -1101,6 +1185,10 @@
       </button>
       <button class="admin-menu-row" data-admin-nav="adminprofessions" id="adminMenuRow_adminprofessions" >
         <span class="admin-menu-title">👷 Meslek Listesi</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminquiz" id="adminMenuRow_adminquiz" >
+        <span class="admin-menu-title">🧠 Soru Bankası</span>
         <span class="admin-menu-arrow">›</span>
       </button>
       <button class="admin-menu-row" data-admin-nav="adminranks" id="adminMenuRow_adminranks" >
@@ -1340,6 +1428,61 @@
       </div>
     </div>
   </section>
+
+  <section class="screen" id="screen-adminquiz">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminquiz">‹</button>
+      <span class="cal-title">🧠 Soru Bankası</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-title" style="margin-top:0;" id="quizAdminFormTitle">Yeni Soru Ekle</div>
+      <div class="field">
+        <label>Kategori</label>
+        <select id="quizAdminCategory" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
+          <option value="genel_kultur">🌍 Genel Kültür</option>
+          <option value="islami">🕌 İslami Bilgiler</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Soru Metni</label>
+        <textarea id="quizAdminQuestionText" rows="2" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px; resize:vertical;" placeholder="Soruyu yaz..."></textarea>
+      </div>
+      <div class="field">
+        <label>İpucu (opsiyonel — cevaplamadan önce görünür)</label>
+        <textarea id="quizAdminHint" rows="2" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px; resize:vertical;" placeholder="Kullanıcı zorlanırsa göreceği ipucu..."></textarea>
+      </div>
+      <div class="field">
+        <label>Açıklama (opsiyonel — cevapladıktan sonra görünür)</label>
+        <textarea id="quizAdminExplanation" rows="2" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px; resize:vertical;" placeholder="Doğru cevabın nedenini açıklayan metin..."></textarea>
+      </div>
+      <div class="field">
+        <label>Şıklar (doğru cevabın yanındaki daireyi işaretle)</label>
+        <div id="quizAdminOptionsWrap">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="0" checked><input type="text" id="quizAdminOpt0" placeholder="Şık 1" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="1"><input type="text" id="quizAdminOpt1" placeholder="Şık 2" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="2"><input type="text" id="quizAdminOpt2" placeholder="Şık 3" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><input type="radio" name="quizAdminCorrect" value="3"><input type="text" id="quizAdminOpt3" placeholder="Şık 4" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+          <div style="display:flex; align-items:center; gap:8px;"><input type="radio" name="quizAdminCorrect" value="4"><input type="text" id="quizAdminOpt4" placeholder="Şık 5 (opsiyonel)" style="flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:13.5px;"></div>
+        </div>
+      </div>
+      <button class="submit-btn" id="quizAdminSaveBtn">💾 Kaydet</button>
+      <button class="submit-btn secondary" id="quizAdminCancelEditBtn" style="display:none; margin-top:8px;">Vazgeç (Yeni Soruya Dön)</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-top:0; display:flex; justify-content:space-between; align-items:center;"><span>Mevcut Sorular</span><span class="hint" id="quizAdminCount" style="margin:0;"></span></div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <select id="quizAdminFilterCategory" style="flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:12.5px;">
+          <option value="">Tüm Kategoriler</option>
+          <option value="genel_kultur">Genel Kültür</option>
+          <option value="islami">İslami Bilgiler</option>
+        </select>
+      </div>
+      <div id="quizAdminList"></div>
+    </div>
+  </section>
+
 
   <section class="screen" id="screen-adminranks">
     <div class="cal-nav">
@@ -2283,6 +2426,7 @@ async function openViewProfile(uid){
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
+  document.getElementById('vpQuizScore').textContent = (p && typeof p.quizScore==='number' ? p.quizScore : 0) + ' pn';
   document.getElementById('vpCreatedAt').textContent = p && p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '-';
   renderBadgesFromFlags('vpBadges', p ? p.badges : null, p ? p.profession : null);
 
@@ -2595,6 +2739,7 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
     document.getElementById('vpModEditAnnouncements').checked = !!perms.editAnnouncements;
     document.getElementById('vpModEditQuotes').checked = !!perms.editQuotes;
     document.getElementById('vpModEditProfessions').checked = !!perms.editProfessions;
+    document.getElementById('vpModManageQuizQuestions').checked = !!perms.manageQuizQuestions;
     document.getElementById('vpModBanIp').checked = !!perms.banIp;
     document.getElementById('vpModManageWarnings').checked = !!perms.manageWarnings;
     document.getElementById('vpModViewPrivateInfo').checked = !!perms.viewPrivateInfo;
@@ -2854,6 +2999,7 @@ function canDeleteArchivedMedia(){ return isAdmin || !!modPerms.deleteArchivedMe
 function canEditAnnouncements(){ return isAdmin || !!modPerms.editAnnouncements; }
 function canEditQuotes(){ return isAdmin || !!modPerms.editQuotes; }
 function canEditProfessions(){ return isAdmin || !!modPerms.editProfessions; }
+function canManageQuizQuestions(){ return isAdmin || !!modPerms.manageQuizQuestions; }
 
 
 async function logModAction(action, targetUid, details){
@@ -2880,6 +3026,7 @@ function applyAdminPermVisibility(){
   document.getElementById('adminMenuRow_adminannouncements').style.display = canEditAnnouncements() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminquotes').style.display = canEditQuotes() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminprofessions').style.display = canEditProfessions() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminquiz').style.display = canManageQuizQuestions() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminranks').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('adminMenuRow_admintenureranks').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminipban').style.display = canBanIp() ? 'flex' : 'none';
@@ -2901,6 +3048,7 @@ function loadAllAdminData(){
   if(canEditAnnouncements() || canEditQuotes() || canEditProfessions()) loadAdminContentConfig();
   if(isAdmin){ renderModeratorsList(); loadRankConfig(); loadTenureRankConfig(); }
   if(canBanIp()) renderBannedIpList();
+  if(canManageQuizQuestions()) renderQuizAdminList();
 }
 function openAdminPanel(){
   document.getElementById('settingsOverlay').classList.remove('show');
@@ -3276,6 +3424,7 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     editAnnouncements: document.getElementById('vpModEditAnnouncements').checked,
     editQuotes: document.getElementById('vpModEditQuotes').checked,
     editProfessions: document.getElementById('vpModEditProfessions').checked,
+    manageQuizQuestions: document.getElementById('vpModManageQuizQuestions').checked,
     banIp: document.getElementById('vpModBanIp').checked,
     manageWarnings: document.getElementById('vpModManageWarnings').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
@@ -3639,7 +3788,7 @@ const PERM_LABELS = {
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
   viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
-  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme'
+  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi'
 };
 const PERM_DESCRIPTIONS = {
   editProfile:'Herhangi bir kullanıcının profil bilgilerini (ad, meslek, şehir vb.) düzenleyebilirsin.',
@@ -3667,7 +3816,8 @@ const PERM_DESCRIPTIONS = {
   temelYetki:'Moderatörlüğün temel paketidir — birçok görüntüleme yetkisini tek seferde açar.',
   manageWarnings:'Kullanıcılara süreli uyarı verip, uyarı geçmişlerini görebilirsin.',
   viewUserNotifications:'Bir kullanıcının aldığı bildirimleri görebilirsin.',
-  viewLoginHistory:'Bir kullanıcının geçmiş giriş kayıtlarını (şüpheli giriş kontrolü için) görebilirsin.'
+  viewLoginHistory:'Bir kullanıcının geçmiş giriş kayıtlarını (şüpheli giriş kontrolü için) görebilirsin.',
+  manageQuizQuestions:'"Soru Çöz" bölümündeki soru havuzuna yeni soru ekleyebilir, mevcut soruları düzenleyip silebilirsin.'
 };
 const MOD_ACTION_LABELS = {
   editProfile:'✏️ Profil düzenledi', deletePhoto:'🖼️ Fotoğraf sildi', resetAccount:'🔄 Hesabı sıfırladı',
@@ -4317,6 +4467,7 @@ function activeMemberRowHtml(u){
         <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${u.role==='admin'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">👑 Yönetici</span>':u.role==='moderator'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">🛡️ '+escapeHtml(u.rank||'Moderatör')+'</span>':tenureBadgeHtml(u.createdAt)}</div>
         <div class="note">${escapeHtml(formatLastActive(u.lastActive))}</div>
       </div>
+      <div style="flex-shrink:0; font-weight:800; font-size:12px; color:var(--danger);">${(typeof u.quizScore==='number'?u.quizScore:0)} pn</div>
     </div>`;
 }
 function wireActiveMemberRows(box){
@@ -6374,6 +6525,7 @@ function renderHome(){
   renderReceivableReminder(all);
   renderAvansCard();
   renderActiveMembers();
+  if(typeof loadLeaderboard === 'function') loadLeaderboard();
 
   const curMonth = monthKey(todayStr());
   const prevEntries = entries.filter(e=>monthKey(e.date) < curMonth);
@@ -7226,6 +7378,7 @@ function renderProfile(){
   document.getElementById('profileAvatarBadge').textContent = getInitials(profile.fullName);
   document.getElementById('profileAvatarBadge').style.background = avatarGradient(currentUser.uid);
   document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
+  document.getElementById('ownQuizScore').textContent = (ownP && typeof ownP.quizScore==='number' ? ownP.quizScore : 0);
   document.getElementById('profileUsername').textContent = (profile.username || '-');
   document.getElementById('profileProfession').textContent = profile.profession || '-';
   renderProfileCompletion();
@@ -8150,6 +8303,477 @@ function startPresenceHeartbeat(){
 }
 
 // ========================================================================
+// SORU ÇÖZ (Puan Kazan) — test sistemi, joker, süre, tekrarsız soru havuzu,
+// puanlama ve günlük/haftalık/aylık/genel sıralama.
+// ========================================================================
+let quizQuestions = [];               // Firestore'dan bir kez yüklenip önbelleğe alınır
+let quizSelectedCategory = null;      // 'genel_kultur' | 'islami'
+let quizSessionQuestions = [];
+let quizCurrentIndex = 0;
+let quizSessionScore = 0;
+let quizSessionCorrect = 0;
+let quizSessionWrong = 0;
+let quizJokersRemainingToday = 3;
+let quizJokerUsedThisQuestion = false;
+const QUIZ_QUESTIONS_PER_TEST = 10;
+const QUIZ_JOKERS_PER_DAY = 3;
+const QUIZ_QUESTION_SECONDS = 15;
+let quizTimerInterval = null;
+let quizTimeLeft = QUIZ_QUESTION_SECONDS;
+
+function shuffleArr(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+async function loadQuizQuestions(force){
+  if(quizQuestions.length > 0 && !force) return quizQuestions;
+  try{
+    const snap = await db.collection('quiz_questions').get();
+    quizQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }catch(e){ console.error('Sorular yüklenemedi', e); }
+  return quizQuestions;
+}
+
+async function getSeenQuestionIds(){
+  if(!userDocRef) return [];
+  try{
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    return Array.isArray(data.quizSeenQuestionIds) ? data.quizSeenQuestionIds : [];
+  }catch(e){ return []; }
+}
+async function markQuestionsSeen(ids){
+  if(!userDocRef || ids.length===0) return;
+  try{ await userDocRef.set({ quizSeenQuestionIds: firebase.firestore.FieldValue.arrayUnion(...ids) }, {merge:true}); }
+  catch(e){ console.error('Görülen sorular kaydedilemedi', e); }
+}
+
+async function getJokersRemainingToday(){
+  if(!userDocRef) return QUIZ_JOKERS_PER_DAY;
+  try{
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    const today = todayStr();
+    if(data.quizJokerDate === today) return Math.max(0, QUIZ_JOKERS_PER_DAY - (data.quizJokerUsedCount||0));
+    return QUIZ_JOKERS_PER_DAY;
+  }catch(e){ return QUIZ_JOKERS_PER_DAY; }
+}
+async function useJokerToday(){
+  if(!userDocRef) return;
+  try{
+    const today = todayStr();
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    const cur = (data.quizJokerDate === today) ? (data.quizJokerUsedCount||0) : 0;
+    await userDocRef.set({ quizJokerDate: today, quizJokerUsedCount: cur + 1 }, {merge:true});
+  }catch(e){ console.error('Joker kaydedilemedi', e); }
+}
+
+// ---------- Kategori seçimi ----------
+function quizResetToCategory(){
+  clearQuizTimer();
+  document.getElementById('quizPlayStep').style.display = 'none';
+  document.getElementById('quizResultStep').style.display = 'none';
+  document.getElementById('quizCategoryStep').style.display = 'block';
+}
+document.getElementById('btnGoToQuiz').addEventListener('click', ()=>{ quizResetToCategory(); switchScreen('quiz'); });
+document.getElementById('btnHeaderMenuQuiz').addEventListener('click', ()=>{
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  quizResetToCategory();
+  switchScreen('quiz');
+});
+document.getElementById('quizCategoryGenel').addEventListener('click', ()=>{ quizSelectedCategory='genel_kultur'; startQuizSession(); });
+document.getElementById('quizCategoryIslami').addEventListener('click', ()=>{ quizSelectedCategory='islami'; startQuizSession(); });
+document.getElementById('btnQuizQuit').addEventListener('click', ()=>{
+  if(confirm('Testten çıkmak istediğine emin misin? Bu testteki ilerlemen kaybolur.')) quizResetToCategory();
+});
+document.getElementById('btnQuizBackHome').addEventListener('click', ()=>{ quizResetToCategory(); switchScreen('ana'); });
+
+// ---------- Test başlat: rastgele, tekrarsız 10 soru seç ----------
+async function startQuizSession(){
+  await loadQuizQuestions();
+  const pool = quizQuestions.filter(q => q.category===quizSelectedCategory);
+  if(pool.length === 0){
+    showToast('Bu kategoride henüz soru eklenmemiş');
+    return;
+  }
+  const seenIds = await getSeenQuestionIds();
+  const unseen = pool.filter(q => !seenIds.includes(q.id));
+  let selected;
+  if(unseen.length >= QUIZ_QUESTIONS_PER_TEST){
+    selected = shuffleArr(unseen).slice(0, QUIZ_QUESTIONS_PER_TEST);
+  } else if(unseen.length > 0){
+    const seenPool = shuffleArr(pool.filter(q => seenIds.includes(q.id)));
+    selected = shuffleArr(unseen.concat(seenPool.slice(0, QUIZ_QUESTIONS_PER_TEST - unseen.length)));
+  } else {
+    // Havuzdaki tüm sorular daha önce görülmüş — baştan başlıyoruz.
+    selected = shuffleArr(pool).slice(0, Math.min(QUIZ_QUESTIONS_PER_TEST, pool.length));
+  }
+  quizSessionQuestions = selected;
+  quizCurrentIndex = 0;
+  quizSessionScore = 0;
+  quizSessionCorrect = 0;
+  quizSessionWrong = 0;
+  quizJokersRemainingToday = await getJokersRemainingToday();
+  document.getElementById('quizCategoryStep').style.display = 'none';
+  document.getElementById('quizResultStep').style.display = 'none';
+  document.getElementById('quizPlayStep').style.display = 'block';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  quizJokerUsedThisQuestion = false;
+  const q = quizSessionQuestions[quizCurrentIndex];
+  document.getElementById('quizQuestionNumLbl').textContent = (quizCurrentIndex+1) + '. Soru';
+  document.getElementById('quizProgressLbl').textContent = (quizCurrentIndex+1) + '/' + quizSessionQuestions.length;
+  document.getElementById('quizProgressBar').style.width = Math.round((quizCurrentIndex/quizSessionQuestions.length)*100) + '%';
+  document.getElementById('quizWrongCount').textContent = quizSessionWrong;
+  document.getElementById('quizCorrectCount').textContent = quizSessionCorrect;
+  document.getElementById('quizSessionScoreLbl').textContent = (quizSessionScore>=0?'+':'') + quizSessionScore + ' pn';
+  document.getElementById('quizQuestionText').textContent = q.question;
+  const wrap = document.getElementById('quizOptionsWrap');
+  const letters = ['A','B','C','D','E'];
+  wrap.innerHTML = (q.options||[]).map((opt,i)=>
+    '<button class="quiz-option-btn" data-index="'+i+'" style="width:100%; margin-bottom:10px; text-align:left; padding:13px 15px; border-radius:16px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-size:14.5px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:12px;">'
+      + '<span style="width:27px;height:27px;border-radius:50%; background:var(--concrete); color:var(--ink-soft); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12.5px; flex-shrink:0;">'+letters[i]+'</span>'
+      + '<span style="flex:1;">'+escapeHtml(opt)+'</span>'
+    + '</button>'
+  ).join('');
+  wrap.querySelectorAll('.quiz-option-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> selectQuizAnswer(parseInt(btn.dataset.index,10)));
+  });
+  document.getElementById('quizJokerCount').textContent = quizJokersRemainingToday;
+  document.getElementById('btnQuizJoker').style.display = quizJokersRemainingToday > 0 ? 'block' : 'none';
+  const hintBtn = document.getElementById('btnQuizHintToggle');
+  const hintBox = document.getElementById('quizHintBox');
+  hintBox.style.display = 'none';
+  hintBtn.textContent = '💡 İpucu';
+  hintBtn.style.display = q.hint ? 'block' : 'none';
+  document.getElementById('quizExplanationBox').style.display = 'none';
+  document.getElementById('btnQuizUnderstood').style.display = 'none';
+  startQuizTimer();
+}
+document.getElementById('btnQuizHintToggle').addEventListener('click', ()=>{
+  const q = quizSessionQuestions[quizCurrentIndex];
+  const hintBox = document.getElementById('quizHintBox');
+  const showing = hintBox.style.display !== 'none';
+  if(showing){
+    hintBox.style.display = 'none';
+    document.getElementById('btnQuizHintToggle').textContent = '💡 İpucu';
+  } else {
+    hintBox.textContent = q.hint || '';
+    hintBox.style.display = 'block';
+    document.getElementById('btnQuizHintToggle').textContent = '💡 İpucu ▲';
+  }
+});
+
+function startQuizTimer(){
+  clearQuizTimer();
+  quizTimeLeft = QUIZ_QUESTION_SECONDS;
+  const bar = document.getElementById('quizTimerBar');
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  bar.style.background = 'var(--asphalt)';
+  requestAnimationFrame(()=>{ bar.style.transition = 'width 1s linear'; });
+  quizTimerInterval = setInterval(()=>{
+    quizTimeLeft--;
+    const pct = Math.max(0, (quizTimeLeft/QUIZ_QUESTION_SECONDS)*100);
+    bar.style.width = pct + '%';
+    if(quizTimeLeft <= 5) bar.style.background = 'var(--danger)';
+    if(quizTimeLeft <= 0){
+      clearQuizTimer();
+      selectQuizAnswer(-1); // süre doldu
+    }
+  }, 1000);
+}
+function clearQuizTimer(){
+  if(quizTimerInterval){ clearInterval(quizTimerInterval); quizTimerInterval = null; }
+}
+
+document.getElementById('btnQuizJoker').addEventListener('click', async ()=>{
+  if(quizJokersRemainingToday<=0 || quizJokerUsedThisQuestion) return;
+  const q = quizSessionQuestions[quizCurrentIndex];
+  const wrongIdx = (q.options||[]).map((_,i)=>i).filter(i=>i!==q.correctIndex);
+  const eliminate = shuffleArr(wrongIdx).slice(0,2);
+  eliminate.forEach(i=>{
+    const btn = document.querySelector('.quiz-option-btn[data-index="'+i+'"]');
+    if(btn){ btn.disabled = true; btn.style.opacity = '0.35'; btn.style.textDecoration = 'line-through'; }
+  });
+  quizJokerUsedThisQuestion = true;
+  quizJokersRemainingToday--;
+  document.getElementById('quizJokerCount').textContent = quizJokersRemainingToday;
+  document.getElementById('btnQuizJoker').style.display = 'none';
+  await useJokerToday();
+});
+
+async function selectQuizAnswer(index){
+  clearQuizTimer();
+  const q = quizSessionQuestions[quizCurrentIndex];
+  const correct = (index === q.correctIndex);
+  const points = correct ? 5 : -10;
+  quizSessionScore += points;
+  if(correct) quizSessionCorrect++; else quizSessionWrong++;
+
+  document.querySelectorAll('.quiz-option-btn').forEach(btn=>{
+    btn.disabled = true;
+    const i = parseInt(btn.dataset.index,10);
+    if(i === q.correctIndex){ btn.style.background = 'var(--tint-forest)'; btn.style.borderColor = '#16A34A'; }
+    else if(i === index){ btn.style.background = 'var(--tint-rust)'; btn.style.borderColor = 'var(--danger)'; }
+  });
+  document.getElementById('quizSessionScoreLbl').textContent = (quizSessionScore>=0?'+':'') + quizSessionScore + ' pn';
+  document.getElementById('quizWrongCount').textContent = quizSessionWrong;
+  document.getElementById('quizCorrectCount').textContent = quizSessionCorrect;
+
+  // Cevaplandıktan sonra: joker/ipucu butonları gizlenir, varsa açıklama gösterilir,
+  // "Anladım" butonuna basılana kadar bir sonraki soruya geçilmez.
+  document.getElementById('btnQuizJoker').style.display = 'none';
+  document.getElementById('btnQuizHintToggle').style.display = 'none';
+  document.getElementById('quizHintBox').style.display = 'none';
+  if(q.explanation){
+    document.getElementById('quizExplanationText').textContent = q.explanation;
+    document.getElementById('quizExplanationBox').style.display = 'block';
+  }
+  document.getElementById('btnQuizUnderstood').style.display = 'block';
+
+  applyQuizPoints(points, quizSelectedCategory);
+}
+document.getElementById('btnQuizUnderstood').addEventListener('click', ()=>{
+  document.getElementById('quizExplanationBox').style.display = 'none';
+  document.getElementById('btnQuizUnderstood').style.display = 'none';
+  quizCurrentIndex++;
+  if(quizCurrentIndex < quizSessionQuestions.length) renderQuizQuestion();
+  else finishQuizSession();
+});
+
+async function applyQuizPoints(points, category){
+  if(!currentUser) return;
+  try{
+    const pubRef = db.collection('public_profiles').doc(currentUser.uid);
+    const doc = await pubRef.get();
+    const current = (doc.exists && typeof doc.data().quizScore === 'number') ? doc.data().quizScore : 0;
+    let newScore = current + points;
+    if(newScore < -50) newScore = -50; // taban puan
+    await pubRef.set({ quizScore: newScore }, {merge:true});
+    const p = profileByUid(currentUser.uid);
+    if(p) p.quizScore = newScore; // yerel önbelleği de güncelle
+    await db.collection('quiz_score_events').add({ uid: currentUser.uid, points, category, timestamp: Date.now() });
+  }catch(e){ console.error('Puan kaydedilemedi', e); }
+}
+
+function finishQuizSession(){
+  clearQuizTimer();
+  markQuestionsSeen(quizSessionQuestions.map(q=>q.id));
+  document.getElementById('quizPlayStep').style.display = 'none';
+  document.getElementById('quizResultStep').style.display = 'block';
+  document.getElementById('quizResultDetail').textContent = quizSessionCorrect + ' doğru, ' + quizSessionWrong + ' yanlış (' + quizSessionQuestions.length + ' soru)';
+  document.getElementById('quizResultScore').textContent = (quizSessionScore>=0?'+':'') + quizSessionScore + ' pn';
+}
+document.getElementById('btnQuizPlayAgain').addEventListener('click', ()=>{
+  document.getElementById('quizResultStep').style.display = 'none';
+  startQuizSession();
+});
+
+// ---------- SIRALAMA (Günlük / Haftalık / Aylık / Genel) ----------
+let leaderboardPeriod = 'daily';
+let leaderboardExpanded = false;
+
+async function loadLeaderboard(){
+  const listEl = document.getElementById('leaderboardList');
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  let ranked = [];
+  try{
+    if(leaderboardPeriod === 'alltime'){
+      const snap = await db.collection('public_profiles').orderBy('quizScore','desc').limit(14).get();
+      ranked = snap.docs.map(d => ({ uid: d.id, score: d.data().quizScore||0 }));
+    } else {
+      const now = new Date();
+      let periodStart;
+      if(leaderboardPeriod === 'daily'){
+        periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      } else if(leaderboardPeriod === 'weekly'){
+        const day = now.getDay();
+        const diffToMonday = (day===0?6:day-1);
+        periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()-diffToMonday).getTime();
+      } else {
+        periodStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      }
+      const snap = await db.collection('quiz_score_events').where('timestamp','>=',periodStart).get();
+      const totals = {};
+      snap.docs.forEach(d=>{ const data=d.data(); totals[data.uid] = (totals[data.uid]||0) + data.points; });
+      ranked = Object.keys(totals).map(uid=>({uid, score: totals[uid]})).sort((a,b)=>b.score-a.score).slice(0,14);
+    }
+  }catch(e){ console.error('Sıralama yüklenemedi', e); }
+  renderLeaderboardList(ranked);
+}
+function renderLeaderboardList(ranked){
+  const visibleCount = leaderboardExpanded ? 14 : 7;
+  const shown = ranked.slice(0, visibleCount);
+  const listEl = document.getElementById('leaderboardList');
+  const expandBtn = document.getElementById('btnExpandLeaderboard');
+  if(shown.length === 0){
+    listEl.innerHTML = '<div class="hint">Henüz veri yok.</div>';
+    expandBtn.style.display = 'none';
+    return;
+  }
+  listEl.innerHTML = shown.map((row,i)=>{
+    const p = profileByUid(row.uid);
+    const name = getDisplayName(p);
+    const initials = getInitials(name);
+    const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
+    const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
+    return '<div style="display:flex; align-items:center; gap:10px; padding:8px 0; '+borderStyle+'">'
+      + '<div style="width:24px; text-align:center; font-weight:800; font-size:13px;">'+medal+'</div>'
+      + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarGradient(row.uid)+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0;">'+escapeHtml(initials)+'</div>'
+      + '<div style="flex:1; font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(name)+'</div>'
+      + '<div style="font-weight:800; font-size:13px; color:var(--asphalt);">'+row.score+' pn</div>'
+      + '</div>';
+  }).join('');
+  expandBtn.style.display = (ranked.length > 7) ? 'block' : 'none';
+  expandBtn.textContent = leaderboardExpanded ? 'Daralt' : 'Genişlet (14 kişi göster)';
+}
+document.querySelectorAll('.leaderboard-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.leaderboard-tab').forEach(t=>{ t.classList.remove('active'); });
+    tab.classList.add('active');
+    leaderboardPeriod = tab.dataset.period;
+    leaderboardExpanded = false;
+    loadLeaderboard();
+  });
+});
+document.getElementById('btnExpandLeaderboard').addEventListener('click', ()=>{
+  leaderboardExpanded = !leaderboardExpanded;
+  loadLeaderboard();
+});
+
+// ---------- ADMİN: SORU BANKASI YÖNETİMİ (ekle / düzenle / sil) ----------
+let quizAdminEditingId = null;
+const QUIZ_CATEGORY_LABELS = { genel_kultur:'🌍 Genel Kültür', islami:'🕌 İslami Bilgiler' };
+
+function quizAdminClearForm(){
+  quizAdminEditingId = null;
+  document.getElementById('quizAdminFormTitle').textContent = 'Yeni Soru Ekle';
+  document.getElementById('quizAdminCategory').value = 'genel_kultur';
+  document.getElementById('quizAdminQuestionText').value = '';
+  document.getElementById('quizAdminHint').value = '';
+  document.getElementById('quizAdminExplanation').value = '';
+  document.getElementById('quizAdminOpt0').value = '';
+  document.getElementById('quizAdminOpt1').value = '';
+  document.getElementById('quizAdminOpt2').value = '';
+  document.getElementById('quizAdminOpt3').value = '';
+  document.getElementById('quizAdminOpt4').value = '';
+  document.querySelector('input[name="quizAdminCorrect"][value="0"]').checked = true;
+  document.getElementById('quizAdminSaveBtn').textContent = '💾 Kaydet';
+  document.getElementById('quizAdminCancelEditBtn').style.display = 'none';
+}
+
+async function renderQuizAdminList(){
+  const listEl = document.getElementById('quizAdminList');
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  await loadQuizQuestions(true);
+  const catFilter = document.getElementById('quizAdminFilterCategory').value;
+  let list = quizQuestions.slice();
+  if(catFilter) list = list.filter(q=>q.category===catFilter);
+  document.getElementById('quizAdminCount').textContent = list.length + ' / ' + quizQuestions.length + ' soru';
+  if(list.length===0){
+    listEl.innerHTML = '<div class="hint">Bu filtrede soru yok.</div>';
+    return;
+  }
+  listEl.innerHTML = list.map(q=>
+    '<div class="entry" style="align-items:flex-start; cursor:default;">'
+      + '<div class="info" style="width:100%;">'
+        + '<div class="ttype" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px;">'
+          + '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--asphalt);">'+(QUIZ_CATEGORY_LABELS[q.category]||q.category)+'</span>'
+        + '</div>'
+        + '<div class="note" style="color:var(--ink); font-weight:600; white-space:normal;">'+escapeHtml(q.question)+'</div>'
+      + '</div>'
+      + '<div style="display:flex; gap:6px; flex-shrink:0;">'
+        + '<button data-quiz-edit="'+escapeHtml(q.id)+'" style="border:1.5px solid var(--line); background:var(--paper); border-radius:10px; width:32px;height:32px; cursor:pointer;">✏️</button>'
+        + '<button data-quiz-delete="'+escapeHtml(q.id)+'" style="border:1.5px solid var(--tint-rust); background:var(--tint-rust); color:var(--danger); border-radius:10px; width:32px;height:32px; cursor:pointer;">🗑️</button>'
+      + '</div>'
+    + '</div>'
+  ).join('');
+  listEl.querySelectorAll('[data-quiz-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=> quizAdminStartEdit(btn.dataset.quizEdit));
+  });
+  listEl.querySelectorAll('[data-quiz-delete]').forEach(btn=>{
+    btn.addEventListener('click', ()=> quizAdminDeleteQuestion(btn.dataset.quizDelete));
+  });
+}
+
+function quizAdminStartEdit(id){
+  const q = quizQuestions.find(x=>x.id===id);
+  if(!q) return;
+  quizAdminEditingId = id;
+  document.getElementById('quizAdminFormTitle').textContent = 'Soruyu Düzenle';
+  document.getElementById('quizAdminCategory').value = q.category || 'genel_kultur';
+  document.getElementById('quizAdminQuestionText').value = q.question || '';
+  document.getElementById('quizAdminHint').value = q.hint || '';
+  document.getElementById('quizAdminExplanation').value = q.explanation || '';
+  const opts = q.options || ['','','',''];
+  document.getElementById('quizAdminOpt0').value = opts[0]||'';
+  document.getElementById('quizAdminOpt1').value = opts[1]||'';
+  document.getElementById('quizAdminOpt2').value = opts[2]||'';
+  document.getElementById('quizAdminOpt3').value = opts[3]||'';
+  document.getElementById('quizAdminOpt4').value = opts[4]||'';
+  const radio = document.querySelector('input[name="quizAdminCorrect"][value="'+(q.correctIndex||0)+'"]');
+  if(radio) radio.checked = true;
+  document.getElementById('quizAdminSaveBtn').textContent = '💾 Güncelle';
+  document.getElementById('quizAdminCancelEditBtn').style.display = 'block';
+  document.getElementById('quizAdminQuestionText').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function quizAdminDeleteQuestion(id){
+  if(!confirm('Bu soru kalıcı olarak silinecek. Emin misin?')) return;
+  try{
+    await db.collection('quiz_questions').doc(id).delete();
+    showToast('Soru silindi');
+    if(quizAdminEditingId===id) quizAdminClearForm();
+    await renderQuizAdminList();
+  }catch(e){ showToast('Silinemedi: ' + (e.message||'')); }
+}
+
+document.getElementById('quizAdminSaveBtn').addEventListener('click', async ()=>{
+  const category = document.getElementById('quizAdminCategory').value;
+  const question = document.getElementById('quizAdminQuestionText').value.trim();
+  const hint = document.getElementById('quizAdminHint').value.trim();
+  const explanation = document.getElementById('quizAdminExplanation').value.trim();
+  const opt4 = document.getElementById('quizAdminOpt4').value.trim();
+  const options = [
+    document.getElementById('quizAdminOpt0').value.trim(),
+    document.getElementById('quizAdminOpt1').value.trim(),
+    document.getElementById('quizAdminOpt2').value.trim(),
+    document.getElementById('quizAdminOpt3').value.trim()
+  ];
+  if(opt4) options.push(opt4);
+  const correctRadio = document.querySelector('input[name="quizAdminCorrect"]:checked');
+  const correctIndex = correctRadio ? parseInt(correctRadio.value,10) : 0;
+
+  if(!question){ showToast('Soru metni boş olamaz'); return; }
+  if(options.slice(0,4).some(o=>!o)){ showToast('İlk 4 şık doldurulmalı'); return; }
+  if(correctIndex >= options.length){ showToast('Doğru cevap olarak boş bıraktığın 5. şıkkı seçtin'); return; }
+
+  const data = { category, question, options, correctIndex };
+  if(hint) data.hint = hint;
+  if(explanation) data.explanation = explanation;
+
+  try{
+    if(quizAdminEditingId){
+      await db.collection('quiz_questions').doc(quizAdminEditingId).set(data, {merge:true});
+      showToast('Soru güncellendi');
+    } else {
+      data.createdAt = Date.now();
+      data.createdBy = currentUser ? currentUser.uid : null;
+      await db.collection('quiz_questions').add(data);
+      showToast('Soru eklendi');
+    }
+    quizAdminClearForm();
+    await renderQuizAdminList();
+  }catch(e){ showToast('Kaydedilemedi: ' + (e.message||'')); }
+});
+document.getElementById('quizAdminCancelEditBtn').addEventListener('click', quizAdminClearForm);
+document.getElementById('quizAdminFilterCategory').addEventListener('change', renderQuizAdminList);
+
+
 // SESLİ ARAMA (WebRTC + Firestore sinyalleşme)
 // Sunucu/TURN kullanılmıyor — sadece Google'ın ücretsiz herkese açık STUN
 // sunucuları. Bu yüzden bazı "zor" ağlarda (bazı mobil operatörler/kurumsal
