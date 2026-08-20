@@ -628,6 +628,28 @@
       <div style="font-size:11px; color:var(--ink-soft); margin-top:6px;" id="profileCompletionHint"></div>
     </div>
 
+    <div class="card" id="quizStatsCard" style="padding:14px; margin-bottom:14px;">
+      <div class="section-title" style="margin:0 0 10px; padding:0; border:none;">🧠 Soru Çöz İstatistikleri</div>
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1; text-align:center; background:var(--concrete); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px;" id="quizStatTotal">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Çözülen Soru</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-forest); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:#16A34A;" id="quizStatCorrect">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Doğru</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-rust); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:var(--danger);" id="quizStatWrong">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Yanlış</div>
+        </div>
+        <div style="flex:1; text-align:center; background:var(--tint-slate); border-radius:12px; padding:10px 4px;">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:17px; color:var(--asphalt);" id="quizStatAccuracy">-</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Başarı</div>
+        </div>
+      </div>
+    </div>
+
     <div class="section-title">Takipçilerim <button class="see-all-btn" id="ownSeeAllFollowers">Tüm Takipçiler</button></div>
     <div class="card">
       <div id="ownFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
@@ -7376,6 +7398,7 @@ function renderProfile(){
 
   applyAvatar(document.getElementById('profileAvatarImg'), document.getElementById('profileAvatarInitials'));
   updateHeaderAvatar();
+  if(typeof loadQuizStats === 'function') loadQuizStats();
   document.getElementById('profileAvatarBadge').textContent = getInitials(profile.fullName);
   document.getElementById('profileAvatarBadge').style.background = avatarGradient(currentUser.uid);
   document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
@@ -8575,6 +8598,26 @@ document.getElementById('btnQuizPlayAgain').addEventListener('click', ()=>{
 // ---------- SIRALAMA (Günlük / Haftalık / Aylık / Genel) ----------
 let leaderboardPeriod = 'daily';
 let leaderboardExpanded = false;
+
+// ---------- PROFİLDEKİ "SORU ÇÖZ İSTATİSTİKLERİ" KARTI ----------
+async function loadQuizStats(){
+  const totalEl = document.getElementById('quizStatTotal');
+  if(!totalEl || !currentUser) return;
+  try{
+    const snap = await db.collection('quiz_score_events').where('uid','==',currentUser.uid).get();
+    let correct = 0, wrong = 0;
+    snap.docs.forEach(d=>{
+      const points = d.data().points;
+      if(points > 0) correct++; else if(points < 0) wrong++;
+    });
+    const total = correct + wrong;
+    const accuracy = total > 0 ? Math.round((correct/total)*100) + '%' : '-';
+    totalEl.textContent = total;
+    document.getElementById('quizStatCorrect').textContent = correct;
+    document.getElementById('quizStatWrong').textContent = wrong;
+    document.getElementById('quizStatAccuracy').textContent = accuracy;
+  }catch(e){ console.error('Soru istatistikleri yüklenemedi', e); }
+}
 
 async function loadLeaderboard(){
   const listEl = document.getElementById('leaderboardList');
