@@ -2840,9 +2840,9 @@ async function openViewProfile(uid){
   vpBadgeEl.style.background = avatarGradient(uid);
   const vpIsOnline = !!(p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000);
   document.getElementById('vpOnlineDot').style.display = vpIsOnline ? 'block' : 'none';
-  document.getElementById('vpName').textContent = getDisplayName(p);
+  document.getElementById('vpName').textContent = p && p.username ? p.username : '-';
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
-  document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
+  document.getElementById('vpUsername').style.display = 'none';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
   document.getElementById('vpFullNameInfo').textContent = p && p.fullName ? p.fullName : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
