@@ -162,8 +162,20 @@
   <div class="brand">
     <div class="brand-left" id="brandHomeLink" style="cursor:pointer;"><img id="headerLogoImg" style="width:34px;height:34px;border-radius:9px; object-fit:cover; flex-shrink:0;"><span class="title" id="headerTitleText">Şantiye Defteri</span></div>
     <div style="display:flex; gap:8px; flex-shrink:0;">
-      <button class="gear-btn" id="btnHeaderMessages" aria-label="Mesajlar" style="position:relative;">💬<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
-      <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+      <div style="position:relative; flex-shrink:0;">
+        <button class="gear-btn" id="btnHeaderMessages" aria-label="Mesajlar" style="position:relative;">💬<span id="navMsgBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+        <div id="headerMsgDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:280px; max-height:360px; overflow-y:auto;">
+          <div id="headerMsgDropdownList" style="padding:6px;"></div>
+          <button id="btnHeaderMsgSeeAll" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-weight:800; font-size:12.5px; color:var(--asphalt); cursor:pointer; border-radius:0 0 12px 12px;">Tüm Mesajlar</button>
+        </div>
+      </div>
+      <div style="position:relative; flex-shrink:0;">
+        <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+        <div id="headerNotifDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:280px; max-height:360px; overflow-y:auto;">
+          <div id="headerNotifDropdownList" style="padding:6px;"></div>
+          <button id="btnHeaderNotifSeeAll" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-weight:800; font-size:12.5px; color:var(--asphalt); cursor:pointer; border-radius:0 0 12px 12px;">Tüm Bildirimler</button>
+        </div>
+      </div>
       <div style="position:relative; flex-shrink:0;">
         <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
         <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
@@ -450,14 +462,17 @@
     <div id="quizCategoryStep">
       <div class="section-title" style="margin-top:0;">🧠 Soru Çöz, Puan Kazan</div>
       <div class="hint" style="margin-bottom:14px;">Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır. Her soruda bir kez 50/50 joker hakkın var.</div>
+      <button id="btnQuizGoBookmarks" class="submit-btn secondary" style="margin-bottom:14px; padding:11px;">⭐ Kayıtlı Sorularım</button>
       <div class="card" id="quizCategoryGenel" style="cursor:pointer; display:flex; align-items:center; gap:14px; margin-bottom:12px;">
-        <div style="width:52px;height:52px;border-radius:16px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌍</div>
+        <div style="width:52px;height:52px;border-radius:20px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌍</div>
         <div style="flex:1;"><div style="font-weight:800; font-size:15px;">Genel Kültür</div><div class="hint" style="margin:2px 0 0;">Tarih, coğrafya, bilim, spor ve daha fazlası</div></div>
+        <span id="quizCategoryGenelCount" style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); white-space:nowrap; flex-shrink:0;"></span>
         <div style="color:var(--ink-soft); font-size:18px;">›</div>
       </div>
       <div class="card" id="quizCategoryIslami" style="cursor:pointer; display:flex; align-items:center; gap:14px;">
-        <div style="width:52px;height:52px;border-radius:16px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🕌</div>
+        <div style="width:52px;height:52px;border-radius:20px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🕌</div>
         <div style="flex:1;"><div style="font-weight:800; font-size:15px;">İslami Bilgiler</div><div class="hint" style="margin:2px 0 0;">İbadetler, siyer, temel dini bilgiler</div></div>
+        <span id="quizCategoryIslamiCount" style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); white-space:nowrap; flex-shrink:0;"></span>
         <div style="color:var(--ink-soft); font-size:18px;">›</div>
       </div>
     </div>
@@ -481,7 +496,13 @@
         <div style="font-weight:800; font-size:13px; color:var(--ink-soft);" id="quizSessionScoreLbl">0 pn</div>
       </div>
       <div class="card" style="margin-bottom:16px;">
-        <div id="quizQuestionText" style="font-weight:700; font-size:17px; line-height:1.55; margin-bottom:10px;">-</div>
+        <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px;">
+          <div id="quizQuestionText" style="flex:1; font-weight:700; font-size:17px; line-height:1.55;">-</div>
+          <div style="display:flex; gap:4px; flex-shrink:0;">
+            <button id="btnQuizSpeak" title="Soruyu sesli oku" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">🔊</button>
+            <button id="btnQuizBookmark" title="Kaydet" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">☆</button>
+          </div>
+        </div>
         <div style="height:5px; border-radius:3px; background:var(--concrete); overflow:hidden;">
           <div id="quizTimerBar" style="height:100%; width:100%; background:var(--asphalt); transition:width 1s linear;"></div>
         </div>
@@ -505,6 +526,16 @@
       <button class="submit-btn" id="btnQuizPlayAgain" style="margin-bottom:10px;">🔁 Diğer Teste Geç</button>
       <button class="submit-btn secondary" id="btnQuizBackHome">Ana Sayfaya Dön</button>
     </div>
+  </section>
+
+  <!-- KAYITLI SORULARIM (Favoriler) -->
+  <section class="screen" id="screen-quiz-bookmarks">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnQuizBookmarksBack">‹</button>
+      <span class="cal-title">⭐ Kayıtlı Sorularım</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div id="quizBookmarksList"></div>
   </section>
 
 
@@ -596,8 +627,7 @@
           <span class="vp-avatar-badge" id="profileAvatarBadge">-</span>
         </div>
         <div style="flex:1; min-width:0;">
-          <div class="vp-name" id="profileDisplayName">-</div>
-          <div class="vp-username" id="profileUsername">-</div>
+          <div class="vp-username" id="profileUsername" style="font-size:16px; font-weight:800; color:var(--ink);">-</div>
           <div class="vp-meta">👷 <span id="profileProfession">-</span></div>
           <div id="ownRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="ownTenureBadge" style="margin-top:6px; display:inline-block;"></span>
@@ -657,6 +687,12 @@
 
     <div class="section-title">Kişisel Bilgiler</div>
     <div class="card">
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🪪</div>
+          <div><div class="tlbl">Ad Soyad</div><div class="tsub" id="profileFullNameInfo">-</div></div>
+        </div>
+      </div>
       <div class="toggle-row">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🆔</div>
@@ -996,10 +1032,21 @@
         <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
-      <div style="text-align:center; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);">
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);">
         <span id="vpFollowerCount">0 takipçi</span>
+        <div id="vpFollowerMiniAvatars" style="display:flex; align-items:center; cursor:pointer;"></div>
       </div>
       <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
+    </div>
+
+    <div id="followerListBar" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4); align-items:flex-end; justify-content:center;">
+      <div style="background:var(--paper); width:100%; max-width:480px; max-height:70vh; border-radius:20px 20px 0 0; padding:16px; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-weight:800; font-size:15px;">Takipçiler</div>
+          <button id="followerListBarClose" style="border:none; background:var(--concrete); width:30px;height:30px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
+        </div>
+        <div id="followerListBarBody"></div>
+      </div>
     </div>
 
     <div class="card" id="vpQuizStatsCard" style="padding:14px; margin-bottom:14px;">
@@ -1436,6 +1483,7 @@
           </select>
         </div>
         <button class="submit-btn secondary" id="adminBannerSave">Duyuru Bandını Kaydet</button>
+        <button class="submit-btn secondary" id="adminBannerClear" style="margin-top:8px; color:var(--danger); border-color:var(--danger);">🗑️ Duyuruyu Kaldır</button>
       </div>
     </div>
   </section>
@@ -2204,6 +2252,40 @@ function tenureBadgeHtml(createdAt, extraStyle, clickable){
   return `<span class="rank-badge-clickable" data-rank-name="${escapeHtml(r.name)}" data-rank-icon="${escapeHtml(r.icon)}" data-rank-min="${r.minDays}" data-rank-max="${r.maxDays==null?'':r.maxDays}" style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); cursor:pointer; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
 
+// ---------- SORU ÇÖZ PUAN RÜTBELERİ ----------
+const QUIZ_RANKS=[
+  {icon:'🔰', name:'Çırak', min:0, max:100, aura:'#9CA3AF'},
+  {icon:'📜', name:'Kâtip', min:101, max:300, aura:'#60A5FA'},
+  {icon:'🧠', name:'Filozof', min:301, max:650, aura:'#A78BFA'},
+  {icon:'🔭', name:'Müneccim', min:651, max:1200, aura:'#818CF8'},
+  {icon:'🎓', name:'Üstat', min:1201, max:2000, aura:'#34D399'},
+  {icon:'⚕️', name:'Hekim / Bilge', min:2001, max:3500, aura:'#F59E0B'},
+  {icon:'🏛️', name:'Başmimar', min:3501, max:5500, aura:'#F97316'},
+  {icon:'🌌', name:'Hezarfen', min:5501, max:null, aura:'#EC4899'}
+];
+function getQuizRank(score){
+  const s = typeof score === 'number' ? score : 0;
+  for(const r of QUIZ_RANKS){ if(s >= r.min && (r.max==null || s <= r.max)) return r; }
+  return QUIZ_RANKS[0];
+}
+function quizRankBadgeHtml(score, extraStyle){
+  const r = getQuizRank(score);
+  return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:0 0 6px ${r.aura}66; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+}
+// Herkes için: admin/mod ise yetki rozeti, değilse kıdem rozeti — her durumda yanında puan rütbesi
+function roleOrTenureBadgeHtml(u, extraStyle){
+  let first = '';
+  if(u.role === 'admin'){
+    first = `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); ${extraStyle||''}">👑 ${escapeHtml(u.adminTitle||'Yönetici')}</span>`;
+  } else if(u.role === 'moderator'){
+    first = `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); ${extraStyle||''}">🛡️ ${escapeHtml(u.rank||'Moderatör')}</span>`;
+  } else {
+    first = tenureBadgeHtml(u.createdAt, extraStyle);
+  }
+  const second = quizRankBadgeHtml(u.quizScore||0, extraStyle);
+  return first + ' ' + second;
+}
+
 const QUOTES=[
   'Alın teri kurumadan hakkını al.',
   'Emek her zaman karşılığını bulur.',
@@ -2273,12 +2355,16 @@ async function persistProfile(){
   if(!userDocRef) return;
   try{ await userDocRef.set({profile}, {merge:true}); }catch(e){ showToast('Kaydedilemedi, internet bağlantını kontrol et'); }
   try{
-    await db.collection('public_profiles').doc(currentUser.uid).set({
+    const publicUpdate = {
       username: profile.username || '', fullName: profile.fullName || '',
       profession: profile.profession || '', city: profile.city || '',
       userId: profile.userId || '', createdAt: profile.createdAt || '',
       followersVisibility: settings.followersVisibility || 'everyone'
-    }, {merge:true});
+    };
+    if(profile.photoData) publicUpdate.photoData = profile.photoData;
+    else publicUpdate.photoData = firebase.firestore.FieldValue.delete();
+    if(isAdmin && profile.adminTitle) publicUpdate.adminTitle = profile.adminTitle;
+    await db.collection('public_profiles').doc(currentUser.uid).set(publicUpdate, {merge:true});
   }catch(e){ console.error('public_profiles yazilamadi', e); }
 }
 async function syncPublicBadges(t){
@@ -2362,6 +2448,53 @@ function getDisplayUsername(p){
   if(!p || p.deactivated) return '';
   return p.username || '';
 }
+function renderFollowerMiniAvatars(followerUids, uidForModal){
+  const box = document.getElementById('vpFollowerMiniAvatars');
+  if(!box) return;
+  if(!followerUids || followerUids.length===0){ box.innerHTML=''; return; }
+  const shown = followerUids.slice(0,5);
+  const extra = followerUids.length - shown.length;
+  let html = '<div style="display:flex;">' + shown.map((uid,i)=>{
+    const p = profileByUid(uid);
+    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:'?'));
+    return `<div style="width:20px;height:20px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; overflow:hidden; border:1.5px solid var(--paper); margin-left:${i>0?'-7px':'0'};">${inner}</div>`;
+  }).join('') + '</div>';
+  if(extra > 0) html += `<span style="font-size:11px; font-weight:700; color:var(--ink-soft); margin-left:4px;">+${extra} kişi</span>`;
+  box.innerHTML = html;
+  box.onclick = () => openFollowerListBar(followerUids);
+}
+function openFollowerListBar(followerUids){
+  const body = document.getElementById('followerListBarBody');
+  if(followerUids.length===0){
+    body.innerHTML = `<div class="empty"><div class="icon">👥</div><div class="msg">Henüz takipçi yok.</div></div>`;
+  } else {
+    body.innerHTML = followerUids.map(uid=>{
+      const p = profileByUid(uid);
+      const name = usernameLabel(p);
+      const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+      return `<div class="toggle-row" data-follower-bar-uid="${escapeHtml(uid)}" style="cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:38px;height:38px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; overflow:hidden; flex-shrink:0;">${inner}</div>
+          <div class="tlbl">${escapeHtml(name)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    body.querySelectorAll('[data-follower-bar-uid]').forEach(row=>{
+      row.addEventListener('click', ()=>{
+        document.getElementById('followerListBar').style.display = 'none';
+        openViewProfile(row.dataset.followerBarUid);
+      });
+    });
+  }
+  document.getElementById('followerListBar').style.display = 'flex';
+}
+document.getElementById('followerListBar').addEventListener('click', (e)=>{
+  if(e.target.id === 'followerListBar') document.getElementById('followerListBar').style.display = 'none';
+});
+document.getElementById('followerListBarClose').addEventListener('click', ()=>{
+  document.getElementById('followerListBar').style.display = 'none';
+});
+
 function renderFollowerAvatarsInto(containerId, followerUids, max){
   const box = document.getElementById(containerId);
   if(!box) return;
@@ -2461,8 +2594,14 @@ async function openViewProfile(uid){
   updateFabVisibility();
 
   const p = profileByUid(uid);
-  document.getElementById('vpAvatar').textContent = getInitials(p ? p.fullName : '?');
-  document.getElementById('vpAvatar').style.background = avatarGradient(uid);
+  const vpAvatarEl = document.getElementById('vpAvatar');
+  if(p && p.photoData){
+    vpAvatarEl.innerHTML = `<img src="${p.photoData}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
+    vpAvatarEl.style.background = 'transparent';
+  } else {
+    vpAvatarEl.textContent = getInitials(p ? p.fullName : '?');
+    vpAvatarEl.style.background = avatarGradient(uid);
+  }
   const vpBadgeEl = document.getElementById('vpAvatarBadge');
   vpBadgeEl.textContent = getInitials(p ? p.fullName : '?');
   vpBadgeEl.style.background = avatarGradient(uid);
@@ -2483,7 +2622,9 @@ async function openViewProfile(uid){
   if(p && p.role==='admin'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '👑 ' + (p.adminTitle || 'Yönetici'); }
   else if(p && p.role==='moderator'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '🛡️ ' + (p.rank || 'Moderatör'); }
   else { rankBadge.style.display='none'; }
-  document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator')) ? '' : tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true);
+  document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator'))
+    ? quizRankBadgeHtml(p.quizScore||0, 'margin-left:6px;')
+    : (tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml(p ? (p.quizScore||0) : 0, 'margin-left:6px;'));
 
   // Katılım tarihi ve e-posta: yönetici araçları düğmesinden bağımsız, admin/mod ise her zaman görünür.
   const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
@@ -2538,6 +2679,7 @@ async function openViewProfile(uid){
       const followerUids = await getFollowerUids(uid);
       document.getElementById('vpFollowerCount').textContent = followerUids.length + ' takipçi';
       renderFollowerAvatarsInto('vpFollowerAvatars', followerUids, 9);
+      renderFollowerMiniAvatars(followerUids);
     }
   }
 }
@@ -2698,7 +2840,7 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
       const items = snap.docs.map(d=>d.data()).sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
       notifBox.innerHTML = items.length ? items.slice(0,20).map(n=>{
         const time = n.createdAt ? new Date(n.createdAt).toLocaleString('tr-TR') : '';
-        return `<div class="card" style="padding:10px;"><div style="font-size:12.5px;">${escapeHtml(n.message||'')}</div><div style="font-size:10px; color:var(--ink-soft); margin-top:3px;">${time} ${n.read?'· okundu':'· okunmadı'}</div></div>`;
+        return `<div class="card" style="padding:10px;"><div style="font-size:12.5px;">${linkifyHtml(n.message||'')}</div><div style="font-size:10px; color:var(--ink-soft); margin-top:3px;">${time} ${n.read?'· okundu':'· okunmadı'}</div></div>`;
       }).join('') : `<div class="hint">Hiç bildirim yok.</div>`;
     }catch(e){ notifBox.innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
   }
@@ -2808,6 +2950,7 @@ document.getElementById('vpFollowBtn').addEventListener('click', async ()=>{
   const followerUids = await getFollowerUids(uid);
   document.getElementById('vpFollowerCount').textContent = followerUids.length + ' takipçi';
   renderFollowerAvatarsInto('vpFollowerAvatars', followerUids, 9);
+  renderFollowerMiniAvatars(followerUids);
 });
 document.getElementById('vpMessageBtn').addEventListener('click', ()=>{
   if(currentViewedUid) openOrCreateConversation(currentViewedUid);
@@ -2815,6 +2958,12 @@ document.getElementById('vpMessageBtn').addEventListener('click', ()=>{
 document.getElementById('vpBlockBtn').addEventListener('click', async ()=>{
   if(!currentViewedUid) return;
   const isBlocked = (await db.collection('blocks').doc(blockDocId(currentUser.uid, currentViewedUid)).get()).exists;
+  if(!isBlocked){
+    try{
+      const targetAdminDoc = await db.collection('admins').doc(currentViewedUid).get();
+      if(targetAdminDoc.exists){ showToast('Yöneticiler engellenemez'); return; }
+    }catch(e){}
+  }
   if(isBlocked){
     await db.collection('blocks').doc(blockDocId(currentUser.uid, currentViewedUid)).delete();
     showToast('Engel kaldırıldı');
@@ -2828,6 +2977,9 @@ document.getElementById('vpBlockBtn').addEventListener('click', async ()=>{
 async function refreshVpBlockBtn(uid){
   const btn = document.getElementById('vpBlockBtn');
   try{
+    const targetAdminDoc = await db.collection('admins').doc(uid).get();
+    if(targetAdminDoc.exists){ btn.style.display = 'none'; return; }
+    btn.style.display = 'inline-flex';
     const isBlocked = (await db.collection('blocks').doc(blockDocId(currentUser.uid, uid)).get()).exists;
     btn.textContent = isBlocked ? '✅' : '🚫';
     btn.title = isBlocked ? 'Engeli kaldır' : 'Engelle';
@@ -3121,7 +3273,7 @@ function adminUserRowHtml(u){
       <div class="info">
         <div class="ttype" style="color:var(--ink);">${escapeHtml(u.fullName||'İsimsiz')} ${u.username?('· '+escapeHtml(u.username)):''}</div>
         <div class="note">${escapeHtml(u.profession||'-')} ${u.city?('· '+escapeHtml(u.city)):''}</div>
-        <div style="margin-top:4px;">${(u.role==='admin') ? '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">👑 '+escapeHtml(u.adminTitle||'Yönetici')+'</span>' : (u.role==='moderator') ? '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">🛡️ '+escapeHtml(u.rank||'Moderatör')+'</span>' : tenureBadgeHtml(u.createdAt)}</div>
+        <div style="margin-top:4px;">${roleOrTenureBadgeHtml(u)}</div>
       </div>
       <div style="font-size:14px; color:var(--ink-soft);">›</div>
     </div>`;
@@ -4156,6 +4308,8 @@ document.getElementById('adminQuoteAddBtn').addEventListener('click', async ()=>
   const input = document.getElementById('adminQuoteAddInput');
   const val = input.value.trim();
   if(!val){ showToast('Bir ayet/söz gir'); return; }
+  const alreadyExists = currentQuotesList.some(q => q.trim().toLowerCase() === val.toLowerCase());
+  if(alreadyExists){ showToast('Bu ayet/söz zaten listede var'); return; }
   currentQuotesList.push(val);
   input.value = '';
   renderQuoteListDisplay();
@@ -4443,7 +4597,19 @@ document.getElementById('adminBannerSave').addEventListener('click', async ()=>{
     loadAppConfig();
   }catch(e){ showToast('Kaydedilemedi: '+(e.message||'')); }
 });
-let dynamicQuotes = null, homeBanner = '';
+document.getElementById('adminBannerClear').addEventListener('click', async ()=>{
+  if(!confirm('Duyuru bandını kaldırmak istediğine emin misin?')) return;
+  try{
+    await db.collection('app_config').doc('content').set({
+      banner: '', bannerExpiresAt: null
+    }, {merge:true});
+    document.getElementById('adminBannerText').value = '';
+    document.getElementById('adminBannerDuration').value = '0';
+    showToast('Duyuru kaldırıldı');
+    loadAppConfig();
+  }catch(e){ showToast('Kaldırılamadı: '+(e.message||'')); }
+});
+let dynamicQuotes = null, homeBanner = '', homeBannerExpiresAt = null;
 async function loadAppConfig(){
   try{
     const doc = await db.collection('app_config').doc('content').get();
@@ -4454,6 +4620,7 @@ async function loadAppConfig(){
       if(Array.isArray(data.baseModPermKeys)) dynamicBaseModPerms = data.baseModPermKeys;
       const expired = data.bannerExpiresAt && new Date(data.bannerExpiresAt).getTime() < Date.now();
       homeBanner = expired ? '' : (data.banner || '');
+      homeBannerExpiresAt = expired ? null : (data.bannerExpiresAt || null);
     }
   }catch(e){}
   try{
@@ -4513,7 +4680,7 @@ function activeMemberRowHtml(u){
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}
       </div>
       <div class="info">
-        <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${u.role==='admin'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">👑 Yönetici</span>':u.role==='moderator'?'<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass);">🛡️ '+escapeHtml(u.rank||'Moderatör')+'</span>':tenureBadgeHtml(u.createdAt)}</div>
+        <div class="ttype" style="color:var(--ink); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">${escapeHtml(u.username||'kullanici')}${roleOrTenureBadgeHtml(u, 'font-size:10px; padding:2px 8px;')}</div>
         <div class="note">${escapeHtml(formatLastActive(u.lastActive))}</div>
       </div>
       <div style="flex-shrink:0; font-weight:800; font-size:12px; color:var(--danger);">${(typeof u.quizScore==='number'?u.quizScore:0)} pn</div>
@@ -4550,10 +4717,37 @@ function renderActiveMembers(){
     };
   }
 }
+let homeBannerCountdownInterval = null;
+function formatBannerCountdown(expiresAtIso){
+  const msLeft = new Date(expiresAtIso).getTime() - Date.now();
+  if(msLeft <= 0) return null;
+  const hours = Math.floor(msLeft / 3600000);
+  const mins = Math.floor((msLeft % 3600000) / 60000);
+  if(hours >= 24){
+    const days = Math.floor(hours/24);
+    return days + ' gün ' + (hours%24) + ' sa kaldı';
+  }
+  if(hours >= 1) return hours + ' sa ' + mins + ' dk kaldı';
+  return mins + ' dk kaldı';
+}
 function renderHomeBanner(){
   const el = document.getElementById('homeBannerBox');
   if(!el) return;
-  if(homeBanner){ el.style.display='block'; el.textContent = '📢 ' + homeBanner; }
+  if(homeBannerCountdownInterval){ clearInterval(homeBannerCountdownInterval); homeBannerCountdownInterval = null; }
+  if(homeBanner){
+    el.style.display='block';
+    const renderText = () => {
+      let html = '📢 ' + escapeHtml(homeBanner);
+      if(homeBannerExpiresAt){
+        const countdown = formatBannerCountdown(homeBannerExpiresAt);
+        if(countdown) html += ' <span style="color:var(--danger); font-size:10.5px; font-weight:800;">· ' + countdown + '</span>';
+        else { homeBanner = ''; renderHomeBanner(); return; }
+      }
+      el.innerHTML = html;
+    };
+    renderText();
+    if(homeBannerExpiresAt) homeBannerCountdownInterval = setInterval(renderText, 60000);
+  }
   else { el.style.display='none'; }
 }
 
@@ -4821,9 +5015,15 @@ function openChatScreen(cid, otherUid){
     document.getElementById('btnChatGroupMembers').style.display = 'none';
     const p = profileByUid(otherUid);
     document.getElementById('chatHeaderName').innerHTML = usernameLabelHtml(p);
-    document.getElementById('chatHeaderAvatar').textContent = getInitials(p?p.fullName:'?');
-    document.getElementById('chatHeaderAvatar').style.background = avatarGradient(otherUid);
-    document.getElementById('chatHeaderAvatar').style.borderRadius = '50%';
+    const chatHeaderAvatarEl = document.getElementById('chatHeaderAvatar');
+    if(p && p.photoData){
+      chatHeaderAvatarEl.innerHTML = `<img src="${p.photoData}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
+      chatHeaderAvatarEl.style.background = 'transparent';
+    } else {
+      chatHeaderAvatarEl.textContent = getInitials(p?p.fullName:'?');
+      chatHeaderAvatarEl.style.background = avatarGradient(otherUid);
+    }
+    chatHeaderAvatarEl.style.borderRadius = '50%';
     document.getElementById('chatHeaderName').onclick = ()=> openViewProfile(otherUid);
     document.getElementById('chatHeaderAvatar').onclick = ()=> openViewProfile(otherUid);
     document.getElementById('chatHeaderSub').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
@@ -5072,6 +5272,12 @@ document.getElementById('btnChatReportUser').addEventListener('click', ()=>{
 document.getElementById('btnChatBlock').addEventListener('click', async ()=>{
   document.getElementById('chatHeaderMenu').style.display = 'none';
   if(!currentChatUid) return;
+  if(!currentChatBlockStatus.byMe){
+    try{
+      const targetAdminDoc = await db.collection('admins').doc(currentChatUid).get();
+      if(targetAdminDoc.exists){ showToast('Yöneticiler engellenemez'); return; }
+    }catch(e){}
+  }
   if(currentChatBlockStatus.byMe){
     await db.collection('blocks').doc(blockDocId(currentUser.uid, currentChatUid)).delete();
     showToast('Engel kaldırıldı');
@@ -5227,7 +5433,7 @@ function chatBubbleHtml(m){
   }
   const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
-  const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${escapeHtml(m.text)}</div>` : '';
+  const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${linkifyHtml(m.text)}</div>` : '';
   const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--asphalt); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
   return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px; user-select:none; gap:6px;">
       <input type="checkbox" class="chat-select-box" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:19px;height:19px; flex-shrink:0; ${mine?'order:2;':''}">
@@ -5682,7 +5888,7 @@ function convRowHtml(c, today){
   return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer; border-radius:16px; margin-bottom:4px; transition:background .12s ease;">
       <input type="checkbox" class="conv-select-box" data-select-conv="${escapeHtml(c.id)}" style="display:none; width:19px;height:19px; flex-shrink:0;">
       <div style="position:relative; flex-shrink:0;">
-        <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:${avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm);">${avatarInitials}</div>
+        <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:${(!isGrp && p && p.photoData) ? 'transparent' : avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm); overflow:hidden;">${(!isGrp && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : avatarInitials}</div>
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--paper);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
@@ -5755,7 +5961,7 @@ function renderFilteredConversations(){
       <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px; max-width:280px; margin-left:auto; margin-right:auto;">
         ${suggestions.map(u=>`
           <button class="submit-btn secondary" data-suggest-uid="${escapeHtml(u.uid)}" style="display:flex; align-items:center; gap:10px; text-align:left; padding:10px 14px;">
-            <div style="width:32px;height:32px;border-radius:50%; background:${avatarGradient(u.uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; flex-shrink:0;">${escapeHtml(getInitials(u.fullName))}</div>
+            <div style="width:32px;height:32px;border-radius:50%; background:${u.photoData ? 'transparent' : avatarGradient(u.uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">${u.photoData ? `<img src="${u.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(u.fullName))}</div>
             <span style="font-size:13px; font-weight:700;">${escapeHtml(u.username||'kullanici')}</span>
           </button>`).join('')}
       </div>` : '';
@@ -6002,14 +6208,12 @@ async function runMessageSearch(q){
   let html = '';
   if(people.length){
     html += `<div class="section-title" style="margin-top:0;">Kişiler (${people.length})</div><div class="card">` + people.map(u=>{
-      const roleBadge = u.role==='admin' ? '<span style="font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); margin-left:6px;">👑 Yönetici</span>'
-        : u.role==='moderator' ? `<span style="font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); margin-left:6px;">🛡️ ${escapeHtml(u.rank||'Moderatör')}</span>` : '';
-      const tenureBadge = tenureBadgeHtml(u.createdAt, 'font-size:9px; padding:2px 7px; margin-left:6px;');
+      const combinedBadge = roleOrTenureBadgeHtml(u, 'font-size:9px; padding:2px 7px; margin-left:6px;');
       return `
       <div class="toggle-row" data-msg-uid="${escapeHtml(u.uid)}" style="cursor:pointer;">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:36px;height:36px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0;">${escapeHtml(getInitials(u.fullName))}</div>
-          <div><div class="tlbl">${escapeHtml(u.username||'kullanici')}${roleBadge}${tenureBadge}</div><div class="tsub">👷 ${escapeHtml(u.profession||'-')}</div></div>
+          <div><div class="tlbl">${escapeHtml(u.username||'kullanici')}${combinedBadge}</div><div class="tsub">👷 ${escapeHtml(u.profession||'-')}</div></div>
         </div>
       </div>`;
     }).join('') + `</div>`;
@@ -6118,7 +6322,7 @@ function renderNotifList(items, isFullHistory){
       <div class="bar" style="background:${n.read?'var(--line)':'var(--asphalt)'};"></div>
       <div class="info">
         <div class="ttype" style="color:var(--ink);">${n.type==='broadcast'?'📢 Duyuru':(n.type==='suggestion_response'?'💡 Öneri Yanıtı':(n.type==='mod_update'?'🛡️ Moderatörlük':(n.type==='report_result'?'🚩 Şikayet Sonucu':'👋 Takip')))}</div>
-        <div class="note" style="margin-top:2px;">${escapeHtml(n.message||'')}</div>
+        <div class="note" style="margin-top:2px;">${linkifyHtml(n.message||'')}</div>
         <div class="date">${dateStr}</div>
       </div>
     </div>`;
@@ -6160,10 +6364,86 @@ async function markAllNotifsRead(){
     await batch.commit();
   }catch(e){}
 }
-document.getElementById('btnNotifBell').addEventListener('click', ()=>{
+// ---------- HEADER: MESAJLAR / BİLDİRİM DROPDOWN PANELLERİ ----------
+function renderHeaderMsgDropdown(){
+  const box = document.getElementById('headerMsgDropdownList');
+  const isArchived = c => Array.isArray(c.archivedFor) && c.archivedFor.includes(currentUser.uid);
+  const items = (allConvsCache||[]).filter(c=>!isArchived(c)).slice(0,5);
+  if(items.length===0){
+    box.innerHTML = `<div class="hint" style="padding:14px; margin:0;">Henüz mesajın yok.</div>`;
+    return;
+  }
+  box.innerHTML = items.map(c=>{
+    const otherUid = !c.isGroup ? (c.participants||[]).find(u=>u!==currentUser.uid) : null;
+    const p = otherUid ? profileByUid(otherUid) : null;
+    const name = c.isGroup ? (c.groupName||'Grup') : getDisplayName(p);
+    const initials = c.isGroup ? (c.groupName||'G').trim().charAt(0).toUpperCase() : getInitials(p?p.fullName:name);
+    const unread = Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid);
+    const preview = c.lastMessage ? (c.lastMessage.length>34 ? c.lastMessage.slice(0,34)+'…' : c.lastMessage) : 'Henüz mesaj yok';
+    const avatarInner = (!c.isGroup && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(initials);
+    return `<div data-dd-conv="${escapeHtml(c.id)}" data-dd-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:9px; padding:9px 8px; cursor:pointer; border-radius:10px;">
+      <div style="width:36px;height:36px;border-radius:${c.isGroup?'10px':'50%'}; background:${(!c.isGroup && p && p.photoData)?'transparent':avatarGradient(c.isGroup?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">${avatarInner}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:${unread?800:700}; font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
+        <div style="font-size:11px; color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(preview)}</div>
+      </div>
+      ${unread?'<span style="width:8px;height:8px; border-radius:50%; background:var(--asphalt); flex-shrink:0;"></span>':''}
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-dd-conv]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      document.getElementById('headerMsgDropdown').style.display = 'none';
+      switchScreen('mesajlar');
+      openChatScreen(row.dataset.ddConv, row.dataset.ddOther || null);
+    });
+  });
+}
+document.getElementById('btnHeaderMessages').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const dd = document.getElementById('headerMsgDropdown');
+  const willOpen = dd.style.display !== 'block';
+  document.getElementById('headerNotifDropdown').style.display = 'none';
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  dd.style.display = willOpen ? 'block' : 'none';
+  if(willOpen) renderHeaderMsgDropdown();
+});
+document.getElementById('btnHeaderMsgSeeAll').addEventListener('click', ()=>{
+  document.getElementById('headerMsgDropdown').style.display = 'none';
+  switchScreen('mesajlar');
+});
+
+function renderHeaderNotifDropdown(){
+  const box = document.getElementById('headerNotifDropdownList');
+  const items = (window._latestNotifications || []).slice(0,5);
+  if(items.length===0){
+    box.innerHTML = `<div class="hint" style="padding:14px; margin:0;">Henüz bildirimin yok.</div>`;
+    return;
+  }
+  box.innerHTML = items.map(n=>{
+    const time = n.createdAt ? formatLastActive(n.createdAt) : '';
+    return `<div style="padding:9px 8px; border-radius:10px; ${!n.read?'background:var(--tint-slate);':''}">
+      <div style="font-size:12.5px; font-weight:${n.read?600:800};">${linkifyHtml(n.message||'')}</div>
+      <div style="font-size:10px; color:var(--ink-soft); margin-top:3px;">${escapeHtml(time)}</div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('btnNotifBell').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const dd = document.getElementById('headerNotifDropdown');
+  const willOpen = dd.style.display !== 'block';
+  document.getElementById('headerMsgDropdown').style.display = 'none';
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  dd.style.display = willOpen ? 'block' : 'none';
+  if(willOpen){ renderHeaderNotifDropdown(); setTimeout(markAllNotifsRead, 800); }
+});
+document.getElementById('btnHeaderNotifSeeAll').addEventListener('click', ()=>{
+  document.getElementById('headerNotifDropdown').style.display = 'none';
   renderNotifList();
   document.getElementById('notifOverlay').classList.add('show');
-  setTimeout(markAllNotifsRead, 800);
+});
+document.addEventListener('click', ()=>{
+  document.getElementById('headerMsgDropdown').style.display = 'none';
+  document.getElementById('headerNotifDropdown').style.display = 'none';
 });
 document.getElementById('notifClose').addEventListener('click', ()=> document.getElementById('notifOverlay').classList.remove('show'));
 
@@ -6303,6 +6583,14 @@ function monthLabel(mk){ const [y,m]=mk.split('-'); return MONTH_NAMES[parseInt(
 function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10); }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 function escapeHtml(str){ const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+function linkifyHtml(str){
+  const escaped = escapeHtml(str);
+  const urlPattern = /((https?:\/\/|www\.)[^\s<]+)/gi;
+  return escaped.replace(urlPattern, (match) => {
+    const href = match.startsWith('http') ? match : 'https://' + match;
+    return '<a href="'+href+'" target="_blank" rel="noopener noreferrer" style="color:var(--asphalt); font-weight:700; text-decoration:underline; word-break:break-all;">'+match+'</a>';
+  });
+}
 
 
 function applyTheme(){
@@ -6376,7 +6664,6 @@ function switchScreen(name){
 document.getElementById('brandHomeLink').addEventListener('click', ()=> switchScreen('ana'));
 
 // ---------- HEADER: MESAJLAR / PROFİL DOĞRUDAN ERİŞİM ----------
-document.getElementById('btnHeaderMessages').addEventListener('click', ()=> switchScreen('mesajlar'));
 document.getElementById('btnHeaderProfile').addEventListener('click', (e)=>{
   e.stopPropagation();
   const menu = document.getElementById('headerProfileMenu');
@@ -7427,7 +7714,7 @@ function renderProfile(){
   if(typeof loadQuizStats === 'function') loadQuizStats();
   document.getElementById('profileAvatarBadge').textContent = getInitials(profile.fullName);
   document.getElementById('profileAvatarBadge').style.background = avatarGradient(currentUser.uid);
-  document.getElementById('profileDisplayName').textContent = profile.fullName || '-';
+  document.getElementById('profileFullNameInfo').textContent = profile.fullName || '-';
   document.getElementById('ownQuizScore').textContent = (ownP && typeof ownP.quizScore==='number' ? ownP.quizScore : 0);
   document.getElementById('profileUsername').textContent = (profile.username || '-');
   document.getElementById('profileProfession').textContent = profile.profession || '-';
@@ -7439,7 +7726,9 @@ function renderProfile(){
   if(isAdmin){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '👑 ' + (profile.adminTitle || 'Yönetici'); }
   else if(modPerms && modPerms.rank){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '🛡️ ' + modPerms.rank; }
   else { ownRankBadge.style.display='none'; }
-  document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank)) ? '' : tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true);
+  document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank))
+    ? quizRankBadgeHtml(profile.quizScore||0, 'margin-left:6px;')
+    : (tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml(profile.quizScore||0, 'margin-left:6px;'));
 
   document.getElementById('viewUserId').textContent = profile.userId || '-';
   document.getElementById('viewEmail').textContent = currentUser.email || '-';
@@ -7571,7 +7860,7 @@ async function openStaffPage(){
     return;
   }
   box.innerHTML = staff.map(u=>{
-    const roleLabel = u.role==='admin' ? '👑 Yönetici' : ('🛡️ ' + (u.rank||'Moderatör'));
+    const roleLabel = u.role==='admin' ? ('👑 ' + (u.adminTitle||'Yönetici')) : ('🛡️ ' + (u.rank||'Moderatör'));
     return `<div class="card" style="display:flex; align-items:center; gap:14px; cursor:pointer;" data-staff-uid="${escapeHtml(u.uid)}">
       <div style="width:52px;height:52px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; flex-shrink:0;">${escapeHtml(getInitials(u.fullName))}</div>
       <div style="flex:1; min-width:0;">
@@ -7839,15 +8128,13 @@ document.getElementById('searchInput').addEventListener('input', (e)=>{
   let html = '';
   if(userResults.length){
     html += `<div class="section-title" style="margin-top:0;">Kullanıcılar (${userResults.length})</div><div class="card">` + userResults.map(u=>{
-      const roleBadge = u.role==='admin' ? '<span style="font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); margin-left:6px;">👑 Yönetici</span>'
-        : u.role==='moderator' ? `<span style="font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); margin-left:6px;">🛡️ ${escapeHtml(u.rank||'Moderatör')}</span>` : '';
-      const tenureBadge = tenureBadgeHtml(u.createdAt, 'font-size:9px; padding:2px 7px; margin-left:6px;');
+      const combinedBadge = roleOrTenureBadgeHtml(u, 'font-size:9px; padding:2px 7px; margin-left:6px;');
       const ipBadgeSlot = canBanIp() ? `<span data-same-ip-slot="${escapeHtml(u.uid)}"></span>` : '';
       return `<div class="toggle-row" data-uid="${escapeHtml(u.uid)}" style="cursor:pointer;">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:36px;height:36px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0;">${escapeHtml(getInitials(u.fullName))}</div>
           <div>
-            <div class="tlbl">${escapeHtml(u.username||'kullanici')}${roleBadge}${tenureBadge}${ipBadgeSlot}</div>
+            <div class="tlbl">${escapeHtml(u.username||'kullanici')}${combinedBadge}${ipBadgeSlot}</div>
             <div class="tsub">👷 ${escapeHtml(u.profession||'-')}${u.city?(' · 📍 '+escapeHtml(u.city)):''}</div>
           </div>
         </div>
@@ -8379,7 +8666,91 @@ async function loadQuizQuestions(force){
     const snap = await db.collection('quiz_questions').get();
     quizQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }catch(e){ console.error('Sorular yüklenemedi', e); }
+  updateQuizCategoryCounts();
   return quizQuestions;
+}
+function updateQuizCategoryCounts(){
+  const genelEl = document.getElementById('quizCategoryGenelCount');
+  const islamiEl = document.getElementById('quizCategoryIslamiCount');
+  if(!genelEl || !islamiEl) return;
+  const genelCount = quizQuestions.filter(q => q.category === 'genel_kultur').length;
+  const islamiCount = quizQuestions.filter(q => q.category === 'islami').length;
+  genelEl.textContent = genelCount + ' Soru';
+  islamiEl.textContent = islamiCount + ' Soru';
+}
+
+// ---------- SORUYU SESLİ OKUMA (Text-to-Speech) ----------
+document.getElementById('btnQuizSpeak').addEventListener('click', ()=>{
+  const q = quizSessionQuestions[quizCurrentIndex];
+  if(!q || typeof speechSynthesis === 'undefined') return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(q.question);
+  utter.lang = 'tr-TR';
+  speechSynthesis.speak(utter);
+});
+
+// ---------- SORU KAYDETME / FAVORİLER ----------
+async function getBookmarkedQuestionIds(){
+  if(!userDocRef) return [];
+  try{
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    return Array.isArray(data.quizBookmarkedIds) ? data.quizBookmarkedIds : [];
+  }catch(e){ return []; }
+}
+async function refreshQuizBookmarkBtn(questionId){
+  const btn = document.getElementById('btnQuizBookmark');
+  if(!btn) return;
+  const bookmarked = await getBookmarkedQuestionIds();
+  const isSaved = bookmarked.includes(questionId);
+  btn.textContent = isSaved ? '★' : '☆';
+  btn.style.color = isSaved ? '#F59E0B' : '';
+}
+document.getElementById('btnQuizBookmark').addEventListener('click', async ()=>{
+  const q = quizSessionQuestions[quizCurrentIndex];
+  if(!q || !userDocRef) return;
+  const bookmarked = await getBookmarkedQuestionIds();
+  const isSaved = bookmarked.includes(q.id);
+  try{
+    if(isSaved){
+      await userDocRef.set({ quizBookmarkedIds: firebase.firestore.FieldValue.arrayRemove(q.id) }, {merge:true});
+      showToast('Kayıtlardan çıkarıldı');
+    } else {
+      await userDocRef.set({ quizBookmarkedIds: firebase.firestore.FieldValue.arrayUnion(q.id) }, {merge:true});
+      showToast('Soru kaydedildi ⭐');
+    }
+  }catch(e){ showToast('İşlem başarısız'); }
+  refreshQuizBookmarkBtn(q.id);
+});
+async function renderQuizBookmarksList(){
+  const box = document.getElementById('quizBookmarksList');
+  if(!box) return;
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const bookmarkedIds = await getBookmarkedQuestionIds();
+  await loadQuizQuestions();
+  const items = quizQuestions.filter(q => bookmarkedIds.includes(q.id));
+  if(items.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">⭐</div><div class="msg">Henüz kaydettiğin soru yok. Soru çözerken ☆ ikonuna dokunarak kaydedebilirsin.</div></div>';
+    return;
+  }
+  box.innerHTML = items.map(q => {
+    const correctOpt = (q.options||[])[q.correctIndex] || '';
+    return '<div class="card" style="margin-bottom:10px; padding:14px;">'
+      + '<div style="font-weight:700; font-size:14px; margin-bottom:8px;">'+escapeHtml(q.question)+'</div>'
+      + '<div style="font-size:12.5px; color:#16A34A; font-weight:700; margin-bottom:10px;">✓ '+escapeHtml(correctOpt)+'</div>'
+      + '<button class="submit-btn secondary" data-unbookmark="'+escapeHtml(q.id)+'" style="padding:8px; font-size:12px;">☆ Kayıttan Çıkar</button>'
+      + '</div>';
+  }).join('');
+  box.querySelectorAll('[data-unbookmark]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.unbookmark;
+      try{
+        await userDocRef.set({ quizBookmarkedIds: firebase.firestore.FieldValue.arrayRemove(id) }, {merge:true});
+        showToast('Kayıttan çıkarıldı');
+        renderQuizBookmarksList();
+      }catch(e){ showToast('İşlem başarısız'); }
+    });
+  });
 }
 
 async function getSeenQuestionIds(){
@@ -8423,8 +8794,17 @@ function quizResetToCategory(){
   document.getElementById('quizPlayStep').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'none';
   document.getElementById('quizCategoryStep').style.display = 'block';
+  loadQuizQuestions();
 }
 document.getElementById('btnGoToQuiz').addEventListener('click', ()=>{ quizResetToCategory(); switchScreen('quiz'); });
+document.getElementById('btnQuizGoBookmarks').addEventListener('click', ()=>{
+  switchScreen('quiz-bookmarks');
+  renderQuizBookmarksList();
+});
+document.getElementById('btnQuizBookmarksBack').addEventListener('click', ()=>{
+  quizResetToCategory();
+  switchScreen('quiz');
+});
 document.getElementById('btnHeaderMenuQuiz').addEventListener('click', ()=>{
   document.getElementById('headerProfileMenu').style.display = 'none';
   quizResetToCategory();
@@ -8499,6 +8879,7 @@ function renderQuizQuestion(){
   hintBtn.style.display = q.hint ? 'block' : 'none';
   document.getElementById('quizExplanationBox').style.display = 'none';
   document.getElementById('btnQuizUnderstood').style.display = 'none';
+  refreshQuizBookmarkBtn(q.id);
   startQuizTimer();
 }
 document.getElementById('btnQuizHintToggle').addEventListener('click', ()=>{
@@ -8710,9 +9091,13 @@ function renderLeaderboardList(ranked){
     const initials = getInitials(name);
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
+    const avatarInner = (p && p.photoData)
+      ? '<img src="'+p.photoData+'" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">'
+      : escapeHtml(initials);
+    const avatarBg = (p && p.photoData) ? 'transparent' : avatarGradient(row.uid);
     return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; '+borderStyle+'">'
       + '<div style="width:24px; text-align:center; font-weight:800; font-size:13px;">'+medal+'</div>'
-      + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarGradient(row.uid)+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0;">'+escapeHtml(initials)+'</div>'
+      + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarBg+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">'+avatarInner+'</div>'
       + '<div style="flex:1; font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(name)+'</div>'
       + '<div style="font-weight:800; font-size:13px; color:var(--asphalt);">'+row.score+' pn</div>'
       + '</div>';
@@ -8848,6 +9233,12 @@ document.getElementById('quizAdminSaveBtn').addEventListener('click', async ()=>
   if(!question){ showToast('Soru metni boş olamaz'); return; }
   if(options.slice(0,4).some(o=>!o)){ showToast('İlk 4 şık doldurulmalı'); return; }
   if(correctIndex >= options.length){ showToast('Doğru cevap olarak boş bıraktığın 5. şıkkı seçtin'); return; }
+
+  const normalizedNew = question.trim().toLowerCase();
+  const duplicate = quizQuestions.find(q => q.id !== quizAdminEditingId && (q.question||'').trim().toLowerCase() === normalizedNew);
+  if(duplicate){
+    if(!confirm('Bu soruyla neredeyse aynı bir soru zaten sistemde var:\n\n"' + duplicate.question + '"\n\nYine de eklemek istiyor musun?')) return;
+  }
 
   const data = { category, question, options, correctIndex };
   if(hint) data.hint = hint;
