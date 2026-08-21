@@ -259,3 +259,19 @@
   .allmonths-row .amval .v2{font-size:10.5px; color:var(--ink-soft); margin-top:1px;}
 
   @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+
+  /* ---------- PROFİL KARTI (vp-*) — eksik olan tanımlar, esnek birimlerle ---------- */
+  .vp-avatar-ring{position:relative; width:5.2rem; height:5.2rem; min-width:5.2rem; min-height:5.2rem; border-radius:50%; overflow:hidden; flex-shrink:0; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center;}
+  .vp-avatar-ring img{width:100%; height:100%; object-fit:cover; display:block; border-radius:50%;}
+  .vp-avatar-ring #profileAvatarInitials, .vp-avatar-ring #vpAvatar{font-family:'Manrope',sans-serif; font-weight:800; font-size:1.7rem; color:#fff;}
+  .vp-avatar-ring #vpAvatar{width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
+  .vp-online-dot{display:none; position:absolute; bottom:0.15rem; right:0.15rem; width:0.9rem; height:0.9rem; border-radius:50%; background:#22C55E; border:0.14rem solid var(--paper); z-index:2;}
+  .vp-avatar-badge{display:none;}
+  .vp-name{font-family:'Manrope',sans-serif; font-weight:800; font-size:1.15rem; color:var(--ink); line-height:1.25; word-break:break-word;}
+  .vp-username{font-size:0.85rem; color:var(--ink-soft); font-weight:600; margin-top:0.2rem;}
+  .vp-meta{font-size:0.8rem; color:var(--ink-soft); margin-top:0.3rem;}
+  .vp-lastactive{font-size:0.75rem; color:var(--ink-soft); margin-top:0.2rem;}
+  .vp-btn-follow, .vp-btn-message, .vp-btn-block{padding:0.65rem 0.9rem; border-radius:0.9rem; font-weight:800; font-size:0.82rem; cursor:pointer; border:none; white-space:nowrap; flex:1; text-align:center;}
+  .vp-btn-follow{background:var(--asphalt); color:#fff;}
+  .vp-btn-message{background:var(--concrete); color:var(--ink);}
+  .vp-btn-block{background:var(--tint-rust); color:var(--danger); width:2.6rem; min-width:2.6rem; flex:0 0 auto; padding:0.65rem;}
