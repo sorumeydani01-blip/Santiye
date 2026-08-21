@@ -170,6 +170,7 @@
         <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
           <button id="btnHeaderMenuProfile" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
           <button id="btnHeaderMenuQuiz" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
+          <button id="btnHeaderMenuAyetler" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">📖 Ayetler</button>
           <button id="btnHeaderMenuSettings" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
         </div>
       </div>
@@ -520,6 +521,7 @@
           <div style="display:flex; gap:4px; flex-shrink:0;">
             <button id="btnQuizSpeak" title="Soruyu sesli oku" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">🔊</button>
             <button id="btnQuizBookmark" title="Kaydet" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">☆</button>
+            <button id="btnQuizReport" title="Soruyu bildir" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">🚩</button>
           </div>
         </div>
         <div style="height:5px; border-radius:3px; background:var(--concrete); overflow:hidden;">
@@ -530,11 +532,18 @@
       <button id="btnQuizHintToggle" style="width:100%; margin-top:10px; padding:10px; border-radius:12px; border:none; background:none; color:var(--ink-soft); font-weight:700; font-size:12.5px; cursor:pointer; text-align:left; display:none;">💡 İpucu</button>
       <div id="quizHintBox" class="hint" style="display:none; background:var(--tint-slate); padding:10px 12px; border-radius:10px; margin-top:4px;"></div>
       <button id="btnQuizJoker" style="width:100%; margin-top:14px; padding:12px; border-radius:14px; border:1.5px dashed var(--asphalt); background:var(--tint-slate); color:var(--asphalt); font-weight:800; font-size:13.5px; cursor:pointer;">🃏 50/50 Joker Kullan (<span id="quizJokerCount">3</span> hakkın var)</button>
-      <div id="quizExplanationBox" style="display:none; margin-top:14px; padding:14px 16px; border-radius:14px; background:var(--tint-slate); border:1px solid var(--line);">
-        <div style="font-weight:800; font-size:12.5px; color:var(--asphalt); margin-bottom:6px;">📖 Açıklama</div>
-        <div id="quizExplanationText" style="font-size:13.5px; line-height:1.5; color:var(--ink);"></div>
+    </div>
+
+    <!-- SORU AÇIKLAMA PENCERESİ -->
+    <div id="quizExplanationOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:flex-end; justify-content:center;">
+      <div class="card" style="width:100%; max-width:480px; border-radius:20px 20px 0 0; padding:20px; max-height:75vh; overflow-y:auto;">
+        <div id="quizExplanationResultBadge" style="font-weight:800; font-size:15px; margin-bottom:10px;"></div>
+        <div id="quizExplanationBox" style="padding:14px 16px; border-radius:14px; background:var(--tint-slate); border:1px solid var(--line);">
+          <div style="font-weight:800; font-size:12.5px; color:var(--asphalt); margin-bottom:6px;">📖 Açıklama</div>
+          <div id="quizExplanationText" style="font-size:13.5px; line-height:1.5; color:var(--ink);"></div>
+        </div>
+        <button id="btnQuizUnderstood" style="width:100%; margin-top:14px; padding:14px; border-radius:14px; border:none; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-weight:800; font-size:14px; cursor:pointer;">✅ Anladım, Devam Et</button>
       </div>
-      <button id="btnQuizUnderstood" style="display:none; width:100%; margin-top:12px; padding:14px; border-radius:14px; border:none; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-weight:800; font-size:14px; cursor:pointer;">✅ Anladım, Devam Et</button>
     </div>
 
     <div id="quizResultStep" style="display:none; text-align:center; padding-top:20px;">
@@ -602,7 +611,79 @@
     <div id="dailyQuestsList"></div>
   </section>
 
+  <!-- AYETLER (namaz sureleri) LİSTE EKRANI -->
+  <section class="screen" id="screen-ayetler">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnAyetlerBack">‹</button>
+      <span class="cal-title">📖 Ayetler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div style="position:relative; margin-bottom:12px;">
+      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
+      <input type="text" id="ayetlerSearchInput" placeholder="Sure ara... (örn: İhlas)" style="width:100%; padding:13px 14px 13px 40px; border-radius:16px; background:var(--concrete); border:none; font-size:14px; color:var(--ink);">
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button class="msg-tab active" id="ayetlerTabAll" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">📖 Tüm Sureler</button>
+      <button class="msg-tab" id="ayetlerTabMine" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">⭐ Listem</button>
+      <button class="msg-tab" id="ayetlerTabMemorized" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">✅ Ezberlediklerim</button>
+    </div>
+    <div class="hint" id="ayetlerHint" style="margin-bottom:12px;">Namazda okunabilecek kısa sureler. Beğendiklerini "Listem"e ekleyip günlük tekrar sayacı tutabilir, ezberlediklerini işaretleyebilirsin.</div>
+    <div id="ayetlerList" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+  </section>
+
+  <!-- AYET DETAY / PRATİK EKRANI -->
+  <section class="screen" id="screen-ayet-detail">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnAyetDetailBack">‹</button>
+      <span class="cal-title" id="ayetDetailTitle">-</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div id="ayetDetailLoading" class="hint">Yükleniyor…</div>
+    <div id="ayetDetailContent" style="display:none;">
+      <div class="card" style="margin-bottom:14px; text-align:center; padding:22px 16px;">
+        <div id="ayetArabicText" dir="rtl" style="font-size:24px; line-height:2.1; font-family:'Amiri','Traditional Arabic',serif; color:var(--ink); margin-bottom:6px;"></div>
+      </div>
+      <div class="card" style="margin-bottom:14px; padding:16px;">
+        <div style="font-weight:800; font-size:11.5px; color:var(--asphalt); margin-bottom:6px;">🗣️ OKUNUŞU</div>
+        <div id="ayetTransliteration" style="font-size:14px; line-height:1.6; color:var(--ink); font-style:italic;"></div>
+      </div>
+      <div class="card" style="margin-bottom:14px; padding:16px;">
+        <div style="font-weight:800; font-size:11.5px; color:var(--asphalt); margin-bottom:6px;">🇹🇷 TÜRKÇE MEALİ</div>
+        <div id="ayetMeal" style="font-size:14px; line-height:1.6; color:var(--ink);"></div>
+      </div>
+      <button id="btnAyetPlayAudio" class="submit-btn secondary" style="margin-bottom:10px;">🔊 Hafız Sesiyle Dinle</button>
+      <div id="ayetAudioError" class="hint" style="display:none; color:var(--danger); text-align:center;"></div>
+
+      <div class="card" style="padding:16px; margin-top:6px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <div style="font-weight:800; font-size:13px;">Bugünkü Tekrar</div>
+          <div style="font-weight:800; font-size:15px; color:var(--asphalt);"><span id="ayetTodayCount">0</span> / <span id="ayetDailyGoal">25</span></div>
+        </div>
+        <div style="height:8px; border-radius:5px; background:var(--concrete); overflow:hidden; margin-bottom:12px;">
+          <div id="ayetProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--asphalt),var(--asphalt-2)); border-radius:5px; transition:width .3s ease;"></div>
+        </div>
+        <button id="btnAyetReadPlusOne" class="submit-btn" style="margin-bottom:10px;">✋ Okudum (+1)</button>
+        <label class="toggle-row" style="padding:8px 0;">
+          <div class="tlbl">✅ Bu sureyi ezberledim</div>
+          <label class="switch"><input type="checkbox" id="ayetMemorizedToggle"><span class="slider"></span></label>
+        </label>
+        <button id="btnAyetAddToList" class="submit-btn secondary" style="margin-top:6px;">⭐ Listeme Ekle</button>
+      </div>
+    </div>
+  </section>
+
   <!-- DÜELLO KURULUM MODALI -->
+  <!-- SORU BİLDİRME MODALI -->
+  <div id="quizReportOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+    <div class="card" style="width:88%; max-width:360px; padding:20px;">
+      <div style="font-weight:800; font-size:16px; margin-bottom:4px;">🚩 Soruyu Bildir</div>
+      <div class="hint" style="margin:0 0 14px;">Bu soruda ne yanlış? Kısaca yaz, yöneticiler kontrol edip düzeltecek.</div>
+      <textarea id="quizReportReason" rows="3" placeholder="Örn: Doğru cevap yanlış işaretlenmiş, soru belirsiz..." style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px; resize:vertical; margin-bottom:12px;"></textarea>
+      <button class="submit-btn" id="quizReportSendBtn">🚩 Bildir</button>
+      <button class="submit-btn secondary" id="quizReportCancelBtn" style="margin-top:8px;">Vazgeç</button>
+    </div>
+  </div>
+
   <div id="duelSetupOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     <div class="card" style="width:88%; max-width:360px; padding:20px;">
       <div style="font-weight:800; font-size:16px; margin-bottom:4px;">⚔️ Düello Davet Et</div>
@@ -849,6 +930,11 @@
     <div class="section-title">🤝 Arkadaşlarım <span id="ownFriendReqBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span> <button class="see-all-btn" id="ownSeeAllFriends">Tümünü Gör</button></div>
     <div class="card">
       <div id="ownFriendAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"><div class="hint" style="margin:0;">Henüz arkadaşın yok.</div></div>
+    </div>
+
+    <div class="section-title">📖 Ezberlediğim Ayetler</div>
+    <div class="card" id="ownMemorizedAyetlerCard">
+      <div class="hint" style="margin:0;">Henüz ezberlediğin sure yok.</div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -1374,6 +1460,8 @@
           <div class="toggle-row"><div class="tlbl">📖 Günün Ayeti Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditQuotes"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🧠 Soru Bankası Yönetimi</div><label class="switch"><input type="checkbox" id="vpModManageQuizQuestions"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">🚩 Soru Şikayetlerini Yönetme</div><label class="switch"><input type="checkbox" id="vpModManageQuizReports"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="tlbl">📖 Ayet Yönetimi</div><label class="switch"><input type="checkbox" id="vpModManageAyetler"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">⚠️ Uyarı Verme</div><label class="switch"><input type="checkbox" id="vpModManageWarnings"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
@@ -1412,6 +1500,9 @@
       <div id="vpFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
       <button class="see-all-btn" id="vpSeeAllFollowers" style="margin-top:10px;">Tüm Arkadaşlar</button>
     </div>
+
+    <div class="section-title" id="vpMemorizedSectionTitle" style="display:none;">📖 Ezberlediği Ayetler</div>
+    <div class="card" id="vpMemorizedAyetlerCard" style="display:none;"></div>
   </section>
 
   <!-- ADMİN PANELİ -->
@@ -1473,6 +1564,14 @@
       </button>
       <button class="admin-menu-row" data-admin-nav="adminquiz" id="adminMenuRow_adminquiz" >
         <span class="admin-menu-title">🧠 Soru Bankası</span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminquizreports" id="adminMenuRow_adminquizreports" >
+        <span class="admin-menu-title">🚩 Soru Şikayetleri <span id="adminQuizReportsBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span></span>
+        <span class="admin-menu-arrow">›</span>
+      </button>
+      <button class="admin-menu-row" data-admin-nav="adminayetler" id="adminMenuRow_adminayetler" >
+        <span class="admin-menu-title">📖 Ayet Yönetimi</span>
         <span class="admin-menu-arrow">›</span>
       </button>
       <button class="admin-menu-row" data-admin-nav="adminranks" id="adminMenuRow_adminranks" >
@@ -1768,6 +1867,48 @@
     </div>
   </section>
 
+  <section class="screen" id="screen-adminquizreports">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminquizreports">‹</button>
+      <span class="cal-title">🚩 Soru Şikayetleri</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-top:0; margin-bottom:14px;">Kullanıcıların hatalı/belirsiz olarak işaretlediği sorular. Düzenleyip kaydedebilir, gerekirse silebilir veya şikayeti "sorun yok" diye kapatabilirsin.</div>
+    <div id="adminQuizReportsList"></div>
+  </section>
+
+  <section class="screen" id="screen-adminayetler">
+    <div class="cal-nav">
+      <button class="admin-back-btn" data-admin-back="adminayetler">‹</button>
+      <span class="cal-title">📖 Ayet Yönetimi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-title" style="margin-top:0;">Yeni Sure/Ayet Ekle</div>
+      <div class="hint" style="margin-bottom:10px;">Kur'an'daki sure numarasını gir (1-114). Belirli ayet aralığı istemiyorsan boş bırak, sure baştan sona eklenir.</div>
+      <div class="field">
+        <label>Sure Numarası</label>
+        <input type="number" id="adminAyetSurahNo" min="1" max="114" placeholder="Örn: 78" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
+      </div>
+      <div class="field">
+        <label>Görünen İsim (Türkçe)</label>
+        <input type="text" id="adminAyetDisplayName" placeholder="Örn: Nebe" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="field" style="flex:1;">
+          <label>Ayet Başlangıç (opsiyonel)</label>
+          <input type="number" id="adminAyetStart" min="1" placeholder="1" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
+        </div>
+        <div class="field" style="flex:1;">
+          <label>Ayet Bitiş (opsiyonel)</label>
+          <input type="number" id="adminAyetEnd" min="1" placeholder="Son ayet" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
+        </div>
+      </div>
+      <button class="submit-btn" id="adminAyetAddBtn">➕ Ekle</button>
+    </div>
+    <div class="section-title">Admin Tarafından Eklenenler</div>
+    <div id="adminAyetlerList"></div>
+  </section>
 
   <section class="screen" id="screen-adminranks">
     <div class="cal-nav">
@@ -2687,14 +2828,16 @@ function renderFollowerAvatarsInto(containerId, followerUids, max){
   const box = document.getElementById(containerId);
   if(!box) return;
   if(followerUids.length===0){
-    box.innerHTML = `<div class="hint" style="margin:0;">Henüz takipçi yok.</div>`;
+    box.innerHTML = `<div class="hint" style="margin:0;">Henüz arkadaşın yok.</div>`;
     return;
   }
   const shown = followerUids.slice(0, max||9);
   box.innerHTML = shown.map(uid=>{
     const p = profileByUid(uid);
     const name = usernameLabel(p);
-    return `<div title="${escapeHtml(name)}" data-avatar-uid="${escapeHtml(uid)}" style="cursor:pointer; width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px;">${escapeHtml(getInitials(p?p.fullName:name))}</div>`;
+    const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
+    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover; border-radius:50%;">` : escapeHtml(getInitials(p?p.fullName:name));
+    return `<div title="${escapeHtml(name)}" data-avatar-uid="${escapeHtml(uid)}" style="position:relative; cursor:pointer; width:38px;height:38px;border-radius:50%; background:${(p&&p.photoData)?'transparent':'linear-gradient(150deg,var(--asphalt),var(--asphalt-2))'}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; overflow:hidden;">${inner}${isOnline?'<span style="position:absolute; bottom:-1px; right:-1px; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}</div>`;
   }).join('');
   box.querySelectorAll('[data-avatar-uid]').forEach(el=>{
     el.addEventListener('click', ()=>{
@@ -2863,6 +3006,10 @@ async function openViewProfile(uid){
       renderFollowerMiniAvatars(friendUids);
     }
   }
+  const memorizedIds = p ? (p.ayetMemorizedSurahs || []) : [];
+  document.getElementById('vpMemorizedSectionTitle').style.display = memorizedIds.length ? 'block' : 'none';
+  document.getElementById('vpMemorizedAyetlerCard').style.display = memorizedIds.length ? 'block' : 'none';
+  if(memorizedIds.length) renderMemorizedAyetlerCard(memorizedIds, 'vpMemorizedAyetlerCard');
 }
 
 // Yönetici/moderatör alanlarını (e-posta, IP, katılım tarihi, uyarılar, araç paneli) çizer.
@@ -3111,6 +3258,8 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
     document.getElementById('vpModEditQuotes').checked = !!perms.editQuotes;
     document.getElementById('vpModEditProfessions').checked = !!perms.editProfessions;
     document.getElementById('vpModManageQuizQuestions').checked = !!perms.manageQuizQuestions;
+    document.getElementById('vpModManageQuizReports').checked = !!perms.manageQuizReports;
+    document.getElementById('vpModManageAyetler').checked = !!perms.manageAyetler;
     document.getElementById('vpModBanIp').checked = !!perms.banIp;
     document.getElementById('vpModManageWarnings').checked = !!perms.manageWarnings;
     document.getElementById('vpModViewPrivateInfo').checked = !!perms.viewPrivateInfo;
@@ -3193,7 +3342,6 @@ document.getElementById('vpFriendBtn').addEventListener('click', async ()=>{
       await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, uid)).set({
         fromUid: currentUser.uid, toUid: uid, status:'pending', createdAt: new Date().toISOString()
       });
-      await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'friend_request', message:'🤝 Sana arkadaşlık isteği gönderdi.', read:false, createdAt:new Date().toISOString()});
       showToast('Arkadaşlık isteği gönderildi');
     } else if(status==='pending_sent'){
       await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, uid)).delete();
@@ -3453,6 +3601,8 @@ function canEditAnnouncements(){ return isAdmin || !!modPerms.editAnnouncements;
 function canEditQuotes(){ return isAdmin || !!modPerms.editQuotes; }
 function canEditProfessions(){ return isAdmin || !!modPerms.editProfessions; }
 function canManageQuizQuestions(){ return isAdmin || !!modPerms.manageQuizQuestions; }
+function canManageQuizReports(){ return isAdmin || !!modPerms.manageQuizReports; }
+function canManageAyetler(){ return isAdmin || !!modPerms.manageAyetler; }
 
 
 async function logModAction(action, targetUid, details){
@@ -3480,6 +3630,9 @@ function applyAdminPermVisibility(){
   document.getElementById('adminMenuRow_adminquotes').style.display = canEditQuotes() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminprofessions').style.display = canEditProfessions() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminquiz').style.display = canManageQuizQuestions() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminquizreports').style.display = canManageQuizReports() ? 'flex' : 'none';
+  document.getElementById('adminMenuRow_adminayetler').style.display = canManageAyetler() ? 'flex' : 'none';
+  if(canManageQuizReports()) refreshQuizReportsBadge();
   document.getElementById('adminMenuRow_adminranks').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('adminMenuRow_admintenureranks').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminipban').style.display = canBanIp() ? 'flex' : 'none';
@@ -3502,6 +3655,8 @@ function loadAllAdminData(){
   if(isAdmin){ renderModeratorsList(); loadRankConfig(); loadTenureRankConfig(); }
   if(canBanIp()) renderBannedIpList();
   if(canManageQuizQuestions()) renderQuizAdminList();
+  if(canManageQuizReports()) renderQuizReportsList();
+  if(canManageAyetler()) renderAdminAyetlerList();
 }
 function openAdminPanel(){
   document.getElementById('settingsOverlay').classList.remove('show');
@@ -3880,6 +4035,8 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     editQuotes: document.getElementById('vpModEditQuotes').checked,
     editProfessions: document.getElementById('vpModEditProfessions').checked,
     manageQuizQuestions: document.getElementById('vpModManageQuizQuestions').checked,
+    manageQuizReports: document.getElementById('vpModManageQuizReports').checked,
+    manageAyetler: document.getElementById('vpModManageAyetler').checked,
     banIp: document.getElementById('vpModBanIp').checked,
     manageWarnings: document.getElementById('vpModManageWarnings').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
@@ -4243,7 +4400,7 @@ const PERM_LABELS = {
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
   viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
-  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi'
+  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi', manageQuizReports:'🚩 Soru Şikayetlerini Yönetme', manageAyetler:'📖 Ayet Yönetimi'
 };
 const PERM_DESCRIPTIONS = {
   editProfile:'Herhangi bir kullanıcının profil bilgilerini (ad, meslek, şehir vb.) düzenleyebilirsin.',
@@ -4272,7 +4429,8 @@ const PERM_DESCRIPTIONS = {
   manageWarnings:'Kullanıcılara süreli uyarı verip, uyarı geçmişlerini görebilirsin.',
   viewUserNotifications:'Bir kullanıcının aldığı bildirimleri görebilirsin.',
   viewLoginHistory:'Bir kullanıcının geçmiş giriş kayıtlarını (şüpheli giriş kontrolü için) görebilirsin.',
-  manageQuizQuestions:'"Soru Çöz" bölümündeki soru havuzuna yeni soru ekleyebilir, mevcut soruları düzenleyip silebilirsin.'
+  manageQuizQuestions:'"Soru Çöz" bölümündeki soru havuzuna yeni soru ekleyebilir, mevcut soruları düzenleyip silebilirsin.',
+  manageAyetler:'"Ayetler" bölümüne yeni sure/ayet ekleyebilir, admin tarafından eklenenleri silebilirsin.'
 };
 const MOD_ACTION_LABELS = {
   editProfile:'✏️ Profil düzenledi', deletePhoto:'🖼️ Fotoğraf sildi', resetAccount:'🔄 Hesabı sıfırladı',
@@ -6644,8 +6802,15 @@ async function markAllNotifsRead(){
   }catch(e){}
 }
 // ---------- HEADER: MESAJLAR / BİLDİRİM DROPDOWN PANELLERİ ----------
-function renderHeaderMsgDropdown(){
+async function renderHeaderMsgDropdown(){
   const box = document.getElementById('headerMsgDropdownList');
+  if(allConvsCache.length === 0){
+    box.innerHTML = `<div class="hint" style="padding:14px; margin:0;">Yükleniyor…</div>`;
+    try{
+      const snap = await db.collection('conversations').where('participants','array-contains',currentUser.uid).get();
+      allConvsCache = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=> (b.updatedAt||'').localeCompare(a.updatedAt||''));
+    }catch(e){ console.error('mesaj onizleme yuklenemedi', e); }
+  }
   const isArchived = c => Array.isArray(c.archivedFor) && c.archivedFor.includes(currentUser.uid);
   const items = (allConvsCache||[]).filter(c=>!isArchived(c)).slice(0,5);
   if(items.length===0){
@@ -6756,10 +6921,17 @@ async function renderFriendsTabList(){
   box.innerHTML = friendUids.slice(0,20).map(uid=>{
     const p = profileByUid(uid);
     const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
     const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div data-dd-friend-uid="${escapeHtml(uid)}" style="display:flex; align-items:center; gap:9px; padding:8px; cursor:pointer; border-radius:10px;">
-      <div style="width:34px;height:34px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden; flex-shrink:0;">${inner}</div>
-      <div style="font-weight:700; font-size:12.5px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
+      <div style="position:relative; width:34px;height:34px; flex-shrink:0;">
+        <div style="width:100%;height:100%;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden;">${inner}</div>
+        ${isOnline?'<span style="position:absolute; bottom:-1px; right:-1px; width:10px;height:10px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:700; font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
+        ${isOnline?'<div style="font-size:10px; color:#16A34A; font-weight:700;">● Aktif</div>':''}
+      </div>
     </div>`;
   }).join('');
   box.querySelectorAll('[data-dd-friend-uid]').forEach(row=>{
@@ -8076,6 +8248,21 @@ document.getElementById('documentFileInput').addEventListener('change', async (e
   }catch(err){ showToast('Belge işlenemedi'); }
 });
 
+// ---------- EZBERLEDİĞİ AYETLER KARTI (kendi profil + görüntülenen profil ortak) ----------
+async function renderMemorizedAyetlerCard(memorizedIds, cardElId){
+  const card = document.getElementById(cardElId);
+  if(!card) return;
+  if(!memorizedIds || memorizedIds.length === 0){
+    card.innerHTML = '<div class="hint" style="margin:0;">Henüz ezberlediği sure yok.</div>';
+    return;
+  }
+  const allItems = await getFullAyetlerList();
+  const items = memorizedIds.map(id => allItems.find(x=>x.id===id)).filter(Boolean);
+  card.innerHTML = '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + items.map(it=>
+    `<span style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:var(--tint-forest); color:#16A34A;">✅ ${escapeHtml(it.name)}</span>`
+  ).join('') + '</div>';
+}
+
 function renderProfile(){
   if(!profile || !currentUser) return;
 
@@ -8121,6 +8308,7 @@ function renderProfile(){
   syncPublicBadges(t);
   renderOwnFollowers();
   renderNotes();
+  getAyetUserData().then(d => renderMemorizedAyetlerCard(d.memorizedSurahs, 'ownMemorizedAyetlerCard'));
 }
 
 function renderBadges(t){
@@ -8435,6 +8623,11 @@ function openRanksInfoPage(){
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-ranks-info').classList.add('active');
   updateFabVisibility();
+  const t1 = document.getElementById('ranksTabTenure'), t2 = document.getElementById('ranksTabQuiz');
+  t1.classList.add('active'); t2.classList.remove('active');
+  setRanksTabStyle(t1, t2);
+  document.getElementById('ranksInfoTenurePanel').style.display = 'block';
+  document.getElementById('ranksInfoQuizPanel').style.display = 'none';
   const ranks = (dynamicTenureRanks && dynamicTenureRanks.length) ? dynamicTenureRanks : DEFAULT_TENURE_RANKS;
   const box = document.getElementById('ranksInfoList');
   box.innerHTML = ranks.map(r=>{
@@ -8459,15 +8652,23 @@ function renderRanksInfoQuizList(){
     </div>`;
   }).join('');
 }
+function setRanksTabStyle(activeBtn, inactiveBtn){
+  activeBtn.style.background = 'linear-gradient(120deg,var(--asphalt),var(--asphalt-2))';
+  activeBtn.style.color = '#fff';
+  inactiveBtn.style.background = 'var(--paper)';
+  inactiveBtn.style.color = 'var(--ink-soft)';
+}
 document.getElementById('ranksTabTenure').addEventListener('click', ()=>{
-  document.getElementById('ranksTabTenure').classList.add('active');
-  document.getElementById('ranksTabQuiz').classList.remove('active');
+  const t1 = document.getElementById('ranksTabTenure'), t2 = document.getElementById('ranksTabQuiz');
+  t1.classList.add('active'); t2.classList.remove('active');
+  setRanksTabStyle(t1, t2);
   document.getElementById('ranksInfoTenurePanel').style.display = 'block';
   document.getElementById('ranksInfoQuizPanel').style.display = 'none';
 });
 document.getElementById('ranksTabQuiz').addEventListener('click', ()=>{
-  document.getElementById('ranksTabQuiz').classList.add('active');
-  document.getElementById('ranksTabTenure').classList.remove('active');
+  const t1 = document.getElementById('ranksTabTenure'), t2 = document.getElementById('ranksTabQuiz');
+  t2.classList.add('active'); t1.classList.remove('active');
+  setRanksTabStyle(t2, t1);
   document.getElementById('ranksInfoQuizPanel').style.display = 'block';
   document.getElementById('ranksInfoTenurePanel').style.display = 'none';
 });
@@ -9059,7 +9260,7 @@ let quizJokersRemainingToday = 3;
 let quizJokerUsedThisQuestion = false;
 const QUIZ_QUESTIONS_PER_TEST = 10;
 const QUIZ_JOKERS_PER_DAY = 3;
-const QUIZ_QUESTION_SECONDS = 15;
+const QUIZ_QUESTION_SECONDS = 20;
 let quizTimerInterval = null;
 let quizTimeLeft = QUIZ_QUESTION_SECONDS;
 
@@ -9126,6 +9327,34 @@ document.getElementById('btnQuizBookmark').addEventListener('click', async ()=>{
     }
   }catch(e){ showToast('İşlem başarısız'); }
   refreshQuizBookmarkBtn(q.id);
+});
+
+// ---------- SORU BİLDİRME ----------
+document.getElementById('btnQuizReport').addEventListener('click', ()=>{
+  const q = quizSessionQuestions[quizCurrentIndex];
+  if(!q) return;
+  document.getElementById('quizReportReason').value = '';
+  document.getElementById('quizReportOverlay').style.display = 'flex';
+});
+document.getElementById('quizReportCancelBtn').addEventListener('click', ()=>{
+  document.getElementById('quizReportOverlay').style.display = 'none';
+});
+document.getElementById('quizReportSendBtn').addEventListener('click', async ()=>{
+  const q = quizSessionQuestions[quizCurrentIndex];
+  const reason = document.getElementById('quizReportReason').value.trim();
+  if(!q) return;
+  if(!reason){ showToast('Lütfen kısaca ne yanlış olduğunu yaz'); return; }
+  const btn = document.getElementById('quizReportSendBtn');
+  btn.disabled = true; btn.textContent = 'Gönderiliyor…';
+  try{
+    await db.collection('question_reports').add({
+      questionId: q.id, questionText: q.question, category: q.category,
+      reason, reportedBy: currentUser.uid, status: 'pending', createdAt: new Date().toISOString()
+    });
+    document.getElementById('quizReportOverlay').style.display = 'none';
+    showToast('Bildirdiğin için teşekkürler, yöneticiler kontrol edecek 🚩');
+  }catch(e){ showToast('Gönderilemedi: '+(e.message||'')); }
+  btn.disabled = false; btn.textContent = '🚩 Bildir';
 });
 async function renderQuizBookmarksList(){
   const box = document.getElementById('quizBookmarksList');
@@ -9209,6 +9438,394 @@ async function refreshDailyQuestBadge(){
   if(claimable > 0){ badge.style.display = 'block'; badge.textContent = claimable; }
   else badge.style.display = 'none';
 }
+// ================= AYETLER (NAMAZ SURELERİ) =================
+const NAMAZ_SURELERI_DEFAULT = [
+  {id:'s85', no:85, name:'Büruc', start:1, end:22}, {id:'s86', no:86, name:'Tarık', start:1, end:17}, {id:'s87', no:87, name:'Ala', start:1, end:19},
+  {id:'s88', no:88, name:'Gaşiye', start:1, end:26}, {id:'s89', no:89, name:'Fecr', start:1, end:30}, {id:'s90', no:90, name:'Beled', start:1, end:20},
+  {id:'s91', no:91, name:'Şems', start:1, end:15}, {id:'s92', no:92, name:'Leyl', start:1, end:21}, {id:'s93', no:93, name:'Duha', start:1, end:11},
+  {id:'s94', no:94, name:'İnşirah', start:1, end:8}, {id:'s95', no:95, name:'Tin', start:1, end:8}, {id:'s96', no:96, name:'Alak', start:1, end:19},
+  {id:'s97', no:97, name:'Kadir', start:1, end:5}, {id:'s98', no:98, name:'Beyyine', start:1, end:8}, {id:'s99', no:99, name:'Zilzal', start:1, end:8},
+  {id:'s100', no:100, name:'Adiyat', start:1, end:11}, {id:'s101', no:101, name:'Karia', start:1, end:11}, {id:'s102', no:102, name:'Tekasür', start:1, end:8},
+  {id:'s103', no:103, name:'Asr', start:1, end:3}, {id:'s104', no:104, name:'Hümeze', start:1, end:9}, {id:'s105', no:105, name:'Fil', start:1, end:5},
+  {id:'s106', no:106, name:'Kureyş', start:1, end:4}, {id:'s107', no:107, name:'Maun', start:1, end:7}, {id:'s108', no:108, name:'Kevser', start:1, end:3},
+  {id:'s109', no:109, name:'Kafirun', start:1, end:6}, {id:'s110', no:110, name:'Nasr', start:1, end:3}, {id:'s111', no:111, name:'Tebbet', start:1, end:5},
+  {id:'s112', no:112, name:'İhlas', start:1, end:4}, {id:'s113', no:113, name:'Felak', start:1, end:5}, {id:'s114', no:114, name:'Nas', start:1, end:6},
+];
+let ayetlerAdminExtras = null; // Firestore'dan admin ekledikleri, ilk açılışta yüklenip önbelleklenir
+async function loadAyetlerAdminExtras(force){
+  if(ayetlerAdminExtras !== null && !force) return ayetlerAdminExtras;
+  try{
+    const snap = await db.collection('namaz_ayetleri').get();
+    ayetlerAdminExtras = snap.docs.map(d=>{
+      const data = d.data();
+      return { id: d.id, no: data.surahNo, name: data.displayName, start: data.ayahStart||1, end: data.ayahEnd||data.ayahCount||1, adminAdded:true };
+    });
+  }catch(e){ ayetlerAdminExtras = []; console.error('Admin ayetleri yüklenemedi', e); }
+  return ayetlerAdminExtras;
+}
+async function getFullAyetlerList(){
+  const extras = await loadAyetlerAdminExtras();
+  return [...NAMAZ_SURELERI_DEFAULT, ...extras];
+}
+const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
+let ayetlerTabMode = 'all';
+let ayetlerSearchQuery = '';
+let ayetTrEditionCache = null; // Türkçe meal edition'ı dinamik bulunup önbelleğe alınır
+let ayetSurahDataCache = {}; // {"surahNo_start_end": {arabic, transliteration, meal}}
+let currentAyetItem = null;
+
+async function todayStrAyet(){ return todayStr(); }
+
+async function getAyetUserData(){
+  if(!userDocRef) return { selectedSurahs:[], memorizedSurahs:[], readCounts:{} };
+  try{
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    return {
+      selectedSurahs: data.ayetSelectedSurahs || [],
+      memorizedSurahs: data.ayetMemorizedSurahs || [],
+      readCounts: data.ayetReadCounts || {} // { "85": {date:'YYYY-MM-DD', count:N} }
+    };
+  }catch(e){ return { selectedSurahs:[], memorizedSurahs:[], readCounts:{} }; }
+}
+
+function switchScreenSimple(screenId){
+  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screenId).classList.add('active');
+}
+
+document.getElementById('btnHeaderMenuAyetler').addEventListener('click', ()=>{
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  switchScreenSimple('ayetler');
+  setAyetlerTab('all');
+});
+document.getElementById('btnAyetlerBack').addEventListener('click', ()=> switchScreenSimple('ana'));
+
+function setAyetlerTab(mode){
+  ayetlerTabMode = mode;
+  ['ayetlerTabAll','ayetlerTabMine','ayetlerTabMemorized'].forEach(id=>{
+    const btn = document.getElementById(id);
+    const isActive = (id==='ayetlerTabAll' && mode==='all') || (id==='ayetlerTabMine' && mode==='mine') || (id==='ayetlerTabMemorized' && mode==='memorized');
+    btn.style.background = isActive ? 'linear-gradient(120deg,var(--asphalt),var(--asphalt-2))' : 'var(--paper)';
+    btn.style.color = isActive ? '#fff' : 'var(--ink-soft)';
+  });
+  const hints = {
+    all: 'Namazda okunabilecek 30 kısa sure. Beğendiklerini "Listem"e ekleyip günlük tekrar sayacı tutabilir, ezberlediklerini işaretleyebilirsin.',
+    mine: 'Kendi seçtiğin, üzerinde çalıştığın sureler.',
+    memorized: 'Ezberlediğini işaretlediğin sureler. Tebrikler! 🎉'
+  };
+  document.getElementById('ayetlerHint').textContent = hints[mode];
+  renderAyetlerList();
+}
+document.getElementById('ayetlerTabAll').addEventListener('click', ()=> setAyetlerTab('all'));
+document.getElementById('ayetlerTabMine').addEventListener('click', ()=> setAyetlerTab('mine'));
+document.getElementById('ayetlerTabMemorized').addEventListener('click', ()=> setAyetlerTab('memorized'));
+
+async function renderAyetlerList(){
+  const box = document.getElementById('ayetlerList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const [allItems, userData] = await Promise.all([getFullAyetlerList(), getAyetUserData()]);
+  let items = allItems;
+  if(ayetlerTabMode === 'mine') items = items.filter(s => userData.selectedSurahs.includes(s.id));
+  if(ayetlerTabMode === 'memorized') items = items.filter(s => userData.memorizedSurahs.includes(s.id));
+  if(ayetlerSearchQuery.trim()){
+    const q = ayetlerSearchQuery.trim().toLocaleLowerCase('tr');
+    items = items.filter(s => s.name.toLocaleLowerCase('tr').includes(q));
+  }
+  if(items.length === 0){
+    const emptyMsg = ayetlerSearchQuery.trim() ? 'Aramanla eşleşen sure yok.' : (ayetlerTabMode==='mine' ? 'Henüz listene sure eklemedin.' : 'Henüz ezberlediğin sure yok.');
+    box.innerHTML = `<div class="empty" style="grid-column:1 / -1;"><div class="icon">📖</div><div class="msg">${emptyMsg}</div></div>`;
+    return;
+  }
+  const today = todayStr();
+  box.innerHTML = items.map(s=>{
+    const isSelected = userData.selectedSurahs.includes(s.id);
+    const isMemorized = userData.memorizedSurahs.includes(s.id);
+    const rc = userData.readCounts[s.id];
+    const todayCount = (rc && rc.date === today) ? rc.count : 0;
+    const ayetCount = s.end - s.start + 1;
+    return `<div data-ayet-id="${escapeHtml(s.id)}" class="card" style="padding:12px; cursor:pointer; text-align:center;">
+      <div style="width:38px;height:38px;border-radius:12px; background:${isMemorized?'var(--tint-forest)':'var(--tint-brass)'}; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:${isMemorized?'#16A34A':'var(--text-brass)'}; margin:0 auto 8px;">${isMemorized?'✅':s.no}</div>
+      <div style="font-weight:800; font-size:13px;">${escapeHtml(s.name)}</div>
+      <div class="hint" style="margin:2px 0 0; font-size:10.5px;">${ayetCount} ayet</div>
+      ${isSelected?`<div style="font-size:10px; color:var(--asphalt); font-weight:700; margin-top:4px;">⭐ ${todayCount} kez</div>`:''}
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-ayet-id]').forEach(row=>{
+    row.addEventListener('click', ()=> openAyetDetail(row.dataset.ayetId));
+  });
+}
+document.getElementById('ayetlerSearchInput').addEventListener('input', (e)=>{
+  ayetlerSearchQuery = e.target.value;
+  renderAyetlerList();
+});
+
+async function discoverTurkishEdition(){
+  if(ayetTrEditionCache) return ayetTrEditionCache;
+  try{
+    const res = await fetch(QURAN_API_BASE + '/edition/language/tr');
+    const json = await res.json();
+    const editions = (json && json.data) || [];
+    const diyanet = editions.find(e => /diyanet/i.test(e.identifier) || /diyanet/i.test(e.name||''));
+    ayetTrEditionCache = (diyanet ? diyanet.identifier : (editions[0] ? editions[0].identifier : 'tr.diyanet'));
+  }catch(e){ ayetTrEditionCache = 'tr.diyanet'; }
+  return ayetTrEditionCache;
+}
+
+async function fetchAyetItemData(item){
+  const cacheKey = item.no + '_' + item.start + '_' + item.end;
+  if(ayetSurahDataCache[cacheKey]) return ayetSurahDataCache[cacheKey];
+  const trEdition = await discoverTurkishEdition();
+  const isFullSurah = item.start === 1 && item.end >= 3; // pratik kontrol; tam sure ise /surah, değilse ayet ayet çekilir
+  let arabicText, translitText, mealText;
+  if(item.start === 1 && !item.__forceRange){
+    // Tam sureyi tek istekte çek, sonra sadece start-end aralığını kullan
+    const [arRes, translitRes, mealRes] = await Promise.all([
+      fetch(QURAN_API_BASE + '/surah/' + item.no).then(r=>r.json()),
+      fetch(QURAN_API_BASE + '/surah/' + item.no + '/en.transliteration').then(r=>r.json()),
+      fetch(QURAN_API_BASE + '/surah/' + item.no + '/' + trEdition).then(r=>r.json())
+    ]);
+    const arAyahs = (arRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
+    const trAyahs = (translitRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
+    const mlAyahs = (mealRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
+    arabicText = arAyahs.map(a=>a.text).join(' ');
+    translitText = trAyahs.map(a=>a.text).join(' ');
+    mealText = mlAyahs.map(a=> a.numberInSurah+'. '+a.text).join('\n');
+  } else {
+    // Belirli bir ayet aralığı: her ayeti ayrı ayrı çek
+    const nums = [];
+    for(let n=item.start; n<=item.end; n++) nums.push(n);
+    const arParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n).then(r=>r.json())));
+    const trParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n + '/en.transliteration').then(r=>r.json())));
+    const mlParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n + '/' + trEdition).then(r=>r.json())));
+    arabicText = arParts.map(r=>r.data.text).join(' ');
+    translitText = trParts.map(r=>r.data.text).join(' ');
+    mealText = mlParts.map((r,i)=> (item.start+i)+'. '+r.data.text).join('\n');
+  }
+  const result = { arabicText, translitText, mealText };
+  ayetSurahDataCache[cacheKey] = result;
+  return result;
+}
+
+async function openAyetDetail(itemId){
+  const allItems = await getFullAyetlerList();
+  const item = allItems.find(x=>x.id===itemId);
+  if(!item) return;
+  currentAyetItem = item;
+  switchScreenSimple('ayet-detail');
+  document.getElementById('ayetDetailTitle').textContent = item.name + ' Suresi';
+  document.getElementById('ayetDetailLoading').style.display = 'block';
+  document.getElementById('ayetDetailLoading').textContent = 'Yükleniyor…';
+  document.getElementById('ayetDetailContent').style.display = 'none';
+  document.getElementById('ayetAudioError').style.display = 'none';
+
+  const userData = await getAyetUserData();
+  const isSelected = userData.selectedSurahs.includes(itemId);
+  const isMemorized = userData.memorizedSurahs.includes(itemId);
+  const rc = userData.readCounts[itemId];
+  const today = todayStr();
+  const todayCount = (rc && rc.date === today) ? rc.count : 0;
+  document.getElementById('ayetTodayCount').textContent = todayCount;
+  document.getElementById('ayetProgressBar').style.width = Math.min(100, (todayCount/25)*100) + '%';
+  document.getElementById('ayetMemorizedToggle').checked = isMemorized;
+  document.getElementById('btnAyetAddToList').textContent = isSelected ? '⭐ Listemde (çıkarmak için dokun)' : '⭐ Listeme Ekle';
+  document.getElementById('btnAyetAddToList').style.background = isSelected ? 'var(--tint-forest)' : '';
+  document.getElementById('btnAyetAddToList').style.color = isSelected ? '#16A34A' : '';
+
+  try{
+    const data = await fetchAyetItemData(item);
+    document.getElementById('ayetArabicText').textContent = data.arabicText;
+    document.getElementById('ayetTransliteration').textContent = data.translitText;
+    document.getElementById('ayetMeal').textContent = data.mealText;
+    document.getElementById('ayetDetailLoading').style.display = 'none';
+    document.getElementById('ayetDetailContent').style.display = 'block';
+  }catch(e){
+    document.getElementById('ayetDetailLoading').textContent = 'Yüklenemedi. İnternet bağlantını kontrol edip tekrar dener misin?';
+    console.error('Sure verisi yüklenemedi', e);
+  }
+}
+
+document.getElementById('btnAyetDetailBack').addEventListener('click', ()=>{
+  switchScreenSimple('ayetler');
+  renderAyetlerList();
+});
+
+let ayetReciterEditionCache = null; // Hafız kaydı (Maher el-Muaykali tercih edilir, bulunamazsa Alafasy'ye düşer)
+let ayetReciterNameCache = null;
+async function discoverReciterEdition(){
+  if(ayetReciterEditionCache) return { id: ayetReciterEditionCache, name: ayetReciterNameCache };
+  try{
+    const res = await fetch(QURAN_API_BASE + '/edition/format/audio');
+    const json = await res.json();
+    const editions = (json && json.data) || [];
+    // Önce sure bütünü (audio-surah) ile uyumlu, "maher" veya "muaiqly" geçen bir kayıt ara
+    const maher = editions.find(e => /maher|muaiqly|mueaqly/i.test(e.identifier) || /maher|muaiqly|mueaqly/i.test(e.name||'') || /maher|muaiqly|mueaqly/i.test(e.englishName||''));
+    if(maher){
+      ayetReciterEditionCache = maher.identifier;
+      ayetReciterNameCache = 'Maher Al Muaiqly';
+    } else {
+      const alafasy = editions.find(e => /alafasy/i.test(e.identifier));
+      ayetReciterEditionCache = alafasy ? alafasy.identifier : 'ar.alafasy';
+      ayetReciterNameCache = 'Mishary Alafasy';
+    }
+  }catch(e){ ayetReciterEditionCache = 'ar.alafasy'; ayetReciterNameCache = 'Mishary Alafasy'; }
+  return { id: ayetReciterEditionCache, name: ayetReciterNameCache };
+}
+
+let ayetCurrentAudio = null;
+let ayetIsLooping = false;
+function stopAyetAudio(){
+  ayetIsLooping = false;
+  if(ayetCurrentAudio){ ayetCurrentAudio.pause(); ayetCurrentAudio.currentTime = 0; ayetCurrentAudio = null; }
+  document.getElementById('btnAyetPlayAudio').textContent = '🔊 Hafız Sesiyle Dinle' + (ayetReciterNameCache ? ' ('+ayetReciterNameCache+')' : '');
+  document.getElementById('btnAyetPlayAudio').style.background = '';
+  document.getElementById('btnAyetPlayAudio').style.color = '';
+}
+document.getElementById('btnAyetPlayAudio').addEventListener('click', async ()=>{
+  if(!currentAyetItem) return;
+  if(ayetIsLooping){ stopAyetAudio(); return; }
+  document.getElementById('ayetAudioError').style.display = 'none';
+  const btn = document.getElementById('btnAyetPlayAudio');
+  btn.disabled = true; btn.textContent = 'Hafız aranıyor…';
+  const reciter = await discoverReciterEdition();
+  btn.disabled = false;
+  const audioUrl = 'https://cdn.islamic.network/quran/audio-surah/128/' + reciter.id + '/' + currentAyetItem.no + '.mp3';
+  ayetIsLooping = true;
+  btn.textContent = '⏸️ Durdur (' + reciter.name + ' · tekrar tekrar okunuyor)';
+  btn.style.background = 'var(--tint-rust)';
+  btn.style.color = 'var(--danger)';
+  const audio = new Audio(audioUrl);
+  ayetCurrentAudio = audio;
+  audio.addEventListener('ended', ()=>{
+    if(!ayetIsLooping || ayetCurrentAudio !== audio) return;
+    document.getElementById('btnAyetReadPlusOne').click(); // her tekrarda otomatik sayaç
+    audio.currentTime = 0;
+    audio.play().catch(()=> stopAyetAudio());
+  });
+  audio.play().catch(err=>{
+    document.getElementById('ayetAudioError').textContent = 'Ses oynatılamadı (bu hafızda bu sure kaydı olmayabilir). İnternet bağlantını kontrol et.';
+    document.getElementById('ayetAudioError').style.display = 'block';
+    console.error(err);
+    stopAyetAudio();
+  });
+});
+document.getElementById('btnAyetDetailBack').addEventListener('click', stopAyetAudio);
+
+document.getElementById('btnAyetReadPlusOne').addEventListener('click', async ()=>{
+  if(!currentAyetItem || !userDocRef) return;
+  try{
+    const userData = await getAyetUserData();
+    const today = todayStr();
+    const rc = userData.readCounts[currentAyetItem.id];
+    const newCount = (rc && rc.date === today) ? rc.count + 1 : 1;
+    userData.readCounts[currentAyetItem.id] = { date: today, count: newCount };
+    await userDocRef.set({ ayetReadCounts: userData.readCounts }, {merge:true});
+    document.getElementById('ayetTodayCount').textContent = newCount;
+    document.getElementById('ayetProgressBar').style.width = Math.min(100, (newCount/25)*100) + '%';
+    if(newCount === 25) showToast('🎉 Bugünkü hedefine ulaştın!');
+  }catch(e){ showToast('Kaydedilemedi'); }
+});
+
+document.getElementById('ayetMemorizedToggle').addEventListener('change', async (e)=>{
+  if(!currentAyetItem || !userDocRef) return;
+  try{
+    const userData = await getAyetUserData();
+    let list = userData.memorizedSurahs;
+    if(e.target.checked){
+      if(!list.includes(currentAyetItem.id)) list.push(currentAyetItem.id);
+      showToast('✅ Ezberlediklerine eklendi, maşallah!');
+    } else {
+      list = list.filter(n=>n!==currentAyetItem.id);
+    }
+    await userDocRef.set({ ayetMemorizedSurahs: list }, {merge:true});
+    try{
+      await db.collection('public_profiles').doc(currentUser.uid).set({ ayetMemorizedSurahs: list }, {merge:true});
+      const p = profileByUid(currentUser.uid);
+      if(p) p.ayetMemorizedSurahs = list;
+    }catch(mirrorErr){ console.error('public_profiles yansitilamadi', mirrorErr); }
+  }catch(e){ showToast('Kaydedilemedi'); e.target.checked = !e.target.checked; }
+});
+
+document.getElementById('btnAyetAddToList').addEventListener('click', async ()=>{
+  if(!currentAyetItem || !userDocRef) return;
+  try{
+    const userData = await getAyetUserData();
+    let list = userData.selectedSurahs;
+    const isSelected = list.includes(currentAyetItem.id);
+    if(isSelected){
+      list = list.filter(n=>n!==currentAyetItem.id);
+      showToast('Listeden çıkarıldı');
+    } else {
+      list.push(currentAyetItem.id);
+      showToast('⭐ Listene eklendi');
+    }
+    await userDocRef.set({ ayetSelectedSurahs: list }, {merge:true});
+    document.getElementById('btnAyetAddToList').textContent = !isSelected ? '⭐ Listemde (çıkarmak için dokun)' : '⭐ Listeme Ekle';
+    document.getElementById('btnAyetAddToList').style.background = !isSelected ? 'var(--tint-forest)' : '';
+    document.getElementById('btnAyetAddToList').style.color = !isSelected ? '#16A34A' : '';
+  }catch(e){ showToast('Kaydedilemedi'); }
+});
+
+// ---------- ADMİN: AYET/SURE YÖNETİMİ ----------
+async function renderAdminAyetlerList(){
+  const box = document.getElementById('adminAyetlerList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const extras = await loadAyetlerAdminExtras(true);
+  if(extras.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">📖</div><div class="msg">Admin tarafından henüz sure eklenmedi.</div></div>';
+    return;
+  }
+  box.innerHTML = extras.map(item=>{
+    const range = (item.start===1 && item.end>=3) ? 'tüm sure' : (item.start+'-'+item.end+'. ayet');
+    return `<div class="card" style="display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:14px;">
+      <div style="width:38px;height:38px;border-radius:12px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--text-brass); flex-shrink:0;">${item.no}</div>
+      <div style="flex:1;"><div style="font-weight:800; font-size:13.5px;">${escapeHtml(item.name)}</div><div class="hint" style="margin:2px 0 0;">Sure ${item.no}, ${range}</div></div>
+      <button data-ayet-admin-delete="${escapeHtml(item.id)}" style="border:1.5px solid var(--tint-rust); background:var(--tint-rust); color:var(--danger); border-radius:10px; width:34px;height:34px; cursor:pointer;">🗑️</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-ayet-admin-delete]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Bu sureyi listeden kaldırmak istediğine emin misin?')) return;
+      try{
+        await db.collection('namaz_ayetleri').doc(btn.dataset.ayetAdminDelete).delete();
+        showToast('Kaldırıldı');
+        renderAdminAyetlerList();
+      }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
+    });
+  });
+}
+document.getElementById('adminAyetAddBtn').addEventListener('click', async ()=>{
+  const surahNo = parseInt(document.getElementById('adminAyetSurahNo').value, 10);
+  const displayName = document.getElementById('adminAyetDisplayName').value.trim();
+  const startVal = document.getElementById('adminAyetStart').value;
+  const endVal = document.getElementById('adminAyetEnd').value;
+  if(!surahNo || surahNo<1 || surahNo>114){ showToast('Geçerli bir sure numarası gir (1-114)'); return; }
+  if(!displayName){ showToast('Görünen isim gir'); return; }
+  const btn = document.getElementById('adminAyetAddBtn');
+  btn.disabled = true; btn.textContent = 'Ekleniyor…';
+  try{
+    let ayahEnd = parseInt(endVal, 10);
+    if(!ayahEnd){
+      // Bitiş verilmemişse, suredeki toplam ayet sayısını API'den öğren
+      const res = await fetch(QURAN_API_BASE + '/surah/' + surahNo);
+      const json = await res.json();
+      ayahEnd = (json.data && json.data.numberOfAyahs) || 1;
+    }
+    const ayahStart = parseInt(startVal, 10) || 1;
+    await db.collection('namaz_ayetleri').add({
+      surahNo, displayName, ayahStart, ayahEnd,
+      addedBy: currentUser.uid, createdAt: new Date().toISOString()
+    });
+    showToast('✅ Eklendi: ' + displayName);
+    document.getElementById('adminAyetSurahNo').value = '';
+    document.getElementById('adminAyetDisplayName').value = '';
+    document.getElementById('adminAyetStart').value = '';
+    document.getElementById('adminAyetEnd').value = '';
+    renderAdminAyetlerList();
+  }catch(e){ showToast('Eklenemedi: '+(e.message||'')); }
+  btn.disabled = false; btn.textContent = '➕ Ekle';
+});
+
 async function renderDailyQuestsScreen(){
   const box = document.getElementById('dailyQuestsList');
   box.innerHTML = '<div class="hint">Yükleniyor…</div>';
@@ -9403,8 +10020,7 @@ function renderQuizQuestion(){
   hintBox.style.display = 'none';
   hintBtn.textContent = '💡 İpucu';
   hintBtn.style.display = q.hint ? 'block' : 'none';
-  document.getElementById('quizExplanationBox').style.display = 'none';
-  document.getElementById('btnQuizUnderstood').style.display = 'none';
+  document.getElementById('quizExplanationOverlay').style.display = 'none';
   refreshQuizBookmarkBtn(q.id);
   startQuizTimer();
 }
@@ -9480,23 +10096,29 @@ async function selectQuizAnswer(index){
   document.getElementById('quizWrongCount').textContent = quizSessionWrong;
   document.getElementById('quizCorrectCount').textContent = quizSessionCorrect;
 
-  // Cevaplandıktan sonra: joker/ipucu butonları gizlenir, varsa açıklama gösterilir,
+  // Cevaplandıktan sonra: joker/ipucu butonları gizlenir, açıklama penceresi açılır,
   // "Anladım" butonuna basılana kadar bir sonraki soruya geçilmez.
   document.getElementById('btnQuizJoker').style.display = 'none';
   document.getElementById('btnQuizHintToggle').style.display = 'none';
   document.getElementById('quizHintBox').style.display = 'none';
+
+  const resultBadge = document.getElementById('quizExplanationResultBadge');
+  resultBadge.textContent = correct ? '✅ Doğru cevap!' : '❌ Yanlış cevap';
+  resultBadge.style.color = correct ? '#16A34A' : 'var(--danger)';
+  const explBox = document.getElementById('quizExplanationBox');
   if(q.explanation){
     document.getElementById('quizExplanationText').textContent = q.explanation;
-    document.getElementById('quizExplanationBox').style.display = 'block';
+    explBox.style.display = 'block';
+  } else {
+    explBox.style.display = 'none';
   }
-  document.getElementById('btnQuizUnderstood').style.display = 'block';
+  document.getElementById('quizExplanationOverlay').style.display = 'flex';
 
   applyQuizPoints(points, quizSelectedCategory);
   updateDailyQuestProgress({ category: quizSelectedCategory });
 }
 document.getElementById('btnQuizUnderstood').addEventListener('click', ()=>{
-  document.getElementById('quizExplanationBox').style.display = 'none';
-  document.getElementById('btnQuizUnderstood').style.display = 'none';
+  document.getElementById('quizExplanationOverlay').style.display = 'none';
   quizCurrentIndex++;
   if(quizCurrentIndex < quizSessionQuestions.length) renderQuizQuestion();
   else finishQuizSession();
@@ -9665,6 +10287,7 @@ async function openDuelRoom(duelId){
   document.getElementById('duelWaitingState').style.display = 'none';
   document.getElementById('duelActiveState').style.display = 'none';
   document.getElementById('duelFinishedState').style.display = 'none';
+  await loadQuizQuestions(); // davet eden taraf da soru havuzunu yüklemiş olsun
   if(currentDuelUnsub){ currentDuelUnsub(); currentDuelUnsub = null; }
   currentDuelUnsub = db.collection('duels').doc(duelId).onSnapshot(doc=>{
     if(!doc.exists) return;
@@ -10086,6 +10709,87 @@ async function quizAdminDeleteQuestion(id){
     if(quizAdminEditingId===id) quizAdminClearForm();
     await renderQuizAdminList();
   }catch(e){ showToast('Silinemedi: ' + (e.message||'')); }
+}
+
+// ---------- ADMİN: SORU ŞİKAYETLERİ ----------
+async function refreshQuizReportsBadge(){
+  try{
+    const snap = await db.collection('question_reports').where('status','==','pending').get();
+    const badge = document.getElementById('adminQuizReportsBadge');
+    if(!badge) return;
+    if(snap.size > 0){ badge.style.display = 'inline-block'; badge.textContent = snap.size; }
+    else badge.style.display = 'none';
+  }catch(e){}
+}
+async function renderQuizReportsList(){
+  const box = document.getElementById('adminQuizReportsList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  try{
+    const snap = await db.collection('question_reports').where('status','==','pending').get();
+    const reports = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    if(reports.length === 0){
+      box.innerHTML = '<div class="empty"><div class="icon">🚩</div><div class="msg">Bekleyen şikayet yok.</div></div>';
+      return;
+    }
+    // Aynı soruya ait şikayetleri grupla
+    const grouped = {};
+    reports.forEach(r=>{
+      if(!grouped[r.questionId]) grouped[r.questionId] = { questionId:r.questionId, questionText:r.questionText, reports:[] };
+      grouped[r.questionId].reports.push(r);
+    });
+    await loadQuizQuestions();
+    box.innerHTML = Object.values(grouped).map(g=>{
+      const stillExists = quizQuestions.some(q=>q.id===g.questionId);
+      const reasonsHtml = g.reports.map(r=>'<div style="font-size:12px; color:var(--ink-soft); margin-top:4px; padding-left:10px; border-left:2px solid var(--line);">"'+escapeHtml(r.reason)+'"</div>').join('');
+      return `<div class="card" style="margin-bottom:12px; padding:14px;">
+        <div style="font-weight:800; font-size:13.5px; margin-bottom:2px;">${escapeHtml(g.questionText)}</div>
+        <div style="font-size:11px; color:var(--danger); font-weight:700; margin-bottom:6px;">🚩 ${g.reports.length} şikayet</div>
+        ${reasonsHtml}
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          ${stillExists ? `<button data-report-edit="${escapeHtml(g.questionId)}" data-report-ids="${escapeHtml(g.reports.map(r=>r.id).join(','))}" style="flex:1; border:1.5px solid var(--line); background:var(--paper); border-radius:10px; padding:9px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Düzenle</button>
+          <button data-report-delete="${escapeHtml(g.questionId)}" data-report-ids="${escapeHtml(g.reports.map(r=>r.id).join(','))}" style="flex:1; border:1.5px solid var(--tint-rust); background:var(--tint-rust); color:var(--danger); border-radius:10px; padding:9px; font-size:12.5px; font-weight:700; cursor:pointer;">🗑️ Soruyu Sil</button>` : '<div class="hint" style="margin:0;">Bu soru zaten silinmiş.</div>'}
+          <button data-report-dismiss="${escapeHtml(g.reports.map(r=>r.id).join(','))}" style="flex:1; border:1.5px solid var(--line); background:var(--concrete); color:var(--ink-soft); border-radius:10px; padding:9px; font-size:12.5px; font-weight:700; cursor:pointer;">✓ Reddet</button>
+        </div>
+      </div>`;
+    }).join('');
+    box.querySelectorAll('[data-report-edit]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        await resolveQuizReports(btn.dataset.reportIds.split(','));
+        document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
+        document.getElementById('screen-adminquiz').classList.add('active');
+        await renderQuizAdminList();
+        quizAdminStartEdit(btn.dataset.reportEdit);
+        showToast('Şikayet kapatıldı, soruyu düzenleyip kaydedebilirsin');
+      });
+    });
+    box.querySelectorAll('[data-report-delete]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('Bu soru kalıcı olarak silinecek. Emin misin?')) return;
+        try{
+          await db.collection('quiz_questions').doc(btn.dataset.reportDelete).delete();
+          await resolveQuizReports(btn.dataset.reportIds.split(','));
+          showToast('Soru silindi, şikayet kapatıldı');
+          renderQuizReportsList();
+          refreshQuizReportsBadge();
+        }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
+      });
+    });
+    box.querySelectorAll('[data-report-dismiss]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        await resolveQuizReports(btn.dataset.reportDismiss.split(','));
+        showToast('Şikayet reddedildi');
+        renderQuizReportsList();
+        refreshQuizReportsBadge();
+      });
+    });
+  }catch(e){ box.innerHTML = '<div class="hint">Şikayetler yüklenemedi.</div>'; console.error(e); }
+}
+async function resolveQuizReports(ids){
+  try{
+    const batch = db.batch();
+    ids.forEach(id => batch.update(db.collection('question_reports').doc(id), { status:'resolved' }));
+    await batch.commit();
+  }catch(e){ console.error('Şikayet kapatılamadı', e); }
 }
 
 document.getElementById('quizAdminSaveBtn').addEventListener('click', async ()=>{
