@@ -638,7 +638,7 @@
         </div>
         <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
           <div style="font-family:'Manrope'; font-weight:800; font-size:19px;" id="ownFollowerCount">0</div>
-          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">Takipçi</div>
+          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">Arkadaş</div>
         </div>
       </div>
     </div>
@@ -680,9 +680,9 @@
       </div>
     </div>
 
-    <div class="section-title">Takipçilerim <button class="see-all-btn" id="ownSeeAllFollowers">Tüm Takipçiler</button></div>
+    <div class="section-title">🤝 Arkadaşlarım <span id="ownFriendReqBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span> <button class="see-all-btn" id="ownSeeAllFriends">Tümünü Gör</button></div>
     <div class="card">
-      <div id="ownFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      <div id="ownFriendAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"><div class="hint" style="margin:0;">Henüz arkadaşın yok.</div></div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -800,18 +800,18 @@
     <div class="section-title">Gizlilik</div>
     <div class="card">
       <div class="field">
-        <label>Takipçilerimi Kim Görebilir?</label>
+        <label>Arkadaş Listemi Kim Görebilir?</label>
         <select id="selFollowersVisibility">
-          <option value="everyone">Herkes — herkes takip edebilir, listem görünür</option>
-          <option value="onlyme">Sadece Ben — takip edilebilirim ama liste/sayı gizli</option>
-          <option value="nobody">Hiç Kimse — takip özelliği tamamen kapalı</option>
+          <option value="everyone">Herkes — arkadaş isteği gönderilebilir, listem görünür</option>
+          <option value="onlyme">Sadece Ben — arkadaş eklenebilirim ama liste/sayı gizli</option>
+          <option value="nobody">Hiç Kimse — arkadaşlık özelliği tamamen kapalı</option>
         </select>
       </div>
       <div class="field">
         <label>Bana Kimler Mesaj Atabilir?</label>
         <select id="selMessagePermission">
           <option value="everyone">Herkes</option>
-          <option value="followers">Sadece Takipçilerim</option>
+          <option value="followers">Sadece Arkadaşlarım</option>
         </select>
         <div class="hint">Yöneticiler ve moderatörler bu ayardan bağımsız her zaman mesaj atabilir.</div>
       </div>
@@ -899,7 +899,7 @@
         <p class="hint">Kayıtların (yevmiye, avans, alacak, notlar) sadece senin hesabınla ilişkilendirilir ve yalnızca sen görebilirsin. Diğer kullanıcılar arama yaptığında sadece kullanıcı adını, mesleğini ve şehrini görebilir — asla kazancını, kayıtlarını ya da e-postanı göremezler. Bu kuralın tek istisnası, teknik ve hesap desteği sağlayan yöneticiler/moderatörlerdir.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takip sistemi nasıl çalışır?</summary>
-        <p class="hint">Bir kullanıcının profilinde 🤍 "Takip Et" butonuna dokunarak onu takip edebilirsin, takip edilen kişiye bildirim gider. Ayarlar'dan takipçi listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
+        <p class="hint">Bir kullanıcının profilinde 🤝 "Arkadaş Ekle" butonuna dokunarak arkadaşlık isteği gönderebilirsin, karşı taraf onaylayınca arkadaş olursunuz. Ayarlar'dan arkadaş listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Mesajlaşma nasıl çalışır?</summary>
         <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece takipçilerine açabilirsin.</p>
@@ -1028,7 +1028,7 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:8px; margin-top:16px;" id="vpFollowRow">
-        <button id="vpFollowBtn" class="vp-btn-follow">🤍 Takip Et</button>
+        <button id="vpFriendBtn" class="vp-btn-follow" style="background:var(--tint-forest); color:#16A34A; border:1.5px solid #16A34A;">🤝 Arkadaş Ekle</button>
         <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
@@ -1042,7 +1042,7 @@
     <div id="followerListBar" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4); align-items:flex-end; justify-content:center;">
       <div style="background:var(--paper); width:100%; max-width:480px; max-height:70vh; border-radius:20px 20px 0 0; padding:16px; overflow-y:auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-weight:800; font-size:15px;">Takipçiler</div>
+          <div style="font-weight:800; font-size:15px;" id="followerListBarTitle">Takipçiler</div>
           <button id="followerListBarClose" style="border:none; background:var(--concrete); width:30px;height:30px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
         </div>
         <div id="followerListBarBody"></div>
@@ -1217,10 +1217,10 @@
     <div class="section-title">Rozetler</div>
     <div class="card" id="vpBadges" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
 
-    <div class="section-title" id="vpFollowerSectionTitle">Takipçiler</div>
+    <div class="section-title" id="vpFollowerSectionTitle">Arkadaşlar</div>
     <div class="card" id="vpFollowerCard">
       <div id="vpFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-      <button class="see-all-btn" id="vpSeeAllFollowers" style="margin-top:10px;">Tüm Takipçiler</button>
+      <button class="see-all-btn" id="vpSeeAllFollowers" style="margin-top:10px;">Tüm Arkadaşlar</button>
     </div>
   </section>
 
@@ -2268,11 +2268,12 @@ function getQuizRank(score){
   for(const r of QUIZ_RANKS){ if(s >= r.min && (r.max==null || s <= r.max)) return r; }
   return QUIZ_RANKS[0];
 }
-function quizRankBadgeHtml(score, extraStyle){
+function quizRankBadgeHtml(score, extraStyle, totalAnswered){
+  if((totalAnswered||0) < 5) return ''; // 5 soru çözülmeden rütbe rozeti gösterilmez
   const r = getQuizRank(score);
   return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:0 0 6px ${r.aura}66; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
-// Herkes için: admin/mod ise yetki rozeti, değilse kıdem rozeti — her durumda yanında puan rütbesi
+// Herkes için: admin/mod ise yetki rozeti, değilse kıdem rozeti — her durumda yanında puan rütbesi (5 soru çözülünce)
 function roleOrTenureBadgeHtml(u, extraStyle){
   let first = '';
   if(u.role === 'admin'){
@@ -2282,8 +2283,8 @@ function roleOrTenureBadgeHtml(u, extraStyle){
   } else {
     first = tenureBadgeHtml(u.createdAt, extraStyle);
   }
-  const second = quizRankBadgeHtml(u.quizScore||0, extraStyle);
-  return first + ' ' + second;
+  const second = quizRankBadgeHtml(u.quizScore||0, extraStyle, u.quizTotalAnswered||0);
+  return second ? (first + ' ' + second) : first;
 }
 
 const QUOTES=[
@@ -2379,37 +2380,6 @@ async function syncPublicBadges(t){
   try{ await db.collection('public_profiles').doc(currentUser.uid).set({badges}, {merge:true}); }catch(e){}
 }
 let allPublicProfiles = [];
-// ---------- TAKİP SİSTEMİ ----------
-function followDocId(followerUid, followedUid){ return followerUid + '__' + followedUid; }
-async function isFollowing(targetUid){
-  if(!currentUser) return false;
-  try{
-    const doc = await db.collection('follows').doc(followDocId(currentUser.uid, targetUid)).get();
-    return doc.exists;
-  }catch(e){ return false; }
-}
-async function toggleFollow(targetUid){
-  const ref = db.collection('follows').doc(followDocId(currentUser.uid, targetUid));
-  const doc = await ref.get();
-  if(doc.exists){ await ref.delete(); return false; }
-  const warnedUntil = isCurrentUserWarned();
-  if(warnedUntil){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar birini takip edemezsin'); return false; }
-  await ref.set({followerUid:currentUser.uid, followedUid:targetUid, createdAt:new Date().toISOString()});
-  try{
-    const myName = (profile && profile.fullName) || currentUser.email || 'Bir kullanıcı';
-    await db.collection('notifications').add({
-      toUid: targetUid, fromUid: currentUser.uid, type: 'follow',
-      message: myName + ' seni takip etmeye başladı', read: false, createdAt: new Date().toISOString()
-    });
-  }catch(e){ console.error('bildirim olusturulamadi', e); }
-  return true;
-}
-async function getFollowerUids(uid){
-  try{
-    const snap = await db.collection('follows').where('followedUid','==',uid).get();
-    return snap.docs.map(d=>d.data().followerUid);
-  }catch(e){ return []; }
-}
 function profileByUid(uid){
   return allPublicProfiles.find(p=>p.uid===uid) || null;
 }
@@ -2463,7 +2433,8 @@ function renderFollowerMiniAvatars(followerUids, uidForModal){
   box.innerHTML = html;
   box.onclick = () => openFollowerListBar(followerUids);
 }
-function openFollowerListBar(followerUids){
+function openFollowerListBar(followerUids, title){
+  document.getElementById('followerListBarTitle').textContent = title || 'Takipçiler';
   const body = document.getElementById('followerListBarBody');
   if(followerUids.length===0){
     body.innerHTML = `<div class="empty"><div class="icon">👥</div><div class="msg">Henüz takipçi yok.</div></div>`;
@@ -2545,14 +2516,10 @@ document.getElementById('followerListClose').addEventListener('click', ()=> docu
 
 async function renderOwnFollowers(){
   if(!currentUser) return;
-  const followerUids = await getFollowerUids(currentUser.uid);
-  document.getElementById('ownFollowerCount').textContent = followerUids.length;
-  renderFollowerAvatarsInto('ownFollowerAvatars', followerUids, 9);
+  const friendUidsForCount = await getFriendUids(currentUser.uid);
+  document.getElementById('ownFollowerCount').textContent = friendUidsForCount.length;
+  refreshOwnFriendsSection();
 }
-document.getElementById('ownSeeAllFollowers').addEventListener('click', async ()=>{
-  const followerUids = await getFollowerUids(currentUser.uid);
-  renderFollowerListModal(followerUids);
-});
 
 let currentViewedUid = null;
 let vpAdminToolsOpen = false;
@@ -2586,6 +2553,7 @@ async function openViewProfile(uid){
     }
   }catch(e){}
   refreshVpBlockBtn(uid);
+  refreshVpFriendBtn(uid);
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-view-profile').classList.add('active');
   const mainScrollEl0 = document.querySelector('main');
@@ -2623,8 +2591,8 @@ async function openViewProfile(uid){
   else if(p && p.role==='moderator'){ rankBadge.style.display='inline-block'; rankBadge.textContent = '🛡️ ' + (p.rank || 'Moderatör'); }
   else { rankBadge.style.display='none'; }
   document.getElementById('vpTenureBadge').innerHTML = (p && (p.role==='admin' || p.role==='moderator'))
-    ? quizRankBadgeHtml(p.quizScore||0, 'margin-left:6px;')
-    : (tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml(p ? (p.quizScore||0) : 0, 'margin-left:6px;'));
+    ? quizRankBadgeHtml(p.quizScore||0, 'margin-left:6px;', p.quizTotalAnswered||0)
+    : (tenureBadgeHtml(p ? p.createdAt : null, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml(p ? (p.quizScore||0) : 0, 'margin-left:6px;', p ? (p.quizTotalAnswered||0) : 0));
 
   // Katılım tarihi ve e-posta: yönetici araçları düğmesinden bağımsız, admin/mod ise her zaman görünür.
   const createdAtStaffEl = document.getElementById('vpCreatedAtStaffOnly');
@@ -2661,25 +2629,21 @@ async function openViewProfile(uid){
   } else {
     document.getElementById('vpHiddenNote').style.display = 'none';
     document.getElementById('vpFollowRow').style.display = 'flex';
-    const following = await isFollowing(uid);
-    const btn = document.getElementById('vpFollowBtn');
-    btn.textContent = following ? '💙 Takipte' : '🤍 Takip Et';
-    btn.dataset.uid = uid;
 
     if(visibility === 'onlyme'){
       document.getElementById('vpFollowerSectionTitle').style.display = 'flex';
       document.getElementById('vpFollowerCard').style.display = 'block';
       document.getElementById('vpFollowerCount').textContent = 'gizli';
-      document.getElementById('vpFollowerAvatars').innerHTML = `<div class="hint" style="margin:0;">Bu kullanıcı takipçi listesini gizli tutuyor.</div>`;
+      document.getElementById('vpFollowerAvatars').innerHTML = `<div class="hint" style="margin:0;">Bu kullanıcı arkadaş listesini gizli tutuyor.</div>`;
       document.getElementById('vpSeeAllFollowers').style.display = 'none';
     } else {
       document.getElementById('vpFollowerSectionTitle').style.display = 'flex';
       document.getElementById('vpFollowerCard').style.display = 'block';
       document.getElementById('vpSeeAllFollowers').style.display = 'block';
-      const followerUids = await getFollowerUids(uid);
-      document.getElementById('vpFollowerCount').textContent = followerUids.length + ' takipçi';
-      renderFollowerAvatarsInto('vpFollowerAvatars', followerUids, 9);
-      renderFollowerMiniAvatars(followerUids);
+      const friendUids = await getFriendUids(uid);
+      document.getElementById('vpFollowerCount').textContent = friendUids.length + ' arkadaş';
+      renderFollowerAvatarsInto('vpFollowerAvatars', friendUids, 9);
+      renderFollowerMiniAvatars(friendUids);
     }
   }
 }
@@ -2941,17 +2905,6 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
 }
 
 document.getElementById('btnBackFromViewProfile').addEventListener('click', ()=> switchScreen('profil'));
-document.getElementById('vpFollowBtn').addEventListener('click', async ()=>{
-  const uid = document.getElementById('vpFollowBtn').dataset.uid;
-  if(!uid) return;
-  const nowFollowing = await toggleFollow(uid);
-  const btn = document.getElementById('vpFollowBtn');
-  btn.textContent = nowFollowing ? '💙 Takipte' : '🤍 Takip Et';
-  const followerUids = await getFollowerUids(uid);
-  document.getElementById('vpFollowerCount').textContent = followerUids.length + ' takipçi';
-  renderFollowerAvatarsInto('vpFollowerAvatars', followerUids, 9);
-  renderFollowerMiniAvatars(followerUids);
-});
 document.getElementById('vpMessageBtn').addEventListener('click', ()=>{
   if(currentViewedUid) openOrCreateConversation(currentViewedUid);
 });
@@ -2985,10 +2938,92 @@ async function refreshVpBlockBtn(uid){
     btn.title = isBlocked ? 'Engeli kaldır' : 'Engelle';
   }catch(e){ btn.textContent = '🚫'; }
 }
+
+// ---------- ARKADAŞ EKLEME SİSTEMİ ----------
+function friendDocId(a, b){ return [a,b].sort().join('__'); }
+function friendReqDocId(fromUid, toUid){ return fromUid + '__' + toUid; }
+async function getFriendStatus(otherUid){
+  if(!currentUser || otherUid === currentUser.uid) return 'self';
+  try{
+    const friendDoc = await db.collection('friends').doc(friendDocId(currentUser.uid, otherUid)).get();
+    if(friendDoc.exists) return 'friends';
+    const sentDoc = await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, otherUid)).get();
+    if(sentDoc.exists && sentDoc.data().status==='pending') return 'pending_sent';
+    const receivedDoc = await db.collection('friend_requests').doc(friendReqDocId(otherUid, currentUser.uid)).get();
+    if(receivedDoc.exists && receivedDoc.data().status==='pending') return 'pending_received';
+    return 'none';
+  }catch(e){ return 'none'; }
+}
+async function refreshVpFriendBtn(uid){
+  const btn = document.getElementById('vpFriendBtn');
+  if(!btn || !currentUser || uid === currentUser.uid){ if(btn) btn.style.display='none'; return; }
+  btn.style.display = 'inline-flex';
+  const status = await getFriendStatus(uid);
+  btn.dataset.friendStatus = status;
+  btn.dataset.uid = uid;
+  if(status==='friends'){ btn.textContent = '✅ Arkadaşsın'; btn.style.background='var(--tint-forest)'; btn.style.color='#16A34A'; }
+  else if(status==='pending_sent'){ btn.textContent = '⏳ İstek Gönderildi'; btn.style.background='var(--concrete)'; btn.style.color='var(--ink-soft)'; }
+  else if(status==='pending_received'){ btn.textContent = '🤝 İsteği Onayla'; btn.style.background='var(--tint-brass)'; btn.style.color='var(--text-brass)'; }
+  else { btn.textContent = '🤝 Arkadaş Ekle'; btn.style.background='var(--tint-forest)'; btn.style.color='#16A34A'; }
+}
+document.getElementById('vpFriendBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('vpFriendBtn');
+  const uid = btn.dataset.uid;
+  const status = btn.dataset.friendStatus;
+  if(!uid) return;
+  try{
+    if(status==='none'){
+      await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, uid)).set({
+        fromUid: currentUser.uid, toUid: uid, status:'pending', createdAt: new Date().toISOString()
+      });
+      await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'friend_request', message:'🤝 Sana arkadaşlık isteği gönderdi.', read:false, createdAt:new Date().toISOString()});
+      showToast('Arkadaşlık isteği gönderildi');
+    } else if(status==='pending_sent'){
+      await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, uid)).delete();
+      showToast('İstek geri çekildi');
+    } else if(status==='pending_received'){
+      await db.collection('friends').doc(friendDocId(currentUser.uid, uid)).set({members:[currentUser.uid, uid], createdAt:new Date().toISOString()});
+      await db.collection('friend_requests').doc(friendReqDocId(uid, currentUser.uid)).delete();
+      await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ Arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
+      showToast('Artık arkadaşsınız 🎉');
+    } else if(status==='friends'){
+      if(!confirm('Arkadaşlıktan çıkarmak istediğine emin misin?')) return;
+      await db.collection('friends').doc(friendDocId(currentUser.uid, uid)).delete();
+      showToast('Arkadaşlıktan çıkarıldı');
+    }
+  }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
+  refreshVpFriendBtn(uid);
+});
+
+async function getFriendUids(uid){
+  try{
+    const snap = await db.collection('friends').where('members','array-contains',uid).get();
+    return snap.docs.map(d=>{
+      const members = d.data().members || [];
+      return members.find(m=>m!==uid);
+    }).filter(Boolean);
+  }catch(e){ return []; }
+}
+async function refreshOwnFriendsSection(){
+  if(!currentUser) return;
+  const friendUids = await getFriendUids(currentUser.uid);
+  renderFollowerAvatarsInto('ownFriendAvatars', friendUids, 9);
+  try{
+    const pendingSnap = await db.collection('friend_requests').where('toUid','==',currentUser.uid).where('status','==','pending').get();
+    const badge = document.getElementById('ownFriendReqBadge');
+    if(pendingSnap.size > 0){ badge.style.display='inline-block'; badge.textContent = pendingSnap.size; }
+    else badge.style.display = 'none';
+  }catch(e){}
+}
+document.getElementById('ownSeeAllFriends').addEventListener('click', async ()=>{
+  const friendUids = await getFriendUids(currentUser.uid);
+  openFollowerListBar(friendUids, 'Arkadaşlarım');
+});
+
 document.getElementById('vpSeeAllFollowers').addEventListener('click', async ()=>{
-  const uid = document.getElementById('vpFollowBtn').dataset.uid || currentViewedUid;
-  const followerUids = await getFollowerUids(uid);
-  renderFollowerListModal(followerUids);
+  const uid = currentViewedUid;
+  const friendUids = await getFriendUids(uid);
+  renderFollowerListModal(friendUids);
 });
 
 // ---------- ADMİN PANELİ ----------
@@ -3356,11 +3391,13 @@ document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async 
     await db.collection('users').doc(uid).delete();
     await db.collection('public_profiles').doc(uid).delete();
     await db.collection('moderators').doc(uid).delete().catch(()=>{});
-    const asFollower = await db.collection('follows').where('followerUid','==',uid).get();
-    const asFollowed = await db.collection('follows').where('followedUid','==',uid).get();
+    const asFriendA = await db.collection('friends').where('members','array-contains',uid).get();
+    const sentReqs = await db.collection('friend_requests').where('fromUid','==',uid).get();
+    const receivedReqs = await db.collection('friend_requests').where('toUid','==',uid).get();
     const batch = db.batch();
-    asFollower.docs.forEach(d=> batch.delete(d.ref));
-    asFollowed.docs.forEach(d=> batch.delete(d.ref));
+    asFriendA.docs.forEach(d=> batch.delete(d.ref));
+    sentReqs.docs.forEach(d=> batch.delete(d.ref));
+    receivedReqs.docs.forEach(d=> batch.delete(d.ref));
     await batch.commit();
     showToast('Hesap kalıcı olarak silindi');
     await loadPublicProfiles();
@@ -4882,7 +4919,7 @@ async function canMessageUser(targetUid){
   if(p && p.selfPaused) return false;
   const perm = (p && p.messagePermission) || 'everyone';
   if(perm==='everyone') return true;
-  return await isFollowing(targetUid);
+  return (await getFriendStatus(targetUid)) === 'friends';
 }
 async function openOrCreateConversation(targetUid){
   if(targetUid===currentUser.uid) return;
@@ -7727,8 +7764,8 @@ function renderProfile(){
   else if(modPerms && modPerms.rank){ ownRankBadge.style.display='inline-block'; ownRankBadge.textContent = '🛡️ ' + modPerms.rank; }
   else { ownRankBadge.style.display='none'; }
   document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank))
-    ? quizRankBadgeHtml(profile.quizScore||0, 'margin-left:6px;')
-    : (tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml(profile.quizScore||0, 'margin-left:6px;'));
+    ? quizRankBadgeHtml((ownP&&ownP.quizScore)||0, 'margin-left:6px;', (ownP&&ownP.quizTotalAnswered)||0)
+    : (tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml((ownP&&ownP.quizScore)||0, 'margin-left:6px;', (ownP&&ownP.quizTotalAnswered)||0));
 
   document.getElementById('viewUserId').textContent = profile.userId || '-';
   document.getElementById('viewEmail').textContent = currentUser.email || '-';
@@ -8980,11 +9017,13 @@ async function applyQuizPoints(points, category){
     const pubRef = db.collection('public_profiles').doc(currentUser.uid);
     const doc = await pubRef.get();
     const current = (doc.exists && typeof doc.data().quizScore === 'number') ? doc.data().quizScore : 0;
+    const currentTotal = (doc.exists && typeof doc.data().quizTotalAnswered === 'number') ? doc.data().quizTotalAnswered : 0;
     let newScore = current + points;
     if(newScore < -50) newScore = -50; // taban puan
-    await pubRef.set({ quizScore: newScore }, {merge:true});
+    const newTotal = currentTotal + 1;
+    await pubRef.set({ quizScore: newScore, quizTotalAnswered: newTotal }, {merge:true});
     const p = profileByUid(currentUser.uid);
-    if(p) p.quizScore = newScore; // yerel önbelleği de güncelle
+    if(p){ p.quizScore = newScore; p.quizTotalAnswered = newTotal; } // yerel önbelleği de güncelle
     await db.collection('quiz_score_events').add({ uid: currentUser.uid, points, category, timestamp: Date.now() });
   }catch(e){ console.error('Puan kaydedilemedi', e); }
 }
