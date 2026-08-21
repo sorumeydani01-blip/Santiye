@@ -170,6 +170,16 @@
         </div>
       </div>
       <div style="position:relative; flex-shrink:0;">
+        <button class="gear-btn" id="btnHeaderFriends" aria-label="Arkadaşlar" style="position:relative;">🤝<span id="friendReqNavBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
+        <div id="headerFriendsDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:280px; max-height:400px; overflow-y:auto;">
+          <div style="display:flex; gap:6px; padding:8px 8px 0;">
+            <button id="btnFriendsTabList" class="submit-btn" style="flex:1; padding:8px; font-size:12px;">🤝 Arkadaşlar</button>
+            <button id="btnFriendsTabReqs" class="submit-btn secondary" style="flex:1; padding:8px; font-size:12px; position:relative;">📥 İstekler<span id="friendReqTabBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:14px; height:14px; line-height:14px; text-align:center; padding:0 2px;">0</span></button>
+          </div>
+          <div id="headerFriendsDropdownList" style="padding:8px;"></div>
+        </div>
+      </div>
+      <div style="position:relative; flex-shrink:0;">
         <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
         <div id="headerNotifDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:280px; max-height:360px; overflow-y:auto;">
           <div id="headerNotifDropdownList" style="padding:6px;"></div>
@@ -310,10 +320,6 @@
         <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center;">✎</button>
       </div>
     </div>
-    <div style="position:relative; margin-bottom:14px;">
-      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
-      <input type="text" id="msgSearchInput" placeholder="Kişi ara veya mesajlarda ara..." style="width:100%; padding:12px 14px 12px 38px; border-radius:24px; background:var(--concrete); border:none; font-size:14px;">
-    </div>
     <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
       <span style="font-size:15px;">🔔</span><span></span>
     </div>
@@ -326,10 +332,14 @@
         <button id="convSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
       </div>
     </div>
-    <div id="msgTabsWrap" style="display:flex; gap:8px; margin-bottom:16px; background:var(--concrete); padding:4px; border-radius:16px;">
-      <button class="msg-tab active" data-msgtab="all" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">💬 Tümü <span id="msgTabAllCount" class="msg-tab-count"></span></button>
-      <button class="msg-tab" data-msgtab="chats" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👤 Sohbetler <span id="msgTabChatsCount" class="msg-tab-count"></span></button>
-      <button class="msg-tab" data-msgtab="groups" style="flex:1; border:none; background:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:5px;">👥 Gruplar <span id="msgTabGroupsCount" class="msg-tab-count"></span></button>
+    <div style="position:relative; margin-bottom:14px;">
+      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
+      <input type="text" id="msgSearchInput" placeholder="Kişi ara veya mesajlarda ara..." style="width:100%; padding:14px 14px 14px 40px; border-radius:16px; background:var(--concrete); border:none; font-size:14px;">
+    </div>
+    <div id="msgTabsWrap" style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="msg-tab active" data-msgtab="all" style="flex:1; border:none; background:var(--paper); padding:12px 4px; border-radius:16px; font-weight:800; font-size:13.5px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:var(--shadow-sm);">Tümü <span id="msgTabAllCount" class="msg-tab-count"></span></button>
+      <button class="msg-tab" data-msgtab="chats" style="flex:1; border:none; background:var(--paper); padding:12px 4px; border-radius:16px; font-weight:800; font-size:13.5px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:var(--shadow-sm);">Sohbetler <span id="msgTabChatsCount" class="msg-tab-count"></span></button>
+      <button class="msg-tab" data-msgtab="groups" style="flex:1; border:none; background:var(--paper); padding:12px 4px; border-radius:16px; font-weight:800; font-size:13.5px; cursor:pointer; color:var(--ink-soft); transition:all .15s ease; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:var(--shadow-sm);">Gruplar <span id="msgTabGroupsCount" class="msg-tab-count"></span></button>
     </div>
     <div id="conversationListWrap" style="overscroll-behavior-y:contain;">
       <div id="conversationList"></div>
@@ -408,6 +418,15 @@
   .vp-fade-in{animation:vpFadeIn .22s ease;}
   @keyframes shimmerMove{0%{background-position:-200px 0;}100%{background-position:200px 0;}}
   .skeleton-shimmer{background:linear-gradient(90deg,var(--concrete) 25%,var(--line) 50%,var(--concrete) 75%); background-size:400px 100%; animation:shimmerMove 1.4s infinite linear;}
+@keyframes quizRankAuraPulse {
+  0%, 100% { box-shadow: 0 0 4px var(--rank-aura-color), 0 0 0px var(--rank-aura-color); }
+  50% { box-shadow: 0 0 12px var(--rank-aura-color), 0 0 4px var(--rank-aura-color); }
+}
+.quiz-rank-badge-glow { animation: quizRankAuraPulse 2.2s ease-in-out infinite; }
+@keyframes duelConfettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity:1; }
+  100% { transform: translateY(420px) rotate(720deg); opacity:0; }
+}
   </style>
 
   <!-- GEÇMİŞ -->
@@ -538,6 +557,97 @@
     <div id="quizBookmarksList"></div>
   </section>
 
+  <!-- DÜELLO KURULUM MODALI -->
+  <div id="duelSetupOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+    <div class="card" style="width:88%; max-width:360px; padding:20px;">
+      <div style="font-weight:800; font-size:16px; margin-bottom:4px;">⚔️ Düello Davet Et</div>
+      <div class="hint" style="margin:0 0 14px;" id="duelSetupOpponentName">-</div>
+      <div class="field">
+        <label>Kaç Soru?</label>
+        <select id="duelSetupQuestionCount">
+          <option value="10">10 Soru</option>
+          <option value="15">15 Soru</option>
+          <option value="20" selected>20 Soru</option>
+          <option value="25">25 Soru</option>
+          <option value="30">30 Soru</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Soru Başına Süre</label>
+        <select id="duelSetupTimePerQ">
+          <option value="15">15 sn</option>
+          <option value="20" selected>20 sn</option>
+          <option value="25">25 sn</option>
+        </select>
+      </div>
+      <button class="submit-btn" id="duelSetupSendBtn" style="margin-top:6px;">⚔️ Daveti Gönder</button>
+      <button class="submit-btn secondary" id="duelSetupCancelBtn" style="margin-top:8px;">Vazgeç</button>
+    </div>
+  </div>
+
+  <!-- DÜELLO ODASI -->
+  <section class="screen" id="screen-duel">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnDuelBack">‹</button>
+      <span class="cal-title">⚔️ Düello</span>
+      <button id="btnDuelVoice" style="width:36px;height:36px; border-radius:50%; border:none; background:var(--concrete); font-size:16px; cursor:pointer;">🎤</button>
+    </div>
+
+    <!-- Bekleme durumu -->
+    <div id="duelWaitingState" style="display:none; text-align:center; padding:40px 20px;">
+      <div style="font-size:44px; margin-bottom:14px;">⏳</div>
+      <div style="font-weight:800; font-size:16px; margin-bottom:6px;" id="duelWaitingText">Rakip bekleniyor...</div>
+      <div class="hint" id="duelWaitingSub"></div>
+      <div id="duelInviteActions" style="display:none; margin-top:20px; display:flex; gap:10px; justify-content:center;">
+        <button class="submit-btn" id="duelAcceptBtn" style="flex:1; max-width:140px;">✅ Kabul Et</button>
+        <button class="submit-btn secondary" id="duelDeclineBtn" style="flex:1; max-width:140px;">❌ Reddet</button>
+      </div>
+    </div>
+
+    <!-- Aktif düello -->
+    <div id="duelActiveState" style="display:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;">
+        <div style="flex:1; text-align:center; background:var(--tint-slate); border-radius:14px; padding:10px;">
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:700;" id="duelMeNameLbl">Sen</div>
+          <div style="font-weight:800; font-size:20px; color:var(--asphalt);" id="duelMeScoreLbl">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);" id="duelMeProgressLbl">0/0</div>
+        </div>
+        <div style="font-weight:800; font-size:14px; color:var(--ink-soft);">VS</div>
+        <div style="flex:1; text-align:center; background:var(--tint-rust); border-radius:14px; padding:10px;">
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:700;" id="duelOppNameLbl">Rakip</div>
+          <div style="font-weight:800; font-size:20px; color:var(--danger);" id="duelOppScoreLbl">0</div>
+          <div style="font-size:10px; color:var(--ink-soft);" id="duelOppProgressLbl">0/0</div>
+        </div>
+      </div>
+      <div style="font-weight:800; font-size:13px; color:var(--asphalt); margin-bottom:8px;" id="duelQNumLbl">1. Soru</div>
+      <div class="card" style="margin-bottom:14px;">
+        <div id="duelQuestionText" style="font-weight:700; font-size:16px; line-height:1.5; margin-bottom:10px;">-</div>
+        <div style="height:5px; border-radius:3px; background:var(--concrete); overflow:hidden;">
+          <div id="duelTimerBar" style="height:100%; width:100%; background:var(--danger); transition:width 1s linear;"></div>
+        </div>
+      </div>
+      <div id="duelOptionsWrap"></div>
+    </div>
+
+    <!-- Bitiş durumu -->
+    <div id="duelFinishedState" style="display:none; text-align:center; padding:30px 16px; position:relative; overflow:hidden;">
+      <div id="duelConfettiWrap" style="position:absolute; inset:0; pointer-events:none;"></div>
+      <div style="font-size:52px; margin-bottom:10px;" id="duelResultIcon">🏆</div>
+      <div style="font-weight:800; font-size:19px; margin-bottom:6px;" id="duelResultTitle">Kazandın!</div>
+      <div class="hint" style="margin-bottom:20px;" id="duelResultSub"></div>
+      <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+        <div style="flex:1; max-width:130px; background:var(--tint-slate); border-radius:14px; padding:12px;">
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:700;" id="duelFinalMeNameLbl">Sen</div>
+          <div style="font-weight:800; font-size:22px; color:var(--asphalt);" id="duelFinalMeScoreLbl">0</div>
+        </div>
+        <div style="flex:1; max-width:130px; background:var(--tint-rust); border-radius:14px; padding:12px;">
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:700;" id="duelFinalOppNameLbl">Rakip</div>
+          <div style="font-weight:800; font-size:22px; color:var(--danger);" id="duelFinalOppScoreLbl">0</div>
+        </div>
+      </div>
+      <button class="submit-btn secondary" id="duelBackHomeBtn">Ana Sayfaya Dön</button>
+    </div>
+  </section>
 
   <!-- İSTATİSTİK (tüm zamanlar) -->
   <section class="screen" id="screen-istatistik">
@@ -656,6 +766,17 @@
         <div id="profileCompletionBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--asphalt),var(--asphalt-2)); border-radius:6px; transition:width .3s ease;"></div>
       </div>
       <div style="font-size:11px; color:var(--ink-soft); margin-top:6px;" id="profileCompletionHint"></div>
+    </div>
+
+    <div class="card" id="quizRankProgressCard" style="display:none; padding:14px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div style="font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:6px;" id="quizRankProgressLabel">🔰 Çırak</div>
+        <div style="font-size:11px; font-weight:800; color:var(--asphalt);" id="quizRankProgressPct">0%</div>
+      </div>
+      <div style="height:9px; border-radius:6px; background:var(--concrete); overflow:hidden;">
+        <div id="quizRankProgressBar" style="height:100%; width:0%; border-radius:6px; transition:width .4s ease;"></div>
+      </div>
+      <div style="font-size:11px; color:var(--ink-soft); margin-top:6px;" id="quizRankProgressHint"></div>
     </div>
 
     <div class="card" id="quizStatsCard" style="padding:14px; margin-bottom:14px;">
@@ -1029,6 +1150,7 @@
       </div>
       <div style="display:flex; align-items:center; gap:8px; margin-top:16px;" id="vpFollowRow">
         <button id="vpFriendBtn" class="vp-btn-follow" style="background:var(--tint-forest); color:#16A34A; border:1.5px solid #16A34A;">🤝 Arkadaş Ekle</button>
+        <button id="vpDuelBtn" class="vp-btn-follow" style="background:var(--tint-rust); color:var(--danger); border:1.5px solid var(--danger);">⚔️ Düello</button>
         <button id="vpMessageBtn" class="vp-btn-message">💬 Mesaj</button>
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
@@ -2268,10 +2390,37 @@ function getQuizRank(score){
   for(const r of QUIZ_RANKS){ if(s >= r.min && (r.max==null || s <= r.max)) return r; }
   return QUIZ_RANKS[0];
 }
+function renderQuizRankProgress(score, totalAnswered){
+  const card = document.getElementById('quizRankProgressCard');
+  if(!card) return;
+  if((totalAnswered||0) < 5){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  const r = getQuizRank(score);
+  const idx = QUIZ_RANKS.indexOf(r);
+  const next = QUIZ_RANKS[idx+1];
+  document.getElementById('quizRankProgressLabel').textContent = r.icon + ' ' + r.name;
+  document.getElementById('quizRankProgressBar').style.background = 'linear-gradient(90deg, '+r.aura+', '+r.aura+'cc)';
+  if(!next){
+    document.getElementById('quizRankProgressPct').textContent = 'MAX';
+    document.getElementById('quizRankProgressBar').style.width = '100%';
+    document.getElementById('quizRankProgressHint').textContent = 'En yüksek rütbeye ulaştın! 🌌';
+    return;
+  }
+  const rangeStart = r.min, rangeEnd = next.min;
+  const span = rangeEnd - rangeStart;
+  const progressed = Math.max(0, Math.min(span, score - rangeStart));
+  const pct = span > 0 ? Math.round((progressed/span)*100) : 100;
+  document.getElementById('quizRankProgressPct').textContent = pct + '%';
+  document.getElementById('quizRankProgressBar').style.width = pct + '%';
+  document.getElementById('quizRankProgressHint').textContent = 'Sonraki Rütbe (' + next.icon + ' ' + next.name + '): ' + score + ' / ' + rangeEnd + ' Puan';
+}
 function quizRankBadgeHtml(score, extraStyle, totalAnswered){
   if((totalAnswered||0) < 5) return ''; // 5 soru çözülmeden rütbe rozeti gösterilmez
   const r = getQuizRank(score);
-  return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:0 0 6px ${r.aura}66; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  return `<span class="quiz-rank-badge-glow" style="--rank-aura-color:${r.aura}; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
 // Herkes için: admin/mod ise yetki rozeti, değilse kıdem rozeti — her durumda yanında puan rütbesi (5 soru çözülünce)
 function roleOrTenureBadgeHtml(u, extraStyle){
@@ -5105,7 +5254,7 @@ function openChatScreen(cid, otherUid){
     const retryBtn = document.getElementById('btnChatRetry');
     if(retryBtn) retryBtn.addEventListener('click', ()=> openChatScreen(cid, otherUid));
   });
-  try{ db.collection('conversations').doc(cid).update({unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid), ['lastReadAt_'+currentUser.uid]: new Date().toISOString()}); }catch(e){}
+  try{ db.collection('conversations').doc(cid).update({unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid), ['lastReadAt_'+currentUser.uid]: new Date().toISOString(), ['unreadCount.'+currentUser.uid]: 0}); }catch(e){}
 }
 let currentChatBlockStatus = {byMe:false, byThem:false};
 let currentChatPinned = false;
@@ -5711,9 +5860,11 @@ async function sendChatPayload({text, imageData, audioData, audioDuration}){
     if(currentChatIsGroup){
       const others = (currentChatGroupData.participants||[]).filter(u=>u!==currentUser.uid);
       convUpdate.unreadFor = firebase.firestore.FieldValue.arrayUnion(...others);
+      others.forEach(uid=>{ convUpdate['unreadCount.'+uid] = firebase.firestore.FieldValue.increment(1); });
     } else {
       convUpdate.participants = [currentUser.uid, currentChatUid];
       convUpdate.unreadFor = firebase.firestore.FieldValue.arrayUnion(currentChatUid);
+      convUpdate['unreadCount.'+currentChatUid] = firebase.firestore.FieldValue.increment(1);
     }
     await db.collection('conversations').doc(currentConvId).set(convUpdate, {merge:true});
   }catch(e){ showToast('Gönderilemedi: '+(e.message||'')); }
@@ -5900,6 +6051,7 @@ function convRowHtml(c, today){
   const avatarInitials = isGrp ? escapeHtml((c.groupName||'G').trim().charAt(0).toUpperCase()) : escapeHtml(getInitials(p?p.fullName:name));
   const isOnline = !isGrp && p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
   const unread = Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid);
+  const unreadNum = (c.unreadCount && typeof c.unreadCount[currentUser.uid]==='number' && c.unreadCount[currentUser.uid]>0) ? c.unreadCount[currentUser.uid] : (unread ? 1 : 0);
   const isPinned = Array.isArray(c.pinnedFor) && c.pinnedFor.includes(currentUser.uid);
   let time = '';
   if(c.updatedAt){
@@ -5922,19 +6074,19 @@ function convRowHtml(c, today){
   } else {
     preview = c.lastMessage ? escapeHtml(prefix + (c.lastMessage.length>36?c.lastMessage.slice(0,36)+'…':c.lastMessage)) : 'Henüz mesaj yok';
   }
-  return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer; border-radius:16px; margin-bottom:4px; transition:background .12s ease;">
+  return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; border-radius:18px; margin-bottom:10px; background:var(--paper); box-shadow:var(--shadow-sm); transition:transform .12s ease;">
       <input type="checkbox" class="conv-select-box" data-select-conv="${escapeHtml(c.id)}" style="display:none; width:19px;height:19px; flex-shrink:0;">
       <div style="position:relative; flex-shrink:0;">
-        <div style="width:52px;height:52px;border-radius:${isGrp?'16px':'50%'}; background:${(!isGrp && p && p.photoData) ? 'transparent' : avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:18px; box-shadow:var(--shadow-sm); overflow:hidden;">${(!isGrp && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : avatarInitials}</div>
-        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:13px;height:13px; border-radius:50%; background:#22C55E; border:2.5px solid var(--paper);"></span>':''}
+        <div style="width:54px;height:54px;border-radius:${isGrp?'16px':'50%'}; background:${(!isGrp && p && p.photoData) ? 'transparent' : avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:19px; overflow:hidden;">${(!isGrp && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : avatarInitials}</div>
+        ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:14px;height:14px; border-radius:50%; background:#22C55E; border:2.5px solid var(--paper);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
-        <div style="font-weight:${unread?800:700}; font-size:15px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${(Array.isArray(c.mutedFor)&&c.mutedFor.includes(currentUser.uid))?'🔕 ':''}${name}</div>
-        <div style="font-size:12.5px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?700:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${preview}</div>
+        <div style="font-weight:${unread?800:700}; font-size:15.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${isPinned?'📌 ':''}${(Array.isArray(c.mutedFor)&&c.mutedFor.includes(currentUser.uid))?'🔕 ':''}${name}</div>
+        <div style="font-size:13px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?600:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">${preview}</div>
       </div>
-      <div style="text-align:right; flex-shrink:0;">
-        <div style="font-size:11px; color:${unread?'var(--asphalt)':'var(--ink-soft)'}; font-weight:${unread?700:400};">${time}</div>
-        ${unread?'<div style="width:20px;height:20px;border-radius:50%; background:var(--asphalt); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:6px 0 0 auto;">●</div>':''}
+      <div style="text-align:right; flex-shrink:0; align-self:flex-start;">
+        <div style="font-size:11.5px; color:${unread?'var(--asphalt)':'var(--ink-soft)'}; font-weight:${unread?700:500};">${time}</div>
+        ${unreadNum>0?'<div style="min-width:22px;height:22px;border-radius:50%; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:8px 0 0 auto; padding:0 5px;">'+(unreadNum>99?'99+':unreadNum)+'</div>':''}
       </div>
     </div>`;
 }
@@ -6049,7 +6201,7 @@ document.getElementById('convSelectReadBtn').addEventListener('click', async ()=
   if(convSelectedIds.size===0) return;
   try{
     const batch = db.batch();
-    convSelectedIds.forEach(id=> batch.update(db.collection('conversations').doc(id), {unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)}));
+    convSelectedIds.forEach(id=> batch.update(db.collection('conversations').doc(id), {unreadFor: firebase.firestore.FieldValue.arrayRemove(currentUser.uid), ['unreadCount.'+currentUser.uid]: 0}));
     await batch.commit();
     showToast('Okundu olarak işaretlendi');
     exitConvSelectMode();
@@ -6318,6 +6470,23 @@ function startConversationsListener(){
 // ---------- BİLDİRİM SİSTEMİ ----------
 let notifUnsub = null;
 let notifFirstSnapshot = true;
+let friendReqUnsub = null;
+let latestFriendRequests = [];
+function startFriendRequestListener(){
+  if(!currentUser) return;
+  if(friendReqUnsub) friendReqUnsub();
+  friendReqUnsub = db.collection('friend_requests').where('toUid','==',currentUser.uid)
+    .onSnapshot(snap=>{
+      latestFriendRequests = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>r.status==='pending');
+      const count = latestFriendRequests.length;
+      const navBadge = document.getElementById('friendReqNavBadge');
+      const tabBadge = document.getElementById('friendReqTabBadge');
+      if(navBadge){ if(count>0){ navBadge.style.display='block'; navBadge.textContent = count>9?'9+':count; } else navBadge.style.display='none'; }
+      if(tabBadge){ if(count>0){ tabBadge.style.display='block'; tabBadge.textContent = count>9?'9+':count; } else tabBadge.style.display='none'; }
+      if(document.getElementById('headerFriendsDropdown').style.display==='block' && friendsDropdownMode==='requests') renderFriendsTabRequests();
+      refreshOwnFriendsSection();
+    }, err=>{ console.error('arkadas istek dinleyici hatasi', err); });
+}
 function startNotificationListener(){
   if(!currentUser) return;
   if(notifUnsub) notifUnsub();
@@ -6355,10 +6524,10 @@ function renderNotifList(items, isFullHistory){
   box.innerHTML = items.map(n=>{
     const d = n.createdAt ? new Date(n.createdAt) : null;
     const dateStr = d ? d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
-    return `<div class="entry ${n.read?'':'yevmiye'}" data-nid="${escapeHtml(n.id)}" data-from="${escapeHtml(n.fromUid||'')}" style="cursor:pointer;">
+    return `<div class="entry ${n.read?'':'yevmiye'}" data-nid="${escapeHtml(n.id)}" data-from="${escapeHtml(n.fromUid||'')}" data-duel="${escapeHtml(n.duelId||'')}" data-type="${escapeHtml(n.type||'')}" style="cursor:pointer;">
       <div class="bar" style="background:${n.read?'var(--line)':'var(--asphalt)'};"></div>
       <div class="info">
-        <div class="ttype" style="color:var(--ink);">${n.type==='broadcast'?'📢 Duyuru':(n.type==='suggestion_response'?'💡 Öneri Yanıtı':(n.type==='mod_update'?'🛡️ Moderatörlük':(n.type==='report_result'?'🚩 Şikayet Sonucu':'👋 Takip')))}</div>
+        <div class="ttype" style="color:var(--ink);">${n.type==='broadcast'?'📢 Duyuru':(n.type==='suggestion_response'?'💡 Öneri Yanıtı':(n.type==='mod_update'?'🛡️ Moderatörlük':(n.type==='report_result'?'🚩 Şikayet Sonucu':(n.type==='friend_request'?'🤝 Arkadaşlık İsteği':(n.type==='friend_accept'?'✅ Arkadaşlık':(n.type==='duel_invite'?'⚔️ Düello Daveti':(n.type==='duel_result'?'🏆 Düello Sonucu':'🔔 Bildirim')))))))}</div>
         <div class="note" style="margin-top:2px;">${linkifyHtml(n.message||'')}</div>
         <div class="date">${dateStr}</div>
       </div>
@@ -6369,8 +6538,13 @@ function renderNotifList(items, isFullHistory){
       const nid = row.dataset.nid;
       try{ await db.collection('notifications').doc(nid).update({read:true}); }catch(e){}
       const fromUid = row.dataset.from;
-      if(fromUid){
-        document.getElementById('notifOverlay').classList.remove('show');
+      const duelId = row.dataset.duel;
+      const type = row.dataset.type;
+      document.getElementById('notifOverlay').classList.remove('show');
+      if((type==='duel_invite' || type==='duel_result') && duelId){
+        document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+        openDuelRoom(duelId);
+      } else if(fromUid){
         document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
         openViewProfile(fromUid);
       }
@@ -6440,6 +6614,7 @@ document.getElementById('btnHeaderMessages').addEventListener('click', (e)=>{
   const dd = document.getElementById('headerMsgDropdown');
   const willOpen = dd.style.display !== 'block';
   document.getElementById('headerNotifDropdown').style.display = 'none';
+  document.getElementById('headerFriendsDropdown').style.display = 'none';
   document.getElementById('headerProfileMenu').style.display = 'none';
   dd.style.display = willOpen ? 'block' : 'none';
   if(willOpen) renderHeaderMsgDropdown();
@@ -6458,17 +6633,28 @@ function renderHeaderNotifDropdown(){
   }
   box.innerHTML = items.map(n=>{
     const time = n.createdAt ? formatLastActive(n.createdAt) : '';
-    return `<div style="padding:9px 8px; border-radius:10px; ${!n.read?'background:var(--tint-slate);':''}">
+    return `<div data-dd-notif-from="${escapeHtml(n.fromUid||'')}" data-dd-notif-duel="${escapeHtml(n.duelId||'')}" data-dd-notif-type="${escapeHtml(n.type||'')}" style="padding:9px 8px; border-radius:10px; cursor:pointer; ${!n.read?'background:var(--tint-slate);':''}">
       <div style="font-size:12.5px; font-weight:${n.read?600:800};">${linkifyHtml(n.message||'')}</div>
       <div style="font-size:10px; color:var(--ink-soft); margin-top:3px;">${escapeHtml(time)}</div>
     </div>`;
   }).join('');
+  box.querySelectorAll('[data-dd-notif-type]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      document.getElementById('headerNotifDropdown').style.display = 'none';
+      const type = row.dataset.ddNotifType;
+      const duelId = row.dataset.ddNotifDuel;
+      const fromUid = row.dataset.ddNotifFrom;
+      if((type==='duel_invite' || type==='duel_result') && duelId) openDuelRoom(duelId);
+      else if(fromUid) openViewProfile(fromUid);
+    });
+  });
 }
 document.getElementById('btnNotifBell').addEventListener('click', (e)=>{
   e.stopPropagation();
   const dd = document.getElementById('headerNotifDropdown');
   const willOpen = dd.style.display !== 'block';
   document.getElementById('headerMsgDropdown').style.display = 'none';
+  document.getElementById('headerFriendsDropdown').style.display = 'none';
   document.getElementById('headerProfileMenu').style.display = 'none';
   dd.style.display = willOpen ? 'block' : 'none';
   if(willOpen){ renderHeaderNotifDropdown(); setTimeout(markAllNotifsRead, 800); }
@@ -6478,9 +6664,98 @@ document.getElementById('btnHeaderNotifSeeAll').addEventListener('click', ()=>{
   renderNotifList();
   document.getElementById('notifOverlay').classList.add('show');
 });
+
+// ---------- HEADER: ARKADAŞLAR DROPDOWN (Arkadaşlar / İstekler sekmeleri) ----------
+let friendsDropdownMode = 'list';
+function setFriendsDropdownTab(mode){
+  friendsDropdownMode = mode;
+  const listBtn = document.getElementById('btnFriendsTabList');
+  const reqBtn = document.getElementById('btnFriendsTabReqs');
+  listBtn.className = mode==='list' ? 'submit-btn' : 'submit-btn secondary';
+  reqBtn.className = mode==='requests' ? 'submit-btn' : 'submit-btn secondary';
+  if(mode==='list') renderFriendsTabList(); else renderFriendsTabRequests();
+}
+document.getElementById('btnFriendsTabList').addEventListener('click', (e)=>{ e.stopPropagation(); setFriendsDropdownTab('list'); });
+document.getElementById('btnFriendsTabReqs').addEventListener('click', (e)=>{ e.stopPropagation(); setFriendsDropdownTab('requests'); });
+async function renderFriendsTabList(){
+  const box = document.getElementById('headerFriendsDropdownList');
+  box.innerHTML = '<div class="hint" style="margin:8px 0;">Yükleniyor…</div>';
+  const friendUids = await getFriendUids(currentUser.uid);
+  if(friendUids.length===0){
+    box.innerHTML = '<div class="hint" style="margin:8px 0; text-align:center;">Henüz arkadaşın yok.</div>';
+    return;
+  }
+  box.innerHTML = friendUids.slice(0,20).map(uid=>{
+    const p = profileByUid(uid);
+    const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    return `<div data-dd-friend-uid="${escapeHtml(uid)}" style="display:flex; align-items:center; gap:9px; padding:8px; cursor:pointer; border-radius:10px;">
+      <div style="width:34px;height:34px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden; flex-shrink:0;">${inner}</div>
+      <div style="font-weight:700; font-size:12.5px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-dd-friend-uid]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      document.getElementById('headerFriendsDropdown').style.display = 'none';
+      openViewProfile(row.dataset.ddFriendUid);
+    });
+  });
+}
+async function renderFriendsTabRequests(){
+  const box = document.getElementById('headerFriendsDropdownList');
+  if(latestFriendRequests.length===0){
+    box.innerHTML = '<div class="hint" style="margin:8px 0; text-align:center;">Bekleyen istek yok.</div>';
+    return;
+  }
+  box.innerHTML = latestFriendRequests.map(r=>{
+    const p = profileByUid(r.fromUid);
+    const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    return `<div style="display:flex; align-items:center; gap:9px; padding:8px;">
+      <div style="width:34px;height:34px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(r.fromUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden; flex-shrink:0;">${inner}</div>
+      <div style="font-weight:700; font-size:12.5px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
+      <button data-dd-req-accept="${escapeHtml(r.fromUid)}" style="border:none; background:var(--tint-forest); color:#16A34A; width:28px;height:28px; border-radius:50%; font-size:13px; cursor:pointer; flex-shrink:0;">✓</button>
+      <button data-dd-req-reject="${escapeHtml(r.fromUid)}" style="border:none; background:var(--tint-rust); color:var(--danger); width:28px;height:28px; border-radius:50%; font-size:13px; cursor:pointer; flex-shrink:0;">✕</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-dd-req-accept]').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const fromUid = btn.dataset.ddReqAccept;
+      try{
+        await db.collection('friends').doc(friendDocId(currentUser.uid, fromUid)).set({members:[currentUser.uid, fromUid], createdAt:new Date().toISOString()});
+        await db.collection('friend_requests').doc(friendReqDocId(fromUid, currentUser.uid)).delete();
+        await db.collection('notifications').add({toUid:fromUid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ Arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
+        showToast('Artık arkadaşsınız 🎉');
+      }catch(e){ showToast('İşlem başarısız'); }
+    });
+  });
+  box.querySelectorAll('[data-dd-req-reject]').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const fromUid = btn.dataset.ddReqReject;
+      try{
+        await db.collection('friend_requests').doc(friendReqDocId(fromUid, currentUser.uid)).delete();
+        showToast('İstek reddedildi');
+      }catch(e){ showToast('İşlem başarısız'); }
+    });
+  });
+}
+document.getElementById('btnHeaderFriends').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const dd = document.getElementById('headerFriendsDropdown');
+  const willOpen = dd.style.display !== 'block';
+  document.getElementById('headerMsgDropdown').style.display = 'none';
+  document.getElementById('headerNotifDropdown').style.display = 'none';
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  dd.style.display = willOpen ? 'block' : 'none';
+  if(willOpen) setFriendsDropdownTab('list');
+});
+
 document.addEventListener('click', ()=>{
   document.getElementById('headerMsgDropdown').style.display = 'none';
   document.getElementById('headerNotifDropdown').style.display = 'none';
+  document.getElementById('headerFriendsDropdown').style.display = 'none';
 });
 document.getElementById('notifClose').addEventListener('click', ()=> document.getElementById('notifOverlay').classList.remove('show'));
 
@@ -7766,6 +8041,7 @@ function renderProfile(){
   document.getElementById('ownTenureBadge').innerHTML = (isAdmin || (modPerms && modPerms.rank))
     ? quizRankBadgeHtml((ownP&&ownP.quizScore)||0, 'margin-left:6px;', (ownP&&ownP.quizTotalAnswered)||0)
     : (tenureBadgeHtml(profile.createdAt, 'margin-left:6px;', true) + ' ' + quizRankBadgeHtml((ownP&&ownP.quizScore)||0, 'margin-left:6px;', (ownP&&ownP.quizTotalAnswered)||0));
+  renderQuizRankProgress((ownP&&ownP.quizScore)||0, (ownP&&ownP.quizTotalAnswered)||0);
 
   document.getElementById('viewUserId').textContent = profile.userId || '-';
   document.getElementById('viewEmail').textContent = currentUser.email || '-';
@@ -9041,6 +9317,270 @@ document.getElementById('btnQuizPlayAgain').addEventListener('click', ()=>{
   startQuizSession();
 });
 
+// ================= DÜELLO (1v1) SİSTEMİ =================
+let duelSetupOpponentUid = null;
+let currentDuelId = null;
+let currentDuelUnsub = null;
+let duelLocalQuestions = [];
+let duelLocalIndex = 0;
+let duelLocalScore = 0;
+let duelTimerInterval = null;
+let duelTimeLeft = 0;
+
+function openDuelSetup(opponentUid){
+  duelSetupOpponentUid = opponentUid;
+  const p = profileByUid(opponentUid);
+  document.getElementById('duelSetupOpponentName').textContent = (p ? getDisplayName(p) : 'Kullanıcı') + ' kişisine düello daveti gönder';
+  document.getElementById('duelSetupOverlay').style.display = 'flex';
+}
+document.getElementById('duelSetupCancelBtn').addEventListener('click', ()=>{
+  document.getElementById('duelSetupOverlay').style.display = 'none';
+});
+document.getElementById('vpDuelBtn').addEventListener('click', ()=>{
+  if(currentViewedUid) openDuelSetup(currentViewedUid);
+});
+document.getElementById('duelSetupSendBtn').addEventListener('click', async ()=>{
+  if(!duelSetupOpponentUid || !currentUser) return;
+  const questionCount = parseInt(document.getElementById('duelSetupQuestionCount').value, 10);
+  const timePerQ = parseInt(document.getElementById('duelSetupTimePerQ').value, 10);
+  try{
+    const duelRef = await db.collection('duels').add({
+      player1Uid: currentUser.uid, player2Uid: duelSetupOpponentUid,
+      questionCount, timePerQuestion: timePerQ,
+      status: 'pending',
+      scores: {}, progress: {}, finishedPlayers: [],
+      createdAt: new Date().toISOString()
+    });
+    const myName = (profile && profile.fullName) || 'Bir kullanıcı';
+    await db.collection('notifications').add({
+      toUid: duelSetupOpponentUid, fromUid: currentUser.uid, type:'duel_invite', duelId: duelRef.id,
+      message: '⚔️ ' + myName + ' seni düelloya davet etti! (' + questionCount + ' soru)',
+      read:false, createdAt:new Date().toISOString()
+    });
+    document.getElementById('duelSetupOverlay').style.display = 'none';
+    showToast('Düello daveti gönderildi ⚔️');
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    openDuelRoom(duelRef.id);
+  }catch(e){ showToast('Davet gönderilemedi: '+(e.message||'')); }
+});
+async function openDuelRoom(duelId){
+  currentDuelId = duelId;
+  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-duel').classList.add('active');
+  document.getElementById('duelWaitingState').style.display = 'none';
+  document.getElementById('duelActiveState').style.display = 'none';
+  document.getElementById('duelFinishedState').style.display = 'none';
+  if(currentDuelUnsub){ currentDuelUnsub(); currentDuelUnsub = null; }
+  currentDuelUnsub = db.collection('duels').doc(duelId).onSnapshot(doc=>{
+    if(!doc.exists) return;
+    renderDuelRoom({id:doc.id, ...doc.data()});
+  });
+}
+document.getElementById('btnDuelBack').addEventListener('click', ()=>{
+  if(currentDuelUnsub){ currentDuelUnsub(); currentDuelUnsub = null; }
+  clearInterval(duelTimerInterval);
+  switchScreen('ana');
+});
+document.getElementById('duelBackHomeBtn').addEventListener('click', ()=>{
+  if(currentDuelUnsub){ currentDuelUnsub(); currentDuelUnsub = null; }
+  switchScreen('ana');
+});
+document.getElementById('btnDuelVoice').addEventListener('click', ()=>{
+  const opponentUid = getDuelOpponentUid(window._lastDuelData);
+  if(opponentUid) startVoiceCall(opponentUid);
+});
+function getDuelOpponentUid(d){
+  if(!d || !currentUser) return null;
+  return d.player1Uid === currentUser.uid ? d.player2Uid : d.player1Uid;
+}
+function renderDuelRoom(d){
+  window._lastDuelData = d;
+  const isP1 = d.player1Uid === currentUser.uid;
+  const opponentUid = getDuelOpponentUid(d);
+  const opponentP = profileByUid(opponentUid);
+  const oppName = opponentP ? getDisplayName(opponentP) : 'Rakip';
+
+  if(d.status === 'pending'){
+    document.getElementById('duelWaitingState').style.display = 'block';
+    document.getElementById('duelActiveState').style.display = 'none';
+    document.getElementById('duelFinishedState').style.display = 'none';
+    if(isP1){
+      document.getElementById('duelWaitingText').textContent = oppName + ' bekleniyor...';
+      document.getElementById('duelWaitingSub').textContent = 'Rakibin daveti kabul etmesini bekliyoruz.';
+      document.getElementById('duelInviteActions').style.display = 'none';
+    } else {
+      document.getElementById('duelWaitingText').textContent = oppName + ' seni düelloya davet etti!';
+      document.getElementById('duelWaitingSub').textContent = d.questionCount + ' soru, soru başına ' + d.timePerQuestion + ' saniye.';
+      document.getElementById('duelInviteActions').style.display = 'flex';
+    }
+    return;
+  }
+  if(d.status === 'declined'){
+    document.getElementById('duelWaitingState').style.display = 'block';
+    document.getElementById('duelWaitingText').textContent = 'Davet reddedildi';
+    document.getElementById('duelWaitingSub').textContent = '';
+    document.getElementById('duelInviteActions').style.display = 'none';
+    return;
+  }
+  if(d.status === 'active'){
+    document.getElementById('duelWaitingState').style.display = 'none';
+    document.getElementById('duelFinishedState').style.display = 'none';
+    document.getElementById('duelActiveState').style.display = 'block';
+    document.getElementById('duelMeNameLbl').textContent = getDisplayName(profile ? {fullName:profile.fullName, username:profile.username} : null) || 'Sen';
+    document.getElementById('duelOppNameLbl').textContent = oppName;
+    const myScore = (d.scores && d.scores[currentUser.uid]) || 0;
+    const oppScore = (d.scores && d.scores[opponentUid]) || 0;
+    const myProgress = (d.progress && d.progress[currentUser.uid]) || 0;
+    const oppProgress = (d.progress && d.progress[opponentUid]) || 0;
+    document.getElementById('duelMeScoreLbl').textContent = myScore;
+    document.getElementById('duelOppScoreLbl').textContent = oppScore;
+    document.getElementById('duelMeProgressLbl').textContent = myProgress + '/' + d.questionCount;
+    document.getElementById('duelOppProgressLbl').textContent = oppProgress + '/' + d.questionCount;
+
+    if(duelLocalQuestions.length === 0 && Array.isArray(d.questionIds) && d.questionIds.length){
+      duelLocalQuestions = d.questionIds.map(qid => quizQuestions.find(q=>q.id===qid)).filter(Boolean);
+      duelLocalIndex = 0; duelLocalScore = 0;
+      renderDuelQuestion(d);
+    }
+    return;
+  }
+  if(d.status === 'finished'){
+    clearInterval(duelTimerInterval);
+    document.getElementById('duelWaitingState').style.display = 'none';
+    document.getElementById('duelActiveState').style.display = 'none';
+    document.getElementById('duelFinishedState').style.display = 'block';
+    const myScore = (d.scores && d.scores[currentUser.uid]) || 0;
+    const oppScore = (d.scores && d.scores[opponentUid]) || 0;
+    document.getElementById('duelFinalMeNameLbl').textContent = 'Sen';
+    document.getElementById('duelFinalOppNameLbl').textContent = oppName;
+    document.getElementById('duelFinalMeScoreLbl').textContent = myScore;
+    document.getElementById('duelFinalOppScoreLbl').textContent = oppScore;
+    const iWon = d.winnerUid === currentUser.uid;
+    const isTie = d.winnerUid === 'tie';
+    document.getElementById('duelResultIcon').textContent = isTie ? '🤝' : (iWon ? '🏆' : '💔');
+    document.getElementById('duelResultTitle').textContent = isTie ? 'Berabere!' : (iWon ? 'Kazandın!' : 'Kaybettin');
+    document.getElementById('duelResultSub').textContent = myScore + ' - ' + oppScore;
+    if(iWon && !d._confettiShown){ fireDuelConfetti(); d._confettiShown = true; }
+    return;
+  }
+}
+document.getElementById('duelAcceptBtn').addEventListener('click', async ()=>{
+  if(!currentDuelId) return;
+  try{
+    const doc = await db.collection('duels').doc(currentDuelId).get();
+    const d = doc.data();
+    await loadQuizQuestions();
+    const pool = quizQuestions.slice();
+    for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+    const selected = pool.slice(0, d.questionCount).map(q=>q.id);
+    await db.collection('duels').doc(currentDuelId).update({ status:'active', questionIds: selected, startedAt: new Date().toISOString() });
+  }catch(e){ showToast('Kabul edilemedi: '+(e.message||'')); }
+});
+document.getElementById('duelDeclineBtn').addEventListener('click', async ()=>{
+  if(!currentDuelId) return;
+  try{
+    await db.collection('duels').doc(currentDuelId).update({ status:'declined' });
+  }catch(e){}
+});
+
+function renderDuelQuestion(d){
+  const q = duelLocalQuestions[duelLocalIndex];
+  if(!q) return;
+  document.getElementById('duelQNumLbl').textContent = (duelLocalIndex+1) + '. Soru';
+  document.getElementById('duelQuestionText').textContent = q.question;
+  const wrap = document.getElementById('duelOptionsWrap');
+  const letters = ['A','B','C','D','E'];
+  wrap.innerHTML = (q.options||[]).map((opt,i)=>
+    '<button class="duel-option-btn" data-index="'+i+'" style="width:100%; margin-bottom:10px; text-align:left; padding:13px 15px; border-radius:16px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-size:14.5px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:12px;">'
+      + '<span style="width:27px;height:27px;border-radius:50%; background:var(--concrete); color:var(--ink-soft); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12.5px; flex-shrink:0;">'+letters[i]+'</span>'
+      + '<span style="flex:1;">'+escapeHtml(opt)+'</span>'
+    + '</button>'
+  ).join('');
+  wrap.querySelectorAll('.duel-option-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> selectDuelAnswer(parseInt(btn.dataset.index,10), d));
+  });
+  duelTimeLeft = d.timePerQuestion;
+  document.getElementById('duelTimerBar').style.transition = 'none';
+  document.getElementById('duelTimerBar').style.width = '100%';
+  void document.getElementById('duelTimerBar').offsetWidth;
+  document.getElementById('duelTimerBar').style.transition = 'width 1s linear';
+  clearInterval(duelTimerInterval);
+  duelTimerInterval = setInterval(()=>{
+    duelTimeLeft--;
+    const pct = Math.max(0, (duelTimeLeft/d.timePerQuestion)*100);
+    document.getElementById('duelTimerBar').style.width = pct + '%';
+    if(duelTimeLeft <= 0){
+      clearInterval(duelTimerInterval);
+      selectDuelAnswer(-1, d); // süre doldu, yanlış say
+    }
+  }, 1000);
+}
+async function selectDuelAnswer(index, d){
+  clearInterval(duelTimerInterval);
+  const q = duelLocalQuestions[duelLocalIndex];
+  if(!q) return;
+  document.querySelectorAll('.duel-option-btn').forEach(btn=>{
+    btn.disabled = true;
+    const i = parseInt(btn.dataset.index,10);
+    if(i === q.correctIndex){ btn.style.background = 'var(--tint-forest)'; btn.style.borderColor = '#16A34A'; }
+    else if(i === index){ btn.style.background = 'var(--tint-rust)'; btn.style.borderColor = 'var(--danger)'; }
+  });
+  const isCorrect = index === q.correctIndex;
+  if(isCorrect) duelLocalScore += 5;
+  try{
+    const update = {};
+    update['scores.'+currentUser.uid] = duelLocalScore;
+    update['progress.'+currentUser.uid] = duelLocalIndex+1;
+    await db.collection('duels').doc(currentDuelId).update(update);
+  }catch(e){}
+
+  setTimeout(async ()=>{
+    duelLocalIndex++;
+    if(duelLocalIndex >= duelLocalQuestions.length){
+      // Bu oyuncu bitirdi
+      try{
+        await db.collection('duels').doc(currentDuelId).update({
+          finishedPlayers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+        });
+        const doc = await db.collection('duels').doc(currentDuelId).get();
+        const dd = doc.data();
+        const opponentUid = getDuelOpponentUid(dd);
+        if(Array.isArray(dd.finishedPlayers) && dd.finishedPlayers.includes(opponentUid) && dd.status !== 'finished'){
+          const myScore = (dd.scores && dd.scores[currentUser.uid]) || 0;
+          const oppScore = (dd.scores && dd.scores[opponentUid]) || 0;
+          let winnerUid = 'tie';
+          if(myScore > oppScore) winnerUid = currentUser.uid;
+          else if(oppScore > myScore) winnerUid = opponentUid;
+          await db.collection('duels').doc(currentDuelId).update({ status:'finished', winnerUid });
+          if(winnerUid !== 'tie'){
+            const loserUid = winnerUid === currentUser.uid ? opponentUid : currentUser.uid;
+            await db.collection('notifications').add({
+              toUid: loserUid, fromUid: currentUser.uid, type:'duel_result', duelId: currentDuelId,
+              message: '⚔️ Düello sona erdi: ' + myScore + ' - ' + oppScore, read:false, createdAt:new Date().toISOString()
+            });
+          }
+        }
+      }catch(e){}
+    } else {
+      renderDuelQuestion(d);
+    }
+  }, 900);
+}
+function fireDuelConfetti(){
+  const wrap = document.getElementById('duelConfettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#F59E0B','#EC4899','#818CF8','#34D399','#60A5FA'];
+  for(let i=0;i<40;i++){
+    const piece = document.createElement('div');
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const left = Math.random()*100;
+    const delay = Math.random()*0.6;
+    const duration = 1.8 + Math.random()*1.2;
+    piece.style.cssText = 'position:absolute; top:-10px; left:'+left+'%; width:8px;height:14px; background:'+color+'; opacity:0.9; transform:rotate('+(Math.random()*360)+'deg); animation:duelConfettiFall '+duration+'s ease-in '+delay+'s forwards;';
+    wrap.appendChild(piece);
+  }
+}
+
 // ---------- SIRALAMA (Günlük / Haftalık / Aylık / Genel) ----------
 let leaderboardPeriod = 'daily';
 let leaderboardExpanded = false;
@@ -9922,6 +10462,7 @@ async function enterApp(){
   startReminderScheduler();
   try{ await initNotificationUI(); }catch(e){ console.error('bildirim UI hatasi', e); }
   startNotificationListener();
+  startFriendRequestListener();
   startConversationsListener();
   startPresenceHeartbeat();
   startIncomingCallListener();
