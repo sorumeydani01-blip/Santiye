@@ -476,6 +476,10 @@
     <div id="quizCategoryStep">
       <div class="section-title" style="margin-top:0;">🧠 Soru Çöz, Puan Kazan</div>
       <div class="hint" style="margin-bottom:14px;">Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır. Her soruda bir kez 50/50 joker hakkın var.</div>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button id="btnQuizGoDailyQuests" class="submit-btn secondary" style="flex:1; padding:11px; font-size:12.5px; position:relative;">🎯 Günlük Görevler<span id="dailyQuestBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px;">0</span></button>
+        <button id="btnQuizGoMarket" class="submit-btn secondary" style="flex:1; padding:11px; font-size:12.5px;">🎟️ Market</button>
+      </div>
       <button id="btnQuizGoBookmarks" class="submit-btn secondary" style="margin-bottom:10px; padding:11px;">⭐ Kayıtlı Sorularım</button>
       <button id="btnQuizGoDuel" class="submit-btn" style="margin-bottom:14px; padding:12px; background:linear-gradient(120deg,var(--danger),#B91C1C); box-shadow:0 4px 12px rgba(220,38,38,0.25);">⚔️ Arkadaşınla Düello Yap</button>
       <div class="card" id="quizCategoryGenel" style="cursor:pointer; display:flex; align-items:center; gap:14px; margin-bottom:12px;">
@@ -551,6 +555,51 @@
       <span style="width:36px;"></span>
     </div>
     <div id="quizBookmarksList"></div>
+  </section>
+
+  <!-- DÜELLO: ARKADAŞ SEÇ -->
+  <section class="screen" id="screen-duel-pick-friend">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnDuelPickFriendBack">‹</button>
+      <span class="cal-title">⚔️ Rakip Seç</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-bottom:14px;">Düello için bir arkadaşını seç, sana davet gönderecek.</div>
+    <div id="duelFriendPickerList"></div>
+  </section>
+
+  <!-- MARKET (puan ile joker satın alma) -->
+  <section class="screen" id="screen-quiz-market">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnQuizMarketBack">‹</button>
+      <span class="cal-title">🎟️ Market</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card" style="text-align:center; padding:18px; margin-bottom:16px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff;">
+      <div style="font-size:12px; opacity:0.85; font-weight:700;">Mevcut Puanın</div>
+      <div style="font-size:28px; font-weight:800;" id="marketCurrentScore">0 pn</div>
+    </div>
+    <div class="section-title" style="margin-top:0;">Satın Alınabilecekler</div>
+    <div class="card" style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+      <div style="width:48px;height:48px;border-radius:16px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🃏</div>
+      <div style="flex:1;">
+        <div style="font-weight:800; font-size:14.5px;">+1 Ekstra 50/50 Joker</div>
+        <div class="hint" style="margin:2px 0 0;">Sadece bugün için geçerlidir</div>
+      </div>
+      <button id="btnBuyJoker" class="submit-btn secondary" style="padding:9px 14px; font-size:12.5px; white-space:nowrap;">20 pn</button>
+    </div>
+    <div class="hint" style="text-align:center; margin-top:8px;">Puanların, doğru cevapladığın sorulardan kazandığın puanlardır. Market'ten harcadığın puan toplam puanından düşer.</div>
+  </section>
+
+  <!-- GÜNLÜK GÖREVLER -->
+  <section class="screen" id="screen-daily-quests">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnDailyQuestsBack">‹</button>
+      <span class="cal-title">🎯 Günlük Görevler</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-bottom:14px;">Her gün gece yarısı sıfırlanır. Görevleri tamamlayıp puan kazan!</div>
+    <div id="dailyQuestsList"></div>
   </section>
 
   <!-- DÜELLO KURULUM MODALI -->
@@ -1004,7 +1053,7 @@
         <p class="hint">Profil sayfasındaki "✏️ Profili Düzenle" butonuna dokun. Orada fotoğrafını, adını, kullanıcı adını (en fazla 16 karakter, 1 kez değiştirme hakkın var), mesleğini ve şehrini güncelleyebilir, ayrıca şifreni değiştirebilirsin. Profilinde ayrıca "Çalıştığım Yerler" (kayıtlarından otomatik derlenir) ve "Belgelerim" (ehliyet, sertifika gibi belgelerini saklayabileceğin) bölümleri var.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Kıdem rütbem ne anlama geliyor?</summary>
-        <p class="hint">Üyelik süren arttıkça profilinde bir kıdem rozeti (🌱, 🔨 gibi) belirir. Profil sayfasında rozetine dokunursan, o rütbenin kaç günlük üyeliğe karşılık geldiğini gösteren küçük bir açıklama çıkar.</p>
+        <p class="hint">Üyelik süren arttıkça profilinde bir kıdem rozeti (🌱, 🔨 gibi) belirir — bu, puan rütbesinden farklı, sadece hesabının yaşına bağlı ayrı bir rozettir. Profil sayfasında rozetine dokunursan, o rütbenin kaç günlük üyeliğe karşılık geldiğini gösteren küçük bir açıklama çıkar. Tüm kademeleri Profil → Rütbeler sayfasından görebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Arama nasıl çalışır?</summary>
         <p class="hint">Alt menüdeki büyüteç ikonuna dokunup tarih, not, işveren adı veya tutar yazarak kendi kayıtların içinde arama yapabilirsin. Aynı kutuya bir meslek adı (örn. "elektrikçi") ya da şehir (örn. "istanbul") yazarsan, o bilgilere sahip diğer kullanıcılar da listelenir — bu arama sadece kullanıcı adı/meslek/şehir bilgisiyle sınırlıdır, kimsenin para bilgisi asla görünmez.</p>
@@ -1015,17 +1064,29 @@
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Verilerim güvende mi, kim görebilir?</summary>
         <p class="hint">Kayıtların (yevmiye, avans, alacak, notlar) sadece senin hesabınla ilişkilendirilir ve yalnızca sen görebilirsin. Diğer kullanıcılar arama yaptığında sadece kullanıcı adını, mesleğini ve şehrini görebilir — asla kazancını, kayıtlarını ya da e-postanı göremezler. Bu kuralın tek istisnası, teknik ve hesap desteği sağlayan yöneticiler/moderatörlerdir.</p>
       </details>
-      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Takip sistemi nasıl çalışır?</summary>
-        <p class="hint">Bir kullanıcının profilinde 🤝 "Arkadaş Ekle" butonuna dokunarak arkadaşlık isteği gönderebilirsin, karşı taraf onaylayınca arkadaş olursunuz. Ayarlar'dan arkadaş listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Arkadaşlık sistemi nasıl çalışır?</summary>
+        <p class="hint">Bir kullanıcının profilinde 🤝 "Arkadaş Ekle" butonuna dokunarak arkadaşlık isteği gönderebilirsin, karşı taraf onaylayınca arkadaş olursunuz. Header'daki 🤝 ikonuna dokunarak hem arkadaş listeni hem bekleyen istekleri görebilir, istekleri buradan kabul/reddedebilirsin. Ayarlar'dan arkadaş listeni "Herkes", "Sadece Ben" veya "Hiç Kimse" görebilecek şekilde ayarlayabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Mesajlaşma nasıl çalışır?</summary>
-        <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece takipçilerine açabilirsin.</p>
+        <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece arkadaşlarına açabilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">🧠 Soru Çöz nasıl çalışır?</summary>
+        <p class="hint">Üst menüdeki profil ikonundan veya Ana Sayfa'daki "🏆 Sıralama" kartından "Soru Çöz"e girebilirsin. Genel Kültür veya İslami Bilgiler kategorilerinden birini seç, her testte 10 soru çözersin. Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır (toplam puanın hiçbir zaman −50'nin altına düşmez). Her soruda bir kez, günde toplam 3 kez kullanabileceğin 50/50 joker hakkın vardır — iki yanlış şıkkı eler. Beğendiğin soruları ☆ ikonuyla kaydedip "Kayıtlı Sorularım"dan tekrar bulabilir, 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Puan rütbem ne anlama geliyor?</summary>
+        <p class="hint">Soru Çöz'de kazandığın toplam puana göre 🔰 Çırak'tan başlayıp 🌌 Hezarfen'e kadar yükselen ayrı bir rütbe sistemi vardır. Bu rozet, en az 5 soru çözdükten sonra profilinde ve kullanıcı listelerinde görünmeye başlar; profilindeki ilerleme çubuğundan bir sonraki rütbeye kaç puan kaldığını görebilirsin. Tüm rütbe kademelerinin tam listesini Profil → Rütbeler → "🧠 Puan Rütbeleri" sekmesinden görebilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">⚔️ Düello nasıl çalışır?</summary>
+        <p class="hint">Soru Çöz ekranındaki "⚔️ Arkadaşınla Düello Yap" butonuna dokun, bir arkadaşını seç, soru sayısını (10-30) ve soru başına süreyi (15-25 sn) belirleyip daveti gönder. Arkadaşın daveti kabul ettiğinde ikiniz de aynı soru setini kendi hızınızda cevaplarsınız; canlı skor karşılıklı görünür. Test bitince kazanan taraf konfeti animasyonuyla kutlanır. Düello odasındaki 🎤 ikonuyla rakibini sesli arayabilirsin.</p>
+      </details>
+      <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">🎯 Günlük Görevler ve 🎟️ Market nedir?</summary>
+        <p class="hint">Soru Çöz ekranındaki "Günlük Görevler" butonundan, her gün sıfırlanan küçük hedefleri (belirli sayıda soru çözmek, joker kullanmak gibi) tamamlayıp ekstra puan kazanabilirsin. "Market" bölümünden ise biriktirdiğin puanı harcayarak o günlük ekstra 50/50 joker hakkı satın alabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Bildirimler ne zaman gelir?</summary>
-        <p class="hint">Biri seni takip ettiğinde, sana mesaj yazdığında veya yöneticiden bir duyuru geldiğinde 🔔 zil ikonuna bildirim düşer. İzin verirsen bunlar uygulama açık/arka planda çalışırken telefonuna sistem bildirimi olarak da gelir; günlük yevmiye hatırlatıcısının saatini Ayarlar'dan seçebilirsin.</p>
+        <p class="hint">Biri sana arkadaşlık isteği gönderdiğinde, mesaj yazdığında, düelloya davet ettiğinde veya yöneticiden bir duyuru geldiğinde 🔔 zil ikonuna bildirim düşer. İzin verirsen bunlar uygulama açık/arka planda çalışırken telefonuna sistem bildirimi olarak da gelir; günlük yevmiye hatırlatıcısının saatini Ayarlar'dan seçebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Yönetici ve moderatör rozetleri ne anlama gelir?</summary>
-        <p class="hint">Bazı profillerde "👑 Yönetici" ya da "🛡️ Moderatör" rozetleri görebilirsin — bunlar uygulamayı yöneten, destek sağlayan yetkili hesaplardır. Bu hesapların kendi belirledikleri unvan/rütbeleri de rozetin yanında görünür.</p>
+        <p class="hint">Bazı profillerde "👑 Yönetici" ya da "🛡️ Moderatör" rozetleri görebilirsin — bunlar uygulamayı yöneten, destek sağlayan yetkili hesaplardır. Bu hesaplar hiçbir kullanıcı tarafından engellenemez. Kendi belirledikleri unvan/rütbeleri de rozetin yanında görünür; yanlarında ayrıca puan rütbeleri de gösterilir.</p>
       </details>
       <details style="margin-bottom:0;"><summary style="font-weight:700; cursor:pointer;">Hesabımı nasıl silerim?</summary>
         <p class="hint">Profil sayfası → Güvenlik bölümü → "Hesabı Sil" butonuna dokun. Hesabın hemen silinmez — 30 gün "silinmeyi bekliyor" durumunda kalır, bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur.</p>
@@ -1047,12 +1108,13 @@
       <p class="hint" style="margin-top:0;">Son güncelleme: Ağustos 2026</p>
       <p><strong>1. Topladığımız Veriler</strong><br>Hesabını oluştururken e-posta adresin, ad-soyadın, kullanıcı adın, mesleğin ve şehrin alınır. Uygulamayı kullanırken girdiğin yevmiye, avans, alacak, ödeme kayıtları ve notlar hesabınla ilişkilendirilerek saklanır.</p>
       <p><strong>2. Verilerin Saklanması</strong><br>Tüm veriler Firebase (Google Cloud) sunucularında, endüstri standardı güvenlik önlemleriyle saklanır. Verilerine yalnızca kendi hesabınla giriş yaptığında erişebilirsin; başka kullanıcılar göremez. Uygulama yöneticileri ve yetkili moderatörler, hesap güvenliği ve topluluk kurallarının uygulanması amacıyla sınırlı bilgilere erişebilir.</p>
-      <p><strong>3. Mesajlaşma ve Medya</strong><br>Gönderdiğin fotoğraf ve sesli mesajlar sadece ilgili sohbetin tarafları arasında görünür ve 5 gün sonra otomatik olarak silinir.</p>
-      <p><strong>4. Veri Paylaşımı</strong><br>Verilerin hiçbir şekilde üçüncü taraflarla paylaşılmaz, satılmaz veya reklam amacıyla kullanılmaz.</p>
-      <p><strong>5. Haklarının</strong><br>Hesabını Profil sayfasından silme talebinde bulunabilirsin — hesabın hemen silinmez, 30 gün "silinmeyi bekliyor" durumunda kalır; bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur. Aynı şekilde hesabını geçici olarak duraklatabilir, istediğin an tekrar giriş yaparak aktif hale getirebilirsin.</p>
-      <p><strong>6. Yönetici Erişimi</strong><br>Yetkili adminler/moderatörler, hesap güvenliği amacıyla IP adresin ve giriş geçmişin gibi bazı teknik bilgilere erişebilir — bu erişim ayrı, sınırlı yetkilerle kontrol edilir ve sadece kötüye kullanım/güvenlik araştırması amacıyla kullanılır.</p>
-      <p><strong>7. Uyarı Sistemi</strong><br>Topluluk kurallarını ihlal eden davranışlarda yetkili ekip, hesabına süreli bir uyarı verebilir. Uyarı süresi boyunca mesaj gönderme, yeni sohbet başlatma ve takip etme gibi bazı sosyal özellikler kısıtlanır; uyarı sebebini ve bitiş tarihini profilinden görebilirsin.</p>
-      <p><strong>8. İletişim</strong><br>Gizlilikle ilgili sorularını uygulama içindeki Yardım sayfasından veya "Öneri Gönder" ile iletebilirsin.</p>
+      <p><strong>3. Mesajlaşma ve Medya</strong><br>Gönderdiğin fotoğraf ve sesli mesajlar sadece ilgili sohbetin tarafları arasında görünür ve 5 gün sonra otomatik olarak silinir. Düello odasındaki sesli aramalar kaydedilmez, sadece iki taraf arasında anlık olarak iletilir.</p>
+      <p><strong>4. Soru Çöz ve Sosyal Veriler</strong><br>Soru Çöz'de kazandığın toplam puan ve rütben, profilinde herkese açık şekilde görünür. Hangi soruları doğru/yanlış cevapladığın ise sadece sana özeldir, başkaları göremez. Arkadaşlık isteklerin ve düello davetlerin yalnızca ilgili iki kullanıcı arasında görünür.</p>
+      <p><strong>5. Veri Paylaşımı</strong><br>Verilerin hiçbir şekilde üçüncü taraflarla paylaşılmaz, satılmaz veya reklam amacıyla kullanılmaz.</p>
+      <p><strong>6. Haklarının</strong><br>Hesabını Profil sayfasından silme talebinde bulunabilirsin — hesabın hemen silinmez, 30 gün "silinmeyi bekliyor" durumunda kalır; bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur. Aynı şekilde hesabını geçici olarak duraklatabilir, istediğin an tekrar giriş yaparak aktif hale getirebilirsin.</p>
+      <p><strong>7. Yönetici Erişimi</strong><br>Yetkili adminler/moderatörler, hesap güvenliği amacıyla IP adresin ve giriş geçmişin gibi bazı teknik bilgilere erişebilir — bu erişim ayrı, sınırlı yetkilerle kontrol edilir ve sadece kötüye kullanım/güvenlik araştırması amacıyla kullanılır.</p>
+      <p><strong>8. Uyarı Sistemi</strong><br>Topluluk kurallarını ihlal eden davranışlarda yetkili ekip, hesabına süreli bir uyarı verebilir. Uyarı süresi boyunca mesaj gönderme, yeni sohbet başlatma, arkadaşlık isteği gönderme ve düello davet etme gibi bazı sosyal özellikler kısıtlanır; uyarı sebebini ve bitiş tarihini profilinden görebilirsin.</p>
+      <p><strong>9. İletişim</strong><br>Gizlilikle ilgili sorularını uygulama içindeki Yardım sayfasından veya "Öneri Gönder" ile iletebilirsin.</p>
     </div>
   </section>
 
@@ -1068,10 +1130,11 @@
       <p><strong>1. Uygulamanın Amacı</strong><br>Şantiye Defteri, kişisel yevmiye, avans, alacak ve ödeme takibi yapmana yardımcı olan bir araçtır. Resmi bir muhasebe veya hukuki belge niteliği taşımaz.</p>
       <p><strong>2. Kullanıcı Sorumluluğu</strong><br>Girdiğin bilgilerin doğruluğundan sen sorumlusun. Uygulama, kayıtlarının doğruluğunu garanti etmez.</p>
       <p><strong>3. Hesap Güvenliği</strong><br>Şifreni kimseyle paylaşmamalısın. Hesabından yapılan tüm işlemlerden sen sorumlusun.</p>
-      <p><strong>4. Topluluk Kuralları</strong><br>Mesajlaşma özelliğini kullanırken diğer kullanıcılara karşı saygılı olman beklenir. Taciz, hakaret veya sahte hesap oluşturma gibi davranışlar; süreli bir uyarıya, hesabının devre dışı bırakılmasına veya kalıcı olarak silinmesine yol açabilir. Uyarı aldığında mesaj gönderme, yeni sohbet başlatma ve takip etme gibi bazı özellikler geçici olarak kısıtlanır. Şikayetler yetkili ekip tarafından incelenir ve sonucu sana bildirim olarak iletilir.</p>
-      <p><strong>5. Hesap Silme ve Duraklatma</strong><br>Hesabını silmek istediğinde, hesabın hemen değil 30 günlük bir bekleme süresinin ardından silinir; bu süre içinde giriş yaparsan işlem iptal olur. Hesabını geçici olarak duraklatabilir, istediğin an geri getirebilirsin.</p>
-      <p><strong>6. Garanti Reddi</strong><br>Uygulama herhangi bir garanti vermeksizin "olduğu gibi" sunulur. Veri kaybı, kesinti veya teknik sorunlardan doğabilecek zararlardan sorumluluk kabul edilmez.</p>
-      <p><strong>7. Değişiklikler</strong><br>Bu koşullar zaman zaman güncellenebilir. Önemli değişiklikler uygulama içinde duyurulur.</p>
+      <p><strong>4. Topluluk Kuralları</strong><br>Mesajlaşma, arkadaşlık ve düello özelliklerini kullanırken diğer kullanıcılara karşı saygılı olman beklenir. Taciz, hakaret veya sahte hesap oluşturma gibi davranışlar; süreli bir uyarıya, hesabının devre dışı bırakılmasına veya kalıcı olarak silinmesine yol açabilir. Uyarı aldığında mesaj gönderme, yeni sohbet başlatma, arkadaşlık isteği gönderme ve düello davet etme gibi bazı özellikler geçici olarak kısıtlanır. Şikayetler yetkili ekip tarafından incelenir ve sonucu sana bildirim olarak iletilir.</p>
+      <p><strong>5. Soru Çöz, Puan ve Düello Özellikleri</strong><br>Soru Çöz bölümündeki puanlar, rütbeler ve düello sonuçları eğlence amaçlıdır; parasal bir karşılığı yoktur ve gerçek para ile satın alınamaz/nakite çevrilemez. Market üzerinden yapılan "joker satın alma" işlemleri yalnızca uygulama içi puanınla gerçekleşir. Adil kullanım kapsamında olmayan (bot kullanımı, hile, çoklu hesapla puan biriktirme gibi) davranışlar tespit edilirse puan/rütbe sıfırlanabilir veya hesap kısıtlanabilir.</p>
+      <p><strong>6. Hesap Silme ve Duraklatma</strong><br>Hesabını silmek istediğinde, hesabın hemen değil 30 günlük bir bekleme süresinin ardından silinir; bu süre içinde giriş yaparsan işlem iptal olur. Hesabını geçici olarak duraklatabilir, istediğin an geri getirebilirsin.</p>
+      <p><strong>7. Garanti Reddi</strong><br>Uygulama herhangi bir garanti vermeksizin "olduğu gibi" sunulur. Veri kaybı, kesinti veya teknik sorunlardan doğabilecek zararlardan sorumluluk kabul edilmez.</p>
+      <p><strong>8. Değişiklikler</strong><br>Bu koşullar zaman zaman güncellenebilir. Önemli değişiklikler uygulama içinde duyurulur.</p>
     </div>
   </section>
 
@@ -1092,8 +1155,18 @@
       <span class="cal-title">Rütbeler</span>
       <span style="width:36px;"></span>
     </div>
-    <div class="hint" style="margin-top:0; margin-bottom:16px;">Uygulamayı ne kadar süredir kullandığına göre otomatik olarak bir rütbe kazanırsın. Profilinde ve mesajlarda görünür.</div>
-    <div id="ranksInfoList"></div>
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="msg-tab active" id="ranksTabTenure" style="flex:1; border:none; background:var(--paper); padding:12px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">🏅 Kıdem Rütbeleri</button>
+      <button class="msg-tab" id="ranksTabQuiz" style="flex:1; border:none; background:var(--paper); padding:12px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">🧠 Puan Rütbeleri</button>
+    </div>
+    <div id="ranksInfoTenurePanel">
+      <div class="hint" style="margin-top:0; margin-bottom:16px;">Uygulamayı ne kadar süredir kullandığına göre otomatik olarak bir rütbe kazanırsın. Profilinde ve mesajlarda görünür. Yönetici/moderatör hesaplarında bu rozet yerine yetki rozeti (👑/🛡️) gösterilir.</div>
+      <div id="ranksInfoList"></div>
+    </div>
+    <div id="ranksInfoQuizPanel" style="display:none;">
+      <div class="hint" style="margin-top:0; margin-bottom:16px;">🧠 Soru Çöz bölümünde kazandığın puana göre yükselen ayrı bir rütbe sistemi. Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır (taban −50). Bu rozet, en az 5 soru çözdükten sonra görünmeye başlar.</div>
+      <div id="ranksInfoQuizList"></div>
+    </div>
   </section>
 
   <!-- ÖNERİ GÖNDER -->
@@ -8373,7 +8446,31 @@ function openRanksInfoPage(){
       <div><div style="font-weight:800; font-size:14px;">${escapeHtml(r.name)}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${range} üyelik</div></div>
     </div>`;
   }).join('');
+  renderRanksInfoQuizList();
 }
+function renderRanksInfoQuizList(){
+  const box = document.getElementById('ranksInfoQuizList');
+  if(!box) return;
+  box.innerHTML = QUIZ_RANKS.map(r=>{
+    const range = r.max==null ? `${r.min}+ puan` : `${r.min}–${r.max} puan`;
+    return `<div class="card quiz-rank-badge-glow" style="--rank-aura-color:${r.aura}; display:flex; align-items:center; gap:14px; padding:14px; margin-bottom:10px;">
+      <div style="width:46px;height:46px;border-radius:14px; background:${r.aura}22; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${r.icon}</div>
+      <div><div style="font-weight:800; font-size:14px;">${escapeHtml(r.name)}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${range}</div></div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('ranksTabTenure').addEventListener('click', ()=>{
+  document.getElementById('ranksTabTenure').classList.add('active');
+  document.getElementById('ranksTabQuiz').classList.remove('active');
+  document.getElementById('ranksInfoTenurePanel').style.display = 'block';
+  document.getElementById('ranksInfoQuizPanel').style.display = 'none';
+});
+document.getElementById('ranksTabQuiz').addEventListener('click', ()=>{
+  document.getElementById('ranksTabQuiz').classList.add('active');
+  document.getElementById('ranksTabTenure').classList.remove('active');
+  document.getElementById('ranksInfoQuizPanel').style.display = 'block';
+  document.getElementById('ranksInfoTenurePanel').style.display = 'none';
+});
 document.getElementById('btnBackFromRanksInfo').addEventListener('click', ()=>{
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+privacyReturnScreen).classList.add('active');
@@ -9075,14 +9172,134 @@ async function markQuestionsSeen(ids){
   catch(e){ console.error('Görülen sorular kaydedilemedi', e); }
 }
 
+// ---------- GÜNLÜK GÖREVLER ----------
+const DAILY_QUESTS_DEF = [
+  { id:'total5', label:'Bugün 5 soru çöz', icon:'🧠', target:5, field:'totalAnswered', reward:15 },
+  { id:'genel3', label:'Genel Kültür\'den 3 soru çöz', icon:'🌍', target:3, field:'genelAnswered', reward:10 },
+  { id:'islami3', label:'İslami Bilgiler\'den 3 soru çöz', icon:'🕌', target:3, field:'islamiAnswered', reward:10 },
+  { id:'joker1', label:'1 kez 50/50 joker kullan', icon:'🃏', target:1, field:'jokerUsed', reward:10 },
+];
+async function getDailyQuestData(){
+  if(!userDocRef) return { date: todayStr(), totalAnswered:0, genelAnswered:0, islamiAnswered:0, jokerUsed:0, claimed:[] };
+  try{
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    const today = todayStr();
+    if(data.dailyQuestData && data.dailyQuestData.date === today) return data.dailyQuestData;
+    return { date: today, totalAnswered:0, genelAnswered:0, islamiAnswered:0, jokerUsed:0, claimed:[] };
+  }catch(e){ return { date: todayStr(), totalAnswered:0, genelAnswered:0, islamiAnswered:0, jokerUsed:0, claimed:[] }; }
+}
+async function updateDailyQuestProgress({ category, jokerUsed }){
+  if(!userDocRef) return;
+  try{
+    const data = await getDailyQuestData();
+    data.totalAnswered = (data.totalAnswered||0) + (category ? 1 : 0);
+    if(category === 'genel_kultur') data.genelAnswered = (data.genelAnswered||0) + 1;
+    if(category === 'islami') data.islamiAnswered = (data.islamiAnswered||0) + 1;
+    if(jokerUsed) data.jokerUsed = (data.jokerUsed||0) + 1;
+    await userDocRef.set({ dailyQuestData: data }, {merge:true});
+    refreshDailyQuestBadge();
+  }catch(e){ console.error('Görev ilerlemesi kaydedilemedi', e); }
+}
+async function refreshDailyQuestBadge(){
+  const badge = document.getElementById('dailyQuestBadge');
+  if(!badge) return;
+  const data = await getDailyQuestData();
+  const claimable = DAILY_QUESTS_DEF.filter(q => (data[q.field]||0) >= q.target && !(data.claimed||[]).includes(q.id)).length;
+  if(claimable > 0){ badge.style.display = 'block'; badge.textContent = claimable; }
+  else badge.style.display = 'none';
+}
+async function renderDailyQuestsScreen(){
+  const box = document.getElementById('dailyQuestsList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const data = await getDailyQuestData();
+  box.innerHTML = DAILY_QUESTS_DEF.map(q=>{
+    const progress = Math.min(q.target, data[q.field]||0);
+    const pct = Math.round((progress/q.target)*100);
+    const isDone = progress >= q.target;
+    const isClaimed = (data.claimed||[]).includes(q.id);
+    return `<div class="card" style="margin-bottom:12px; padding:14px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <div style="width:40px;height:40px;border-radius:12px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;">${q.icon}</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:13.5px;">${escapeHtml(q.label)}</div>
+          <div class="hint" style="margin:2px 0 0;">${progress}/${q.target} — Ödül: +${q.reward} pn</div>
+        </div>
+      </div>
+      <div style="height:7px; border-radius:4px; background:var(--concrete); overflow:hidden; margin-bottom:${isDone?'10px':'0'};">
+        <div style="height:100%; width:${pct}%; background:${isDone?'#16A34A':'var(--asphalt)'}; border-radius:4px;"></div>
+      </div>
+      ${isDone ? (isClaimed
+        ? '<button class="submit-btn secondary" disabled style="opacity:0.6; padding:9px; font-size:12.5px;">✓ Ödül Alındı</button>'
+        : `<button class="submit-btn" data-claim-quest="${q.id}" data-reward="${q.reward}" style="padding:9px; font-size:12.5px; background:#16A34A;">🎁 Ödülü Al (+${q.reward} pn)</button>`)
+        : ''}
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-claim-quest]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const questId = btn.dataset.claimQuest;
+      const reward = parseInt(btn.dataset.reward, 10);
+      btn.disabled = true; btn.textContent = 'İşleniyor…';
+      try{
+        const data = await getDailyQuestData();
+        if((data.claimed||[]).includes(questId)) return;
+        data.claimed = [...(data.claimed||[]), questId];
+        await userDocRef.set({ dailyQuestData: data }, {merge:true});
+        await applyQuizPoints(reward, 'gorev_odulu');
+        showToast('+' + reward + ' puan kazandın! 🎉');
+        renderDailyQuestsScreen();
+        refreshDailyQuestBadge();
+      }catch(e){ showToast('Ödül alınamadı'); }
+    });
+  });
+}
+document.getElementById('btnQuizGoDailyQuests').addEventListener('click', ()=>{
+  switchScreen('daily-quests');
+  renderDailyQuestsScreen();
+});
+document.getElementById('btnDailyQuestsBack').addEventListener('click', ()=> switchScreen('quiz'));
+
+// ---------- MARKET (puan ile joker satın alma) ----------
+const JOKER_PURCHASE_COST = 20;
+document.getElementById('btnQuizGoMarket').addEventListener('click', async ()=>{
+  switchScreen('quiz-market');
+  const p = profileByUid(currentUser.uid);
+  const score = p ? (p.quizScore||0) : 0;
+  document.getElementById('marketCurrentScore').textContent = score + ' pn';
+  const buyBtn = document.getElementById('btnBuyJoker');
+  buyBtn.disabled = score < JOKER_PURCHASE_COST;
+  buyBtn.style.opacity = score < JOKER_PURCHASE_COST ? '0.5' : '1';
+});
+document.getElementById('btnQuizMarketBack').addEventListener('click', ()=> switchScreen('quiz'));
+document.getElementById('btnBuyJoker').addEventListener('click', async ()=>{
+  const p = profileByUid(currentUser.uid);
+  const score = p ? (p.quizScore||0) : 0;
+  if(score < JOKER_PURCHASE_COST){ showToast('Yeterli puanın yok'); return; }
+  try{
+    await applyQuizPoints(-JOKER_PURCHASE_COST, 'market_satinalma');
+    const today = todayStr();
+    const doc = await userDocRef.get();
+    const data = doc.data() || {};
+    const curBonus = (data.quizJokerBonusDate === today) ? (data.quizJokerBonusCount||0) : 0;
+    await userDocRef.set({ quizJokerBonusDate: today, quizJokerBonusCount: curBonus + 1 }, {merge:true});
+    showToast('🃏 +1 Joker satın alındı!');
+    quizJokersRemainingToday = await getJokersRemainingToday();
+    const jokerCountEl = document.getElementById('quizJokerCount');
+    if(jokerCountEl) jokerCountEl.textContent = quizJokersRemainingToday;
+    document.getElementById('btnQuizGoMarket').click();
+  }catch(e){ showToast('Satın alınamadı: '+(e.message||'')); }
+});
+
 async function getJokersRemainingToday(){
   if(!userDocRef) return QUIZ_JOKERS_PER_DAY;
   try{
     const doc = await userDocRef.get();
     const data = doc.data() || {};
     const today = todayStr();
-    if(data.quizJokerDate === today) return Math.max(0, QUIZ_JOKERS_PER_DAY - (data.quizJokerUsedCount||0));
-    return QUIZ_JOKERS_PER_DAY;
+    const bonusToday = (data.quizJokerBonusDate === today) ? (data.quizJokerBonusCount||0) : 0;
+    const totalAllowed = QUIZ_JOKERS_PER_DAY + bonusToday;
+    if(data.quizJokerDate === today) return Math.max(0, totalAllowed - (data.quizJokerUsedCount||0));
+    return totalAllowed;
   }catch(e){ return QUIZ_JOKERS_PER_DAY; }
 }
 async function useJokerToday(){
@@ -9103,6 +9320,7 @@ function quizResetToCategory(){
   document.getElementById('quizResultStep').style.display = 'none';
   document.getElementById('quizCategoryStep').style.display = 'block';
   loadQuizQuestions();
+  refreshDailyQuestBadge();
 }
 document.getElementById('btnGoToQuiz').addEventListener('click', ()=>{ quizResetToCategory(); switchScreen('quiz'); });
 document.getElementById('btnQuizGoBookmarks').addEventListener('click', ()=>{
@@ -9241,6 +9459,7 @@ document.getElementById('btnQuizJoker').addEventListener('click', async ()=>{
   document.getElementById('quizJokerCount').textContent = quizJokersRemainingToday;
   document.getElementById('btnQuizJoker').style.display = 'none';
   await useJokerToday();
+  updateDailyQuestProgress({ jokerUsed: true });
 });
 
 async function selectQuizAnswer(index){
@@ -9273,6 +9492,7 @@ async function selectQuizAnswer(index){
   document.getElementById('btnQuizUnderstood').style.display = 'block';
 
   applyQuizPoints(points, quizSelectedCategory);
+  updateDailyQuestProgress({ category: quizSelectedCategory });
 }
 document.getElementById('btnQuizUnderstood').addEventListener('click', ()=>{
   document.getElementById('quizExplanationBox').style.display = 'none';
@@ -9281,6 +9501,62 @@ document.getElementById('btnQuizUnderstood').addEventListener('click', ()=>{
   if(quizCurrentIndex < quizSessionQuestions.length) renderQuizQuestion();
   else finishQuizSession();
 });
+
+// ---------- SEVİYE / XP SİSTEMİ ----------
+const XP_PER_LEVEL = 100;
+const MAX_LEVEL = 50;
+function getLevelFromXp(xp){
+  const level = Math.min(MAX_LEVEL, Math.floor((xp||0) / XP_PER_LEVEL) + 1);
+  return level;
+}
+function getLevelTier(level){
+  if(level >= 50) return { color:'#EC4899', name:'Efsane', frame:'linear-gradient(135deg,#EC4899,#F59E0B,#818CF8,#EC4899)' };
+  if(level >= 40) return { color:'#DC2626', name:'Usta', frame:'linear-gradient(135deg,#DC2626,#F87171)' };
+  if(level >= 30) return { color:'#F59E0B', name:'Altın', frame:'linear-gradient(135deg,#F59E0B,#FBBF24)' };
+  if(level >= 20) return { color:'#8B5CF6', name:'Mor', frame:'linear-gradient(135deg,#8B5CF6,#A78BFA)' };
+  if(level >= 10) return { color:'#3B82F6', name:'Mavi', frame:'linear-gradient(135deg,#3B82F6,#60A5FA)' };
+  return { color:'#9CA3AF', name:'Yeni', frame:'linear-gradient(135deg,#9CA3AF,#D1D5DB)' };
+}
+function xpBadgeHtml(xp, extraStyle){
+  const level = getLevelFromXp(xp);
+  const tier = getLevelTier(level);
+  return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:${tier.color}22; color:${tier.color}; ${extraStyle||''}">⭐ Lv.${level}</span>`;
+}
+async function awardXp(amount){
+  if(!currentUser || amount<=0) return;
+  try{
+    const pubRef = db.collection('public_profiles').doc(currentUser.uid);
+    const doc = await pubRef.get();
+    const currentXp = (doc.exists && typeof doc.data().xp === 'number') ? doc.data().xp : 0;
+    const newXp = currentXp + amount;
+    await pubRef.set({ xp: newXp }, {merge:true});
+    const p = profileByUid(currentUser.uid);
+    if(p) p.xp = newXp;
+    return newXp;
+  }catch(e){ console.error('XP kaydedilemedi', e); }
+}
+function renderXpProgressBar(xp, elPrefix){
+  const level = getLevelFromXp(xp||0);
+  const tier = getLevelTier(level);
+  const labelEl = document.getElementById(elPrefix+'Label');
+  const barEl = document.getElementById(elPrefix+'Bar');
+  const pctEl = document.getElementById(elPrefix+'Pct');
+  const hintEl = document.getElementById(elPrefix+'Hint');
+  if(!labelEl) return;
+  labelEl.textContent = '⭐ Seviye ' + level + ' — ' + tier.name;
+  if(level >= MAX_LEVEL){
+    pctEl.textContent = 'MAX';
+    barEl.style.width = '100%';
+    hintEl.textContent = 'En yüksek seviyeye ulaştın! 🎉';
+  } else {
+    const xpIntoLevel = (xp||0) % XP_PER_LEVEL;
+    const pct = Math.round((xpIntoLevel/XP_PER_LEVEL)*100);
+    pctEl.textContent = pct + '%';
+    barEl.style.width = pct + '%';
+    hintEl.textContent = 'Sonraki Seviye: ' + xpIntoLevel + ' / ' + XP_PER_LEVEL + ' XP';
+  }
+  barEl.style.background = tier.frame;
+}
 
 async function applyQuizPoints(points, category){
   if(!currentUser) return;
@@ -9321,6 +9597,33 @@ let duelLocalIndex = 0;
 let duelLocalScore = 0;
 let duelTimerInterval = null;
 let duelTimeLeft = 0;
+
+document.getElementById('btnQuizGoDuel').addEventListener('click', async ()=>{
+  switchScreen('duel-pick-friend');
+  const box = document.getElementById('duelFriendPickerList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const friendUids = await getFriendUids(currentUser.uid);
+  if(friendUids.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">🤝</div><div class="msg">Düello yapabilmek için önce bir arkadaş eklemen lazım. Bir kullanıcının profiline gidip "Arkadaş Ekle" ile davet gönderebilirsin.</div></div>';
+    return;
+  }
+  box.innerHTML = friendUids.map(uid=>{
+    const p = profileByUid(uid);
+    const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    return `<div class="toggle-row" data-duel-pick-uid="${escapeHtml(uid)}" style="cursor:pointer;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; overflow:hidden; flex-shrink:0;">${inner}</div>
+        <div class="tlbl">${escapeHtml(name)}</div>
+      </div>
+      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-duel-pick-uid]').forEach(row=>{
+    row.addEventListener('click', ()=> openDuelSetup(row.dataset.duelPickUid));
+  });
+});
+document.getElementById('btnDuelPickFriendBack').addEventListener('click', ()=> switchScreen('quiz'));
 
 function openDuelSetup(opponentUid){
   duelSetupOpponentUid = opponentUid;
