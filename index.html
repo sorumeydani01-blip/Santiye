@@ -170,7 +170,6 @@
         <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
           <button id="btnHeaderMenuProfile" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
           <button id="btnHeaderMenuQuiz" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
-          <button id="btnHeaderMenuAyetler" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">📖 Ayetler</button>
           <button id="btnHeaderMenuSettings" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
         </div>
       </div>
@@ -476,7 +475,7 @@
   <section class="screen" id="screen-quiz">
     <div id="quizCategoryStep">
       <div class="section-title" style="margin-top:0;">🧠 Soru Çöz, Puan Kazan</div>
-      <div class="hint" style="margin-bottom:14px;">Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır. Her soruda bir kez 50/50 joker hakkın var.</div>
+      <div class="hint" style="margin-bottom:14px;">Doğru cevap +10 puan, yanlış cevap −15 puan kazandırır. Her soruda bir kez 50/50 joker hakkın var.</div>
       <div style="display:flex; gap:8px; margin-bottom:10px;">
         <button id="btnQuizGoDailyQuests" class="submit-btn secondary" style="flex:1; padding:11px; font-size:12.5px; position:relative;">🎯 Günlük Görevler<span id="dailyQuestBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px;">0</span></button>
         <button id="btnQuizGoMarket" class="submit-btn secondary" style="flex:1; padding:11px; font-size:12.5px;">🎟️ Market</button>
@@ -536,13 +535,13 @@
 
     <!-- SORU AÇIKLAMA PENCERESİ -->
     <div id="quizExplanationOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:flex-end; justify-content:center;">
-      <div class="card" style="width:100%; max-width:480px; border-radius:20px 20px 0 0; padding:20px; max-height:75vh; overflow-y:auto;">
+      <div class="card" style="width:100%; max-width:480px; border-radius:20px 20px 0 0; padding:20px; padding-bottom:calc(20px + env(safe-area-inset-bottom)); max-height:80vh; overflow-y:auto;">
         <div id="quizExplanationResultBadge" style="font-weight:800; font-size:15px; margin-bottom:10px;"></div>
         <div id="quizExplanationBox" style="padding:14px 16px; border-radius:14px; background:var(--tint-slate); border:1px solid var(--line);">
           <div style="font-weight:800; font-size:12.5px; color:var(--asphalt); margin-bottom:6px;">📖 Açıklama</div>
           <div id="quizExplanationText" style="font-size:13.5px; line-height:1.5; color:var(--ink);"></div>
         </div>
-        <button id="btnQuizUnderstood" style="width:100%; margin-top:14px; padding:14px; border-radius:14px; border:none; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-weight:800; font-size:14px; cursor:pointer;">✅ Anladım, Devam Et</button>
+        <button id="btnQuizUnderstood" style="width:100%; margin-top:14px; padding:16px; border-radius:14px; border:none; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-weight:800; font-size:15px; cursor:pointer;">✅ Anladım, Devam Et</button>
       </div>
     </div>
 
@@ -611,68 +610,8 @@
     <div id="dailyQuestsList"></div>
   </section>
 
-  <!-- AYETLER (namaz sureleri) LİSTE EKRANI -->
-  <section class="screen" id="screen-ayetler">
-    <div class="cal-nav">
-      <button class="admin-back-btn" id="btnAyetlerBack">‹</button>
-      <span class="cal-title">📖 Ayetler</span>
-      <span style="width:36px;"></span>
-    </div>
-    <div style="position:relative; margin-bottom:12px;">
-      <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.45; font-size:14px; pointer-events:none;">🔍</span>
-      <input type="text" id="ayetlerSearchInput" placeholder="Sure ara... (örn: İhlas)" style="width:100%; padding:13px 14px 13px 40px; border-radius:16px; background:var(--concrete); border:none; font-size:14px; color:var(--ink);">
-    </div>
-    <div style="display:flex; gap:8px; margin-bottom:14px;">
-      <button class="msg-tab active" id="ayetlerTabAll" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">📖 Tüm Sureler</button>
-      <button class="msg-tab" id="ayetlerTabMine" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">⭐ Listem</button>
-      <button class="msg-tab" id="ayetlerTabMemorized" style="flex:1; border:none; background:var(--paper); padding:11px 4px; border-radius:16px; font-weight:800; font-size:13px; cursor:pointer; box-shadow:var(--shadow-sm);">✅ Ezberlediklerim</button>
-    </div>
-    <div class="hint" id="ayetlerHint" style="margin-bottom:12px;">Namazda okunabilecek kısa sureler. Beğendiklerini "Listem"e ekleyip günlük tekrar sayacı tutabilir, ezberlediklerini işaretleyebilirsin.</div>
-    <div id="ayetlerList" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-  </section>
-
-  <!-- AYET DETAY / PRATİK EKRANI -->
-  <section class="screen" id="screen-ayet-detail">
-    <div class="cal-nav">
-      <button class="admin-back-btn" id="btnAyetDetailBack">‹</button>
-      <span class="cal-title" id="ayetDetailTitle">-</span>
-      <span style="width:36px;"></span>
-    </div>
-    <div id="ayetDetailLoading" class="hint">Yükleniyor…</div>
-    <div id="ayetDetailContent" style="display:none;">
-      <div class="card" style="margin-bottom:14px; text-align:center; padding:22px 16px;">
-        <div id="ayetArabicText" dir="rtl" style="font-size:24px; line-height:2.1; font-family:'Amiri','Traditional Arabic',serif; color:var(--ink); margin-bottom:6px;"></div>
-      </div>
-      <div class="card" style="margin-bottom:14px; padding:16px;">
-        <div style="font-weight:800; font-size:11.5px; color:var(--asphalt); margin-bottom:6px;">🗣️ OKUNUŞU</div>
-        <div id="ayetTransliteration" style="font-size:14px; line-height:1.6; color:var(--ink); font-style:italic;"></div>
-      </div>
-      <div class="card" style="margin-bottom:14px; padding:16px;">
-        <div style="font-weight:800; font-size:11.5px; color:var(--asphalt); margin-bottom:6px;">🇹🇷 TÜRKÇE MEALİ</div>
-        <div id="ayetMeal" style="font-size:14px; line-height:1.6; color:var(--ink);"></div>
-      </div>
-      <button id="btnAyetPlayAudio" class="submit-btn secondary" style="margin-bottom:10px;">🔊 Hafız Sesiyle Dinle</button>
-      <div id="ayetAudioError" class="hint" style="display:none; color:var(--danger); text-align:center;"></div>
-
-      <div class="card" style="padding:16px; margin-top:6px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-          <div style="font-weight:800; font-size:13px;">Bugünkü Tekrar</div>
-          <div style="font-weight:800; font-size:15px; color:var(--asphalt);"><span id="ayetTodayCount">0</span> / <span id="ayetDailyGoal">25</span></div>
-        </div>
-        <div style="height:8px; border-radius:5px; background:var(--concrete); overflow:hidden; margin-bottom:12px;">
-          <div id="ayetProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,var(--asphalt),var(--asphalt-2)); border-radius:5px; transition:width .3s ease;"></div>
-        </div>
-        <button id="btnAyetReadPlusOne" class="submit-btn" style="margin-bottom:10px;">✋ Okudum (+1)</button>
-        <label class="toggle-row" style="padding:8px 0;">
-          <div class="tlbl">✅ Bu sureyi ezberledim</div>
-          <label class="switch"><input type="checkbox" id="ayetMemorizedToggle"><span class="slider"></span></label>
-        </label>
-        <button id="btnAyetAddToList" class="submit-btn secondary" style="margin-top:6px;">⭐ Listeme Ekle</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- DÜELLO KURULUM MODALI -->
+<!-- AYET DETAY / PRATİK EKRANI -->
+<!-- DÜELLO KURULUM MODALI -->
   <!-- SORU BİLDİRME MODALI -->
   <div id="quizReportOverlay" style="display:none; position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     <div class="card" style="width:88%; max-width:360px; padding:20px;">
@@ -688,6 +627,13 @@
     <div class="card" style="width:88%; max-width:360px; padding:20px;">
       <div style="font-weight:800; font-size:16px; margin-bottom:4px;">⚔️ Düello Davet Et</div>
       <div class="hint" style="margin:0 0 14px;" id="duelSetupOpponentName">-</div>
+      <div class="field">
+        <label>Kategori</label>
+        <select id="duelSetupCategory">
+          <option value="genel_kultur">🌍 Genel Kültür</option>
+          <option value="islami">🕌 İslami Bilgiler</option>
+        </select>
+      </div>
       <div class="field">
         <label>Kaç Soru?</label>
         <select id="duelSetupQuestionCount">
@@ -716,7 +662,7 @@
     <div class="cal-nav">
       <button class="admin-back-btn" id="btnDuelBack">‹</button>
       <span class="cal-title">⚔️ Düello</span>
-      <button id="btnDuelVoice" style="width:36px;height:36px; border-radius:50%; border:none; background:var(--concrete); font-size:16px; cursor:pointer;">🎤</button>
+      <button id="btnDuelSpeak" title="Soruyu sesli oku" style="width:36px;height:36px; border-radius:50%; border:none; background:var(--concrete); font-size:16px; cursor:pointer;">🔊</button>
     </div>
 
     <!-- Bekleme durumu -->
@@ -930,11 +876,6 @@
     <div class="section-title">🤝 Arkadaşlarım <span id="ownFriendReqBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span> <button class="see-all-btn" id="ownSeeAllFriends">Tümünü Gör</button></div>
     <div class="card">
       <div id="ownFriendAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"><div class="hint" style="margin:0;">Henüz arkadaşın yok.</div></div>
-    </div>
-
-    <div class="section-title">📖 Ezberlediğim Ayetler</div>
-    <div class="card" id="ownMemorizedAyetlerCard">
-      <div class="hint" style="margin:0;">Henüz ezberlediğin sure yok.</div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -1157,13 +1098,13 @@
         <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece arkadaşlarına açabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">🧠 Soru Çöz nasıl çalışır?</summary>
-        <p class="hint">Üst menüdeki profil ikonundan veya Ana Sayfa'daki "🏆 Sıralama" kartından "Soru Çöz"e girebilirsin. Genel Kültür veya İslami Bilgiler kategorilerinden birini seç, her testte 10 soru çözersin. Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır (toplam puanın hiçbir zaman −50'nin altına düşmez). Her soruda bir kez, günde toplam 3 kez kullanabileceğin 50/50 joker hakkın vardır — iki yanlış şıkkı eler. Beğendiğin soruları ☆ ikonuyla kaydedip "Kayıtlı Sorularım"dan tekrar bulabilir, 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
+        <p class="hint">Üst menüdeki profil ikonundan veya Ana Sayfa'daki "🏆 Sıralama" kartından "Soru Çöz"e girebilirsin. Genel Kültür veya İslami Bilgiler kategorilerinden birini seç, her testte 10 soru çözersin. Doğru cevap +10 puan, yanlış cevap −15 puan kazandırır (toplam puanın hiçbir zaman −50'nin altına düşmez). Her soruda bir kez, günde toplam 3 kez kullanabileceğin 50/50 joker hakkın vardır — iki yanlış şıkkı eler. Beğendiğin soruları ☆ ikonuyla kaydedip "Kayıtlı Sorularım"dan tekrar bulabilir, 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Puan rütbem ne anlama geliyor?</summary>
         <p class="hint">Soru Çöz'de kazandığın toplam puana göre 🔰 Çırak'tan başlayıp 🌌 Hezarfen'e kadar yükselen ayrı bir rütbe sistemi vardır. Bu rozet, en az 5 soru çözdükten sonra profilinde ve kullanıcı listelerinde görünmeye başlar; profilindeki ilerleme çubuğundan bir sonraki rütbeye kaç puan kaldığını görebilirsin. Tüm rütbe kademelerinin tam listesini Profil → Rütbeler → "🧠 Puan Rütbeleri" sekmesinden görebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">⚔️ Düello nasıl çalışır?</summary>
-        <p class="hint">Soru Çöz ekranındaki "⚔️ Arkadaşınla Düello Yap" butonuna dokun, bir arkadaşını seç, soru sayısını (10-30) ve soru başına süreyi (15-25 sn) belirleyip daveti gönder. Arkadaşın daveti kabul ettiğinde ikiniz de aynı soru setini kendi hızınızda cevaplarsınız; canlı skor karşılıklı görünür. Test bitince kazanan taraf konfeti animasyonuyla kutlanır. Düello odasındaki 🎤 ikonuyla rakibini sesli arayabilirsin.</p>
+        <p class="hint">Soru Çöz ekranındaki "⚔️ Arkadaşınla Düello Yap" butonuna dokun, bir arkadaşını seç, soru sayısını (10-30), süreyi (15-25 sn) ve kategoriyi belirleyip daveti gönder. Arkadaşın daveti kabul ettiğinde ikiniz de aynı soru setini kendi hızınızda cevaplarsınız; canlı skor karşılıklı görünür. Test bitince kazanan taraf konfeti animasyonuyla kutlanır. Düello odasındaki 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">🎯 Günlük Görevler ve 🎟️ Market nedir?</summary>
         <p class="hint">Soru Çöz ekranındaki "Günlük Görevler" butonundan, her gün sıfırlanan küçük hedefleri (belirli sayıda soru çözmek, joker kullanmak gibi) tamamlayıp ekstra puan kazanabilirsin. "Market" bölümünden ise biriktirdiğin puanı harcayarak o günlük ekstra 50/50 joker hakkı satın alabilirsin.</p>
@@ -1194,7 +1135,7 @@
       <p class="hint" style="margin-top:0;">Son güncelleme: Ağustos 2026</p>
       <p><strong>1. Topladığımız Veriler</strong><br>Hesabını oluştururken e-posta adresin, ad-soyadın, kullanıcı adın, mesleğin ve şehrin alınır. Uygulamayı kullanırken girdiğin yevmiye, avans, alacak, ödeme kayıtları ve notlar hesabınla ilişkilendirilerek saklanır.</p>
       <p><strong>2. Verilerin Saklanması</strong><br>Tüm veriler Firebase (Google Cloud) sunucularında, endüstri standardı güvenlik önlemleriyle saklanır. Verilerine yalnızca kendi hesabınla giriş yaptığında erişebilirsin; başka kullanıcılar göremez. Uygulama yöneticileri ve yetkili moderatörler, hesap güvenliği ve topluluk kurallarının uygulanması amacıyla sınırlı bilgilere erişebilir.</p>
-      <p><strong>3. Mesajlaşma ve Medya</strong><br>Gönderdiğin fotoğraf ve sesli mesajlar sadece ilgili sohbetin tarafları arasında görünür ve 5 gün sonra otomatik olarak silinir. Düello odasındaki sesli aramalar kaydedilmez, sadece iki taraf arasında anlık olarak iletilir.</p>
+      <p><strong>3. Mesajlaşma ve Medya</strong><br>Gönderdiğin fotoğraf ve sesli mesajlar sadece ilgili sohbetin tarafları arasında görünür ve 5 gün sonra otomatik olarak silinir.</p>
       <p><strong>4. Soru Çöz ve Sosyal Veriler</strong><br>Soru Çöz'de kazandığın toplam puan ve rütben, profilinde herkese açık şekilde görünür. Hangi soruları doğru/yanlış cevapladığın ise sadece sana özeldir, başkaları göremez. Arkadaşlık isteklerin ve düello davetlerin yalnızca ilgili iki kullanıcı arasında görünür.</p>
       <p><strong>5. Veri Paylaşımı</strong><br>Verilerin hiçbir şekilde üçüncü taraflarla paylaşılmaz, satılmaz veya reklam amacıyla kullanılmaz.</p>
       <p><strong>6. Haklarının</strong><br>Hesabını Profil sayfasından silme talebinde bulunabilirsin — hesabın hemen silinmez, 30 gün "silinmeyi bekliyor" durumunda kalır; bu süre içinde tekrar giriş yaparsan silme otomatik iptal olur. Aynı şekilde hesabını geçici olarak duraklatabilir, istediğin an tekrar giriş yaparak aktif hale getirebilirsin.</p>
@@ -1250,7 +1191,7 @@
       <div id="ranksInfoList"></div>
     </div>
     <div id="ranksInfoQuizPanel" style="display:none;">
-      <div class="hint" style="margin-top:0; margin-bottom:16px;">🧠 Soru Çöz bölümünde kazandığın puana göre yükselen ayrı bir rütbe sistemi. Doğru cevap +5 puan, yanlış cevap −10 puan kazandırır (taban −50). Bu rozet, en az 5 soru çözdükten sonra görünmeye başlar.</div>
+      <div class="hint" style="margin-top:0; margin-bottom:16px;">🧠 Soru Çöz bölümünde kazandığın puana göre yükselen ayrı bir rütbe sistemi. Doğru cevap +10 puan, yanlış cevap −15 puan kazandırır (taban −50). Bu rozet, en az 5 soru çözdükten sonra görünmeye başlar.</div>
       <div id="ranksInfoQuizList"></div>
     </div>
   </section>
@@ -1461,7 +1402,6 @@
           <div class="toggle-row"><div class="tlbl">👷 Meslek Listesi Düzenleme</div><label class="switch"><input type="checkbox" id="vpModEditProfessions"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🧠 Soru Bankası Yönetimi</div><label class="switch"><input type="checkbox" id="vpModManageQuizQuestions"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🚩 Soru Şikayetlerini Yönetme</div><label class="switch"><input type="checkbox" id="vpModManageQuizReports"><span class="slider"></span></label></div>
-          <div class="toggle-row"><div class="tlbl">📖 Ayet Yönetimi</div><label class="switch"><input type="checkbox" id="vpModManageAyetler"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">🌐 IP Engelleme</div><label class="switch"><input type="checkbox" id="vpModBanIp"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">⚠️ Uyarı Verme</div><label class="switch"><input type="checkbox" id="vpModManageWarnings"><span class="slider"></span></label></div>
           <div class="toggle-row"><div class="tlbl">👁️ Gizli Bilgileri Görme</div><label class="switch"><input type="checkbox" id="vpModViewPrivateInfo"><span class="slider"></span></label></div>
@@ -1478,6 +1418,12 @@
 
     <div class="section-title">Kişisel Bilgiler</div>
     <div class="card">
+      <div class="toggle-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🪪</div>
+          <div><div class="tlbl">Ad Soyad</div><div class="tsub" id="vpFullNameInfo">-</div></div>
+        </div>
+      </div>
       <div class="toggle-row">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:34px;height:34px;border-radius:10px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;">🆔</div>
@@ -1500,9 +1446,6 @@
       <div id="vpFollowerAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
       <button class="see-all-btn" id="vpSeeAllFollowers" style="margin-top:10px;">Tüm Arkadaşlar</button>
     </div>
-
-    <div class="section-title" id="vpMemorizedSectionTitle" style="display:none;">📖 Ezberlediği Ayetler</div>
-    <div class="card" id="vpMemorizedAyetlerCard" style="display:none;"></div>
   </section>
 
   <!-- ADMİN PANELİ -->
@@ -1570,11 +1513,7 @@
         <span class="admin-menu-title">🚩 Soru Şikayetleri <span id="adminQuizReportsBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span></span>
         <span class="admin-menu-arrow">›</span>
       </button>
-      <button class="admin-menu-row" data-admin-nav="adminayetler" id="adminMenuRow_adminayetler" >
-        <span class="admin-menu-title">📖 Ayet Yönetimi</span>
-        <span class="admin-menu-arrow">›</span>
-      </button>
-      <button class="admin-menu-row" data-admin-nav="adminranks" id="adminMenuRow_adminranks" >
+<button class="admin-menu-row" data-admin-nav="adminranks" id="adminMenuRow_adminranks" >
         <span class="admin-menu-title">🎖️ Moderatör Rütbeleri</span>
         <span class="admin-menu-arrow">›</span>
       </button>
@@ -1876,41 +1815,7 @@
     <div class="hint" style="margin-top:0; margin-bottom:14px;">Kullanıcıların hatalı/belirsiz olarak işaretlediği sorular. Düzenleyip kaydedebilir, gerekirse silebilir veya şikayeti "sorun yok" diye kapatabilirsin.</div>
     <div id="adminQuizReportsList"></div>
   </section>
-
-  <section class="screen" id="screen-adminayetler">
-    <div class="cal-nav">
-      <button class="admin-back-btn" data-admin-back="adminayetler">‹</button>
-      <span class="cal-title">📖 Ayet Yönetimi</span>
-      <span style="width:36px;"></span>
-    </div>
-    <div class="card" style="margin-bottom:14px;">
-      <div class="section-title" style="margin-top:0;">Yeni Sure/Ayet Ekle</div>
-      <div class="hint" style="margin-bottom:10px;">Kur'an'daki sure numarasını gir (1-114). Belirli ayet aralığı istemiyorsan boş bırak, sure baştan sona eklenir.</div>
-      <div class="field">
-        <label>Sure Numarası</label>
-        <input type="number" id="adminAyetSurahNo" min="1" max="114" placeholder="Örn: 78" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
-      </div>
-      <div class="field">
-        <label>Görünen İsim (Türkçe)</label>
-        <input type="text" id="adminAyetDisplayName" placeholder="Örn: Nebe" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
-      </div>
-      <div style="display:flex; gap:10px;">
-        <div class="field" style="flex:1;">
-          <label>Ayet Başlangıç (opsiyonel)</label>
-          <input type="number" id="adminAyetStart" min="1" placeholder="1" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
-        </div>
-        <div class="field" style="flex:1;">
-          <label>Ayet Bitiş (opsiyonel)</label>
-          <input type="number" id="adminAyetEnd" min="1" placeholder="Son ayet" style="width:100%; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:14px;">
-        </div>
-      </div>
-      <button class="submit-btn" id="adminAyetAddBtn">➕ Ekle</button>
-    </div>
-    <div class="section-title">Admin Tarafından Eklenenler</div>
-    <div id="adminAyetlerList"></div>
-  </section>
-
-  <section class="screen" id="screen-adminranks">
+<section class="screen" id="screen-adminranks">
     <div class="cal-nav">
       <button class="admin-back-btn" data-admin-back="adminranks">‹</button>
       <span class="cal-title">🎖️ Moderatör Rütbeleri</span>
@@ -2784,7 +2689,7 @@ function renderFollowerMiniAvatars(followerUids, uidForModal){
   const extra = followerUids.length - shown.length;
   let html = '<div style="display:flex;">' + shown.map((uid,i)=>{
     const p = profileByUid(uid);
-    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:'?'));
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:'?'));
     return `<div style="width:20px;height:20px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; overflow:hidden; border:1.5px solid var(--paper); margin-left:${i>0?'-7px':'0'};">${inner}</div>`;
   }).join('') + '</div>';
   if(extra > 0) html += `<span style="font-size:11px; font-weight:700; color:var(--ink-soft); margin-left:4px;">+${extra} kişi</span>`;
@@ -2800,7 +2705,7 @@ function openFollowerListBar(followerUids, title){
     body.innerHTML = followerUids.map(uid=>{
       const p = profileByUid(uid);
       const name = usernameLabel(p);
-      const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+      const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
       return `<div class="toggle-row" data-follower-bar-uid="${escapeHtml(uid)}" style="cursor:pointer;">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:38px;height:38px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; overflow:hidden; flex-shrink:0;">${inner}</div>
@@ -2836,7 +2741,7 @@ function renderFollowerAvatarsInto(containerId, followerUids, max){
     const p = profileByUid(uid);
     const name = usernameLabel(p);
     const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
-    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover; border-radius:50%;">` : escapeHtml(getInitials(p?p.fullName:name));
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover; border-radius:50%;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div title="${escapeHtml(name)}" data-avatar-uid="${escapeHtml(uid)}" style="position:relative; cursor:pointer; width:38px;height:38px;border-radius:50%; background:${(p&&p.photoData)?'transparent':'linear-gradient(150deg,var(--asphalt),var(--asphalt-2))'}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; overflow:hidden;">${inner}${isOnline?'<span style="position:absolute; bottom:-1px; right:-1px; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}</div>`;
   }).join('');
   box.querySelectorAll('[data-avatar-uid]').forEach(el=>{
@@ -2924,7 +2829,7 @@ async function openViewProfile(uid){
   const p = profileByUid(uid);
   const vpAvatarEl = document.getElementById('vpAvatar');
   if(p && p.photoData){
-    vpAvatarEl.innerHTML = `<img src="${p.photoData}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
+    vpAvatarEl.innerHTML = `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
     vpAvatarEl.style.background = 'transparent';
   } else {
     vpAvatarEl.textContent = getInitials(p ? p.fullName : '?');
@@ -2939,6 +2844,7 @@ async function openViewProfile(uid){
   document.getElementById('vpLastActive').textContent = (p && !p.deactivated) ? formatLastActive(p.lastActive) : '';
   document.getElementById('vpUsername').textContent = getDisplayUsername(p) ? getDisplayUsername(p) : '';
   document.getElementById('vpMeta').textContent = p ? ['👷 '+(p.profession||'-'), p.city].filter(Boolean).join(' · ') : '-';
+  document.getElementById('vpFullNameInfo').textContent = p && p.fullName ? p.fullName : '-';
   document.getElementById('vpUserId').textContent = p && p.userId ? p.userId : '-';
   document.getElementById('vpQuizScoreBadge').textContent = '🧠 ' + (p && typeof p.quizScore==='number' ? p.quizScore : 0) + ' pn';
   loadVpQuizStats(uid);
@@ -3006,10 +2912,6 @@ async function openViewProfile(uid){
       renderFollowerMiniAvatars(friendUids);
     }
   }
-  const memorizedIds = p ? (p.ayetMemorizedSurahs || []) : [];
-  document.getElementById('vpMemorizedSectionTitle').style.display = memorizedIds.length ? 'block' : 'none';
-  document.getElementById('vpMemorizedAyetlerCard').style.display = memorizedIds.length ? 'block' : 'none';
-  if(memorizedIds.length) renderMemorizedAyetlerCard(memorizedIds, 'vpMemorizedAyetlerCard');
 }
 
 // Yönetici/moderatör alanlarını (e-posta, IP, katılım tarihi, uyarılar, araç paneli) çizer.
@@ -3259,7 +3161,6 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
     document.getElementById('vpModEditProfessions').checked = !!perms.editProfessions;
     document.getElementById('vpModManageQuizQuestions').checked = !!perms.manageQuizQuestions;
     document.getElementById('vpModManageQuizReports').checked = !!perms.manageQuizReports;
-    document.getElementById('vpModManageAyetler').checked = !!perms.manageAyetler;
     document.getElementById('vpModBanIp').checked = !!perms.banIp;
     document.getElementById('vpModManageWarnings').checked = !!perms.manageWarnings;
     document.getElementById('vpModViewPrivateInfo').checked = !!perms.viewPrivateInfo;
@@ -3349,7 +3250,8 @@ document.getElementById('vpFriendBtn').addEventListener('click', async ()=>{
     } else if(status==='pending_received'){
       await db.collection('friends').doc(friendDocId(currentUser.uid, uid)).set({members:[currentUser.uid, uid], createdAt:new Date().toISOString()});
       await db.collection('friend_requests').doc(friendReqDocId(uid, currentUser.uid)).delete();
-      await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ Arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
+      const myAcceptName = (profile && profile.fullName) || 'Bir kullanıcı';
+      await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ ' + myAcceptName + ' arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
       showToast('Artık arkadaşsınız 🎉');
     } else if(status==='friends'){
       if(!confirm('Arkadaşlıktan çıkarmak istediğine emin misin?')) return;
@@ -3602,7 +3504,6 @@ function canEditQuotes(){ return isAdmin || !!modPerms.editQuotes; }
 function canEditProfessions(){ return isAdmin || !!modPerms.editProfessions; }
 function canManageQuizQuestions(){ return isAdmin || !!modPerms.manageQuizQuestions; }
 function canManageQuizReports(){ return isAdmin || !!modPerms.manageQuizReports; }
-function canManageAyetler(){ return isAdmin || !!modPerms.manageAyetler; }
 
 
 async function logModAction(action, targetUid, details){
@@ -3631,7 +3532,6 @@ function applyAdminPermVisibility(){
   document.getElementById('adminMenuRow_adminprofessions').style.display = canEditProfessions() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminquiz').style.display = canManageQuizQuestions() ? 'flex' : 'none';
   document.getElementById('adminMenuRow_adminquizreports').style.display = canManageQuizReports() ? 'flex' : 'none';
-  document.getElementById('adminMenuRow_adminayetler').style.display = canManageAyetler() ? 'flex' : 'none';
   if(canManageQuizReports()) refreshQuizReportsBadge();
   document.getElementById('adminMenuRow_adminranks').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('adminMenuRow_admintenureranks').style.display = isAdmin ? 'flex' : 'none';
@@ -3656,7 +3556,6 @@ function loadAllAdminData(){
   if(canBanIp()) renderBannedIpList();
   if(canManageQuizQuestions()) renderQuizAdminList();
   if(canManageQuizReports()) renderQuizReportsList();
-  if(canManageAyetler()) renderAdminAyetlerList();
 }
 function openAdminPanel(){
   document.getElementById('settingsOverlay').classList.remove('show');
@@ -4036,7 +3935,6 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     editProfessions: document.getElementById('vpModEditProfessions').checked,
     manageQuizQuestions: document.getElementById('vpModManageQuizQuestions').checked,
     manageQuizReports: document.getElementById('vpModManageQuizReports').checked,
-    manageAyetler: document.getElementById('vpModManageAyetler').checked,
     banIp: document.getElementById('vpModBanIp').checked,
     manageWarnings: document.getElementById('vpModManageWarnings').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
@@ -4400,7 +4298,7 @@ const PERM_LABELS = {
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
   viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
-  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi', manageQuizReports:'🚩 Soru Şikayetlerini Yönetme', manageAyetler:'📖 Ayet Yönetimi'
+  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi', manageQuizReports:'🚩 Soru Şikayetlerini Yönetme'
 };
 const PERM_DESCRIPTIONS = {
   editProfile:'Herhangi bir kullanıcının profil bilgilerini (ad, meslek, şehir vb.) düzenleyebilirsin.',
@@ -4429,8 +4327,7 @@ const PERM_DESCRIPTIONS = {
   manageWarnings:'Kullanıcılara süreli uyarı verip, uyarı geçmişlerini görebilirsin.',
   viewUserNotifications:'Bir kullanıcının aldığı bildirimleri görebilirsin.',
   viewLoginHistory:'Bir kullanıcının geçmiş giriş kayıtlarını (şüpheli giriş kontrolü için) görebilirsin.',
-  manageQuizQuestions:'"Soru Çöz" bölümündeki soru havuzuna yeni soru ekleyebilir, mevcut soruları düzenleyip silebilirsin.',
-  manageAyetler:'"Ayetler" bölümüne yeni sure/ayet ekleyebilir, admin tarafından eklenenleri silebilirsin.'
+  manageQuizQuestions:'"Soru Çöz" bölümündeki soru havuzuna yeni soru ekleyebilir, mevcut soruları düzenleyip silebilirsin.'
 };
 const MOD_ACTION_LABELS = {
   editProfile:'✏️ Profil düzenledi', deletePhoto:'🖼️ Fotoğraf sildi', resetAccount:'🔄 Hesabı sıfırladı',
@@ -5370,6 +5267,8 @@ function openChatScreen(cid, otherUid){
   document.getElementById('chatReplyPreview').style.display = 'none';
   document.getElementById('chatEmojiPanel').style.display = 'none';
   exitSelectMode();
+  const roleBadgeEl = document.getElementById('roleBadgeWrap');
+  if(roleBadgeEl) roleBadgeEl.style.display = 'none'; // gönder butonuyla çakışmasın
   try{ document.getElementById('chatInput').value = localStorage.getItem('chatDraft_'+cid) || ''; }catch(e){}
   if(typingUnsub){ typingUnsub(); typingUnsub = null; }
   typingUnsub = db.collection('conversations').doc(cid).onSnapshot(doc=>{
@@ -5429,7 +5328,7 @@ function openChatScreen(cid, otherUid){
     document.getElementById('chatHeaderName').innerHTML = usernameLabelHtml(p);
     const chatHeaderAvatarEl = document.getElementById('chatHeaderAvatar');
     if(p && p.photoData){
-      chatHeaderAvatarEl.innerHTML = `<img src="${p.photoData}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
+      chatHeaderAvatarEl.innerHTML = `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">`;
       chatHeaderAvatarEl.style.background = 'transparent';
     } else {
       chatHeaderAvatarEl.textContent = getInitials(p?p.fullName:'?');
@@ -5630,12 +5529,12 @@ document.getElementById('btnChatMediaGallery').addEventListener('click', async (
     const grid = document.getElementById('mediaGalleryGrid');
     if(withImages.length===0){ grid.innerHTML = `<div class="empty"><div class="icon">📷</div><div class="msg">Bu sohbette paylaşılmış fotoğraf yok.</div></div>`; return; }
     withImages.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
-    grid.innerHTML = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">${withImages.map(m=>`<img src="${m.imageData}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; cursor:pointer;" data-gallery-img>`).join('')}</div>`;
+    grid.innerHTML = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">${withImages.map(m=>`<img src="${safeImageSrc(m.imageData)}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; cursor:pointer;" data-gallery-img>`).join('')}</div>`;
     grid.querySelectorAll('[data-gallery-img]').forEach(img=>{
       img.addEventListener('click', ()=>{
         const overlay = document.createElement('div');
         overlay.style.cssText = 'position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; padding:20px;';
-        overlay.innerHTML = `<img src="${img.src}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
+        overlay.innerHTML = `<img src="${safeImageSrc(img.src)}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
         overlay.addEventListener('click', ()=> overlay.remove());
         document.body.appendChild(overlay);
       });
@@ -5834,7 +5733,7 @@ function chatBubbleHtml(m){
         imageHtml = `<div data-view-once-img="${escapeHtml(m.id||'')}" style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.05)'}; text-align:center; font-size:12px; font-weight:700; color:var(--asphalt); cursor:pointer; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülemek için dokun<br><span style="font-weight:400; font-size:10.5px;">(tek seferlik)</span></div>`;
       }
     } else {
-      imageHtml = `<img src="${m.imageData}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>`;
+      imageHtml = `<img src="${safeImageSrc(m.imageData)}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>`;
       if(m.viewOnce && !mine && bypassMedia){
         imageHtml = `<div style="position:relative;">${imageHtml}<div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">👁️ Tek seferlik (yönetici görünümü)</div></div>`;
       }
@@ -6253,7 +6152,7 @@ document.getElementById('chatMessages').addEventListener('click', (e)=>{
       const data = doc.data();
       const overlay = document.createElement('div');
       overlay.style.cssText = 'position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;';
-      overlay.innerHTML = `<img src="${data.imageData}" style="max-width:100%; max-height:85%; border-radius:8px;"><div style="color:#fff; font-size:12px; margin-top:14px; opacity:0.7;">Bu fotoğrafı tekrar göremezsin</div>`;
+      overlay.innerHTML = `<img src="${safeImageSrc(data.imageData)}" style="max-width:100%; max-height:85%; border-radius:8px;"><div style="color:#fff; font-size:12px; margin-top:14px; opacity:0.7;">Bu fotoğrafı tekrar göremezsin</div>`;
       overlay.addEventListener('click', ()=> overlay.remove());
       document.body.appendChild(overlay);
       db.collection('messages').doc(msgId).update({viewOnceViewedBy: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)}).catch(()=>{});
@@ -6264,7 +6163,7 @@ document.getElementById('chatMessages').addEventListener('click', (e)=>{
   if(img){
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; padding:20px;';
-    overlay.innerHTML = `<img src="${img.src}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
+    overlay.innerHTML = `<img src="${safeImageSrc(img.src)}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
     overlay.addEventListener('click', ()=> overlay.remove());
     document.body.appendChild(overlay);
   }
@@ -6303,7 +6202,7 @@ function convRowHtml(c, today){
   return `<div data-conv="${escapeHtml(c.id)}" data-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; border-radius:18px; margin-bottom:10px; background:var(--paper); box-shadow:var(--shadow-sm); transition:transform .12s ease;">
       <input type="checkbox" class="conv-select-box" data-select-conv="${escapeHtml(c.id)}" style="display:none; width:19px;height:19px; flex-shrink:0;">
       <div style="position:relative; flex-shrink:0;">
-        <div style="width:54px;height:54px;border-radius:${isGrp?'16px':'50%'}; background:${(!isGrp && p && p.photoData) ? 'transparent' : avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:19px; overflow:hidden;">${(!isGrp && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : avatarInitials}</div>
+        <div style="width:54px;height:54px;border-radius:${isGrp?'16px':'50%'}; background:${(!isGrp && p && p.photoData) ? 'transparent' : avatarGradient(isGrp?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:19px; overflow:hidden;">${(!isGrp && p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : avatarInitials}</div>
         ${isOnline?'<span style="position:absolute; bottom:0; right:0; width:14px;height:14px; border-radius:50%; background:#22C55E; border:2.5px solid var(--paper);"></span>':''}
       </div>
       <div style="flex:1; min-width:0;">
@@ -6376,7 +6275,7 @@ function renderFilteredConversations(){
       <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px; max-width:280px; margin-left:auto; margin-right:auto;">
         ${suggestions.map(u=>`
           <button class="submit-btn secondary" data-suggest-uid="${escapeHtml(u.uid)}" style="display:flex; align-items:center; gap:10px; text-align:left; padding:10px 14px;">
-            <div style="width:32px;height:32px;border-radius:50%; background:${u.photoData ? 'transparent' : avatarGradient(u.uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">${u.photoData ? `<img src="${u.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(u.fullName))}</div>
+            <div style="width:32px;height:32px;border-radius:50%; background:${u.photoData ? 'transparent' : avatarGradient(u.uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">${u.photoData ? `<img src="${safeImageSrc(u.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(u.fullName))}</div>
             <span style="font-size:13px; font-weight:700;">${escapeHtml(u.username||'kullanici')}</span>
           </button>`).join('')}
       </div>` : '';
@@ -6824,7 +6723,7 @@ async function renderHeaderMsgDropdown(){
     const initials = c.isGroup ? (c.groupName||'G').trim().charAt(0).toUpperCase() : getInitials(p?p.fullName:name);
     const unread = Array.isArray(c.unreadFor) && c.unreadFor.includes(currentUser.uid);
     const preview = c.lastMessage ? (c.lastMessage.length>34 ? c.lastMessage.slice(0,34)+'…' : c.lastMessage) : 'Henüz mesaj yok';
-    const avatarInner = (!c.isGroup && p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(initials);
+    const avatarInner = (!c.isGroup && p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(initials);
     return `<div data-dd-conv="${escapeHtml(c.id)}" data-dd-other="${escapeHtml(otherUid||'')}" style="display:flex; align-items:center; gap:9px; padding:9px 8px; cursor:pointer; border-radius:10px;">
       <div style="width:36px;height:36px;border-radius:${c.isGroup?'10px':'50%'}; background:${(!c.isGroup && p && p.photoData)?'transparent':avatarGradient(c.isGroup?c.id:otherUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">${avatarInner}</div>
       <div style="flex:1; min-width:0;">
@@ -6913,16 +6812,23 @@ document.getElementById('btnFriendsTabReqs').addEventListener('click', (e)=>{ e.
 async function renderFriendsTabList(){
   const box = document.getElementById('headerFriendsDropdownList');
   box.innerHTML = '<div class="hint" style="margin:8px 0;">Yükleniyor…</div>';
-  const friendUids = await getFriendUids(currentUser.uid);
+  let friendUids = await getFriendUids(currentUser.uid);
   if(friendUids.length===0){
     box.innerHTML = '<div class="hint" style="margin:8px 0; text-align:center;">Henüz arkadaşın yok.</div>';
     return;
   }
+  // Aktif olanlar en üstte, sonra en son ne zaman aktif olduğuna göre sırala
+  friendUids = friendUids.slice().sort((a,b)=>{
+    const pa = profileByUid(a), pb = profileByUid(b);
+    const ta = pa && pa.lastActive ? new Date(pa.lastActive).getTime() : 0;
+    const tb = pb && pb.lastActive ? new Date(pb.lastActive).getTime() : 0;
+    return tb - ta;
+  });
   box.innerHTML = friendUids.slice(0,20).map(uid=>{
     const p = profileByUid(uid);
     const name = p ? getDisplayName(p) : 'Kullanıcı';
     const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
-    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div data-dd-friend-uid="${escapeHtml(uid)}" style="display:flex; align-items:center; gap:9px; padding:8px; cursor:pointer; border-radius:10px;">
       <div style="position:relative; width:34px;height:34px; flex-shrink:0;">
         <div style="width:100%;height:100%;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden;">${inner}</div>
@@ -6950,7 +6856,7 @@ async function renderFriendsTabRequests(){
   box.innerHTML = latestFriendRequests.map(r=>{
     const p = profileByUid(r.fromUid);
     const name = p ? getDisplayName(p) : 'Kullanıcı';
-    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div style="display:flex; align-items:center; gap:9px; padding:8px;">
       <div style="width:34px;height:34px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(r.fromUid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; overflow:hidden; flex-shrink:0;">${inner}</div>
       <div style="font-weight:700; font-size:12.5px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(name)}</div>
@@ -6965,7 +6871,8 @@ async function renderFriendsTabRequests(){
       try{
         await db.collection('friends').doc(friendDocId(currentUser.uid, fromUid)).set({members:[currentUser.uid, fromUid], createdAt:new Date().toISOString()});
         await db.collection('friend_requests').doc(friendReqDocId(fromUid, currentUser.uid)).delete();
-        await db.collection('notifications').add({toUid:fromUid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ Arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
+        const myAcceptName = (profile && profile.fullName) || 'Bir kullanıcı';
+        await db.collection('notifications').add({toUid:fromUid, fromUid:currentUser.uid, type:'friend_accept', message:'✅ ' + myAcceptName + ' arkadaşlık isteğini kabul etti.', read:false, createdAt:new Date().toISOString()});
         showToast('Artık arkadaşsınız 🎉');
       }catch(e){ showToast('İşlem başarısız'); }
     });
@@ -7135,6 +7042,12 @@ function monthLabel(mk){ const [y,m]=mk.split('-'); return MONTH_NAMES[parseInt(
 function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10); }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 function escapeHtml(str){ const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+function safeImageSrc(dataUrl){
+  // photoData/imageData her zaman uygulamanın kendi sıkıştırma işleminden gelen data: URL'leri olmalı.
+  // Beklenmeyen bir değer (ör. javascript: veya başka bir şema) varsa resmi hiç göstermeyip sessizce atla.
+  if(typeof dataUrl !== 'string') return '';
+  return /^data:image\/(png|jpe?g|webp|gif);base64,/i.test(dataUrl) ? dataUrl : '';
+}
 function linkifyHtml(str){
   const escaped = escapeHtml(str);
   const urlPattern = /((https?:\/\/|www\.)[^\s<]+)/gi;
@@ -7181,7 +7094,7 @@ function updateHeaderAvatar(){
   if(!btn || !currentUser) return;
   btn.style.background = avatarGradient(currentUser.uid);
   if(profile && profile.photoData){
-    btn.innerHTML = `<img src="${profile.photoData}" style="width:100%;height:100%; object-fit:cover;">`;
+    btn.innerHTML = `<img src="${safeImageSrc(profile.photoData)}" style="width:100%;height:100%; object-fit:cover;">`;
   } else {
     btn.textContent = getInitials(profile ? profile.fullName : '?');
   }
@@ -7195,6 +7108,7 @@ function switchScreen(name){
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
   document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
+  if(name !== 'chat') updateAdminModButtons(); // gönder butonuyla çakışmasın diye sohbette gizlenen rozeti geri getir
   if(name==='ana') renderHome();
   if(name==='kayitlar') renderKayitlar();
   if(name==='istatistik') renderLifetimeStats();
@@ -8248,21 +8162,6 @@ document.getElementById('documentFileInput').addEventListener('change', async (e
   }catch(err){ showToast('Belge işlenemedi'); }
 });
 
-// ---------- EZBERLEDİĞİ AYETLER KARTI (kendi profil + görüntülenen profil ortak) ----------
-async function renderMemorizedAyetlerCard(memorizedIds, cardElId){
-  const card = document.getElementById(cardElId);
-  if(!card) return;
-  if(!memorizedIds || memorizedIds.length === 0){
-    card.innerHTML = '<div class="hint" style="margin:0;">Henüz ezberlediği sure yok.</div>';
-    return;
-  }
-  const allItems = await getFullAyetlerList();
-  const items = memorizedIds.map(id => allItems.find(x=>x.id===id)).filter(Boolean);
-  card.innerHTML = '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + items.map(it=>
-    `<span style="font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; background:var(--tint-forest); color:#16A34A;">✅ ${escapeHtml(it.name)}</span>`
-  ).join('') + '</div>';
-}
-
 function renderProfile(){
   if(!profile || !currentUser) return;
 
@@ -8308,7 +8207,6 @@ function renderProfile(){
   syncPublicBadges(t);
   renderOwnFollowers();
   renderNotes();
-  getAyetUserData().then(d => renderMemorizedAyetlerCard(d.memorizedSurahs, 'ownMemorizedAyetlerCard'));
 }
 
 function renderBadges(t){
@@ -9164,9 +9062,7 @@ async function setupFcmToken(){
     const messaging = firebase.messaging();
     const token = await messaging.getToken({vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg});
     if(token){
-      console.log('[FCM] Token alındı:', token.slice(0,12) + '…');
       await userDocRef.set({fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)}, {merge:true});
-      console.log('[FCM] Token Firestore\'a kaydedildi (users/'+userDocRef.id+'.fcmTokens)');
     } else {
       console.warn('[FCM] getToken() boş döndü — VAPID anahtarını ve tarayıcı iznini kontrol et');
     }
@@ -9176,7 +9072,6 @@ async function setupFcmToken(){
   try{
     if(typeof firebase === 'undefined' || !firebase.messaging || !(await firebase.messaging.isSupported())) return;
     firebase.messaging().onMessage((payload)=>{
-      console.log('[FCM] Ön planda mesaj alındı:', payload);
       const title = (payload.data && payload.data.title) || '📋 Şantiye Defteri';
       const body = (payload.data && payload.data.body) || '';
       fireLocalNotification(title, body);
@@ -9438,394 +9333,6 @@ async function refreshDailyQuestBadge(){
   if(claimable > 0){ badge.style.display = 'block'; badge.textContent = claimable; }
   else badge.style.display = 'none';
 }
-// ================= AYETLER (NAMAZ SURELERİ) =================
-const NAMAZ_SURELERI_DEFAULT = [
-  {id:'s85', no:85, name:'Büruc', start:1, end:22}, {id:'s86', no:86, name:'Tarık', start:1, end:17}, {id:'s87', no:87, name:'Ala', start:1, end:19},
-  {id:'s88', no:88, name:'Gaşiye', start:1, end:26}, {id:'s89', no:89, name:'Fecr', start:1, end:30}, {id:'s90', no:90, name:'Beled', start:1, end:20},
-  {id:'s91', no:91, name:'Şems', start:1, end:15}, {id:'s92', no:92, name:'Leyl', start:1, end:21}, {id:'s93', no:93, name:'Duha', start:1, end:11},
-  {id:'s94', no:94, name:'İnşirah', start:1, end:8}, {id:'s95', no:95, name:'Tin', start:1, end:8}, {id:'s96', no:96, name:'Alak', start:1, end:19},
-  {id:'s97', no:97, name:'Kadir', start:1, end:5}, {id:'s98', no:98, name:'Beyyine', start:1, end:8}, {id:'s99', no:99, name:'Zilzal', start:1, end:8},
-  {id:'s100', no:100, name:'Adiyat', start:1, end:11}, {id:'s101', no:101, name:'Karia', start:1, end:11}, {id:'s102', no:102, name:'Tekasür', start:1, end:8},
-  {id:'s103', no:103, name:'Asr', start:1, end:3}, {id:'s104', no:104, name:'Hümeze', start:1, end:9}, {id:'s105', no:105, name:'Fil', start:1, end:5},
-  {id:'s106', no:106, name:'Kureyş', start:1, end:4}, {id:'s107', no:107, name:'Maun', start:1, end:7}, {id:'s108', no:108, name:'Kevser', start:1, end:3},
-  {id:'s109', no:109, name:'Kafirun', start:1, end:6}, {id:'s110', no:110, name:'Nasr', start:1, end:3}, {id:'s111', no:111, name:'Tebbet', start:1, end:5},
-  {id:'s112', no:112, name:'İhlas', start:1, end:4}, {id:'s113', no:113, name:'Felak', start:1, end:5}, {id:'s114', no:114, name:'Nas', start:1, end:6},
-];
-let ayetlerAdminExtras = null; // Firestore'dan admin ekledikleri, ilk açılışta yüklenip önbelleklenir
-async function loadAyetlerAdminExtras(force){
-  if(ayetlerAdminExtras !== null && !force) return ayetlerAdminExtras;
-  try{
-    const snap = await db.collection('namaz_ayetleri').get();
-    ayetlerAdminExtras = snap.docs.map(d=>{
-      const data = d.data();
-      return { id: d.id, no: data.surahNo, name: data.displayName, start: data.ayahStart||1, end: data.ayahEnd||data.ayahCount||1, adminAdded:true };
-    });
-  }catch(e){ ayetlerAdminExtras = []; console.error('Admin ayetleri yüklenemedi', e); }
-  return ayetlerAdminExtras;
-}
-async function getFullAyetlerList(){
-  const extras = await loadAyetlerAdminExtras();
-  return [...NAMAZ_SURELERI_DEFAULT, ...extras];
-}
-const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
-let ayetlerTabMode = 'all';
-let ayetlerSearchQuery = '';
-let ayetTrEditionCache = null; // Türkçe meal edition'ı dinamik bulunup önbelleğe alınır
-let ayetSurahDataCache = {}; // {"surahNo_start_end": {arabic, transliteration, meal}}
-let currentAyetItem = null;
-
-async function todayStrAyet(){ return todayStr(); }
-
-async function getAyetUserData(){
-  if(!userDocRef) return { selectedSurahs:[], memorizedSurahs:[], readCounts:{} };
-  try{
-    const doc = await userDocRef.get();
-    const data = doc.data() || {};
-    return {
-      selectedSurahs: data.ayetSelectedSurahs || [],
-      memorizedSurahs: data.ayetMemorizedSurahs || [],
-      readCounts: data.ayetReadCounts || {} // { "85": {date:'YYYY-MM-DD', count:N} }
-    };
-  }catch(e){ return { selectedSurahs:[], memorizedSurahs:[], readCounts:{} }; }
-}
-
-function switchScreenSimple(screenId){
-  document.querySelectorAll('main > .screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+screenId).classList.add('active');
-}
-
-document.getElementById('btnHeaderMenuAyetler').addEventListener('click', ()=>{
-  document.getElementById('headerProfileMenu').style.display = 'none';
-  switchScreenSimple('ayetler');
-  setAyetlerTab('all');
-});
-document.getElementById('btnAyetlerBack').addEventListener('click', ()=> switchScreenSimple('ana'));
-
-function setAyetlerTab(mode){
-  ayetlerTabMode = mode;
-  ['ayetlerTabAll','ayetlerTabMine','ayetlerTabMemorized'].forEach(id=>{
-    const btn = document.getElementById(id);
-    const isActive = (id==='ayetlerTabAll' && mode==='all') || (id==='ayetlerTabMine' && mode==='mine') || (id==='ayetlerTabMemorized' && mode==='memorized');
-    btn.style.background = isActive ? 'linear-gradient(120deg,var(--asphalt),var(--asphalt-2))' : 'var(--paper)';
-    btn.style.color = isActive ? '#fff' : 'var(--ink-soft)';
-  });
-  const hints = {
-    all: 'Namazda okunabilecek 30 kısa sure. Beğendiklerini "Listem"e ekleyip günlük tekrar sayacı tutabilir, ezberlediklerini işaretleyebilirsin.',
-    mine: 'Kendi seçtiğin, üzerinde çalıştığın sureler.',
-    memorized: 'Ezberlediğini işaretlediğin sureler. Tebrikler! 🎉'
-  };
-  document.getElementById('ayetlerHint').textContent = hints[mode];
-  renderAyetlerList();
-}
-document.getElementById('ayetlerTabAll').addEventListener('click', ()=> setAyetlerTab('all'));
-document.getElementById('ayetlerTabMine').addEventListener('click', ()=> setAyetlerTab('mine'));
-document.getElementById('ayetlerTabMemorized').addEventListener('click', ()=> setAyetlerTab('memorized'));
-
-async function renderAyetlerList(){
-  const box = document.getElementById('ayetlerList');
-  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
-  const [allItems, userData] = await Promise.all([getFullAyetlerList(), getAyetUserData()]);
-  let items = allItems;
-  if(ayetlerTabMode === 'mine') items = items.filter(s => userData.selectedSurahs.includes(s.id));
-  if(ayetlerTabMode === 'memorized') items = items.filter(s => userData.memorizedSurahs.includes(s.id));
-  if(ayetlerSearchQuery.trim()){
-    const q = ayetlerSearchQuery.trim().toLocaleLowerCase('tr');
-    items = items.filter(s => s.name.toLocaleLowerCase('tr').includes(q));
-  }
-  if(items.length === 0){
-    const emptyMsg = ayetlerSearchQuery.trim() ? 'Aramanla eşleşen sure yok.' : (ayetlerTabMode==='mine' ? 'Henüz listene sure eklemedin.' : 'Henüz ezberlediğin sure yok.');
-    box.innerHTML = `<div class="empty" style="grid-column:1 / -1;"><div class="icon">📖</div><div class="msg">${emptyMsg}</div></div>`;
-    return;
-  }
-  const today = todayStr();
-  box.innerHTML = items.map(s=>{
-    const isSelected = userData.selectedSurahs.includes(s.id);
-    const isMemorized = userData.memorizedSurahs.includes(s.id);
-    const rc = userData.readCounts[s.id];
-    const todayCount = (rc && rc.date === today) ? rc.count : 0;
-    const ayetCount = s.end - s.start + 1;
-    return `<div data-ayet-id="${escapeHtml(s.id)}" class="card" style="padding:12px; cursor:pointer; text-align:center;">
-      <div style="width:38px;height:38px;border-radius:12px; background:${isMemorized?'var(--tint-forest)':'var(--tint-brass)'}; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:${isMemorized?'#16A34A':'var(--text-brass)'}; margin:0 auto 8px;">${isMemorized?'✅':s.no}</div>
-      <div style="font-weight:800; font-size:13px;">${escapeHtml(s.name)}</div>
-      <div class="hint" style="margin:2px 0 0; font-size:10.5px;">${ayetCount} ayet</div>
-      ${isSelected?`<div style="font-size:10px; color:var(--asphalt); font-weight:700; margin-top:4px;">⭐ ${todayCount} kez</div>`:''}
-    </div>`;
-  }).join('');
-  box.querySelectorAll('[data-ayet-id]').forEach(row=>{
-    row.addEventListener('click', ()=> openAyetDetail(row.dataset.ayetId));
-  });
-}
-document.getElementById('ayetlerSearchInput').addEventListener('input', (e)=>{
-  ayetlerSearchQuery = e.target.value;
-  renderAyetlerList();
-});
-
-async function discoverTurkishEdition(){
-  if(ayetTrEditionCache) return ayetTrEditionCache;
-  try{
-    const res = await fetch(QURAN_API_BASE + '/edition/language/tr');
-    const json = await res.json();
-    const editions = (json && json.data) || [];
-    const diyanet = editions.find(e => /diyanet/i.test(e.identifier) || /diyanet/i.test(e.name||''));
-    ayetTrEditionCache = (diyanet ? diyanet.identifier : (editions[0] ? editions[0].identifier : 'tr.diyanet'));
-  }catch(e){ ayetTrEditionCache = 'tr.diyanet'; }
-  return ayetTrEditionCache;
-}
-
-async function fetchAyetItemData(item){
-  const cacheKey = item.no + '_' + item.start + '_' + item.end;
-  if(ayetSurahDataCache[cacheKey]) return ayetSurahDataCache[cacheKey];
-  const trEdition = await discoverTurkishEdition();
-  const isFullSurah = item.start === 1 && item.end >= 3; // pratik kontrol; tam sure ise /surah, değilse ayet ayet çekilir
-  let arabicText, translitText, mealText;
-  if(item.start === 1 && !item.__forceRange){
-    // Tam sureyi tek istekte çek, sonra sadece start-end aralığını kullan
-    const [arRes, translitRes, mealRes] = await Promise.all([
-      fetch(QURAN_API_BASE + '/surah/' + item.no).then(r=>r.json()),
-      fetch(QURAN_API_BASE + '/surah/' + item.no + '/en.transliteration').then(r=>r.json()),
-      fetch(QURAN_API_BASE + '/surah/' + item.no + '/' + trEdition).then(r=>r.json())
-    ]);
-    const arAyahs = (arRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
-    const trAyahs = (translitRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
-    const mlAyahs = (mealRes.data.ayahs||[]).filter(a=> a.numberInSurah>=item.start && a.numberInSurah<=item.end);
-    arabicText = arAyahs.map(a=>a.text).join(' ');
-    translitText = trAyahs.map(a=>a.text).join(' ');
-    mealText = mlAyahs.map(a=> a.numberInSurah+'. '+a.text).join('\n');
-  } else {
-    // Belirli bir ayet aralığı: her ayeti ayrı ayrı çek
-    const nums = [];
-    for(let n=item.start; n<=item.end; n++) nums.push(n);
-    const arParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n).then(r=>r.json())));
-    const trParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n + '/en.transliteration').then(r=>r.json())));
-    const mlParts = await Promise.all(nums.map(n=> fetch(QURAN_API_BASE + '/ayah/' + item.no + ':' + n + '/' + trEdition).then(r=>r.json())));
-    arabicText = arParts.map(r=>r.data.text).join(' ');
-    translitText = trParts.map(r=>r.data.text).join(' ');
-    mealText = mlParts.map((r,i)=> (item.start+i)+'. '+r.data.text).join('\n');
-  }
-  const result = { arabicText, translitText, mealText };
-  ayetSurahDataCache[cacheKey] = result;
-  return result;
-}
-
-async function openAyetDetail(itemId){
-  const allItems = await getFullAyetlerList();
-  const item = allItems.find(x=>x.id===itemId);
-  if(!item) return;
-  currentAyetItem = item;
-  switchScreenSimple('ayet-detail');
-  document.getElementById('ayetDetailTitle').textContent = item.name + ' Suresi';
-  document.getElementById('ayetDetailLoading').style.display = 'block';
-  document.getElementById('ayetDetailLoading').textContent = 'Yükleniyor…';
-  document.getElementById('ayetDetailContent').style.display = 'none';
-  document.getElementById('ayetAudioError').style.display = 'none';
-
-  const userData = await getAyetUserData();
-  const isSelected = userData.selectedSurahs.includes(itemId);
-  const isMemorized = userData.memorizedSurahs.includes(itemId);
-  const rc = userData.readCounts[itemId];
-  const today = todayStr();
-  const todayCount = (rc && rc.date === today) ? rc.count : 0;
-  document.getElementById('ayetTodayCount').textContent = todayCount;
-  document.getElementById('ayetProgressBar').style.width = Math.min(100, (todayCount/25)*100) + '%';
-  document.getElementById('ayetMemorizedToggle').checked = isMemorized;
-  document.getElementById('btnAyetAddToList').textContent = isSelected ? '⭐ Listemde (çıkarmak için dokun)' : '⭐ Listeme Ekle';
-  document.getElementById('btnAyetAddToList').style.background = isSelected ? 'var(--tint-forest)' : '';
-  document.getElementById('btnAyetAddToList').style.color = isSelected ? '#16A34A' : '';
-
-  try{
-    const data = await fetchAyetItemData(item);
-    document.getElementById('ayetArabicText').textContent = data.arabicText;
-    document.getElementById('ayetTransliteration').textContent = data.translitText;
-    document.getElementById('ayetMeal').textContent = data.mealText;
-    document.getElementById('ayetDetailLoading').style.display = 'none';
-    document.getElementById('ayetDetailContent').style.display = 'block';
-  }catch(e){
-    document.getElementById('ayetDetailLoading').textContent = 'Yüklenemedi. İnternet bağlantını kontrol edip tekrar dener misin?';
-    console.error('Sure verisi yüklenemedi', e);
-  }
-}
-
-document.getElementById('btnAyetDetailBack').addEventListener('click', ()=>{
-  switchScreenSimple('ayetler');
-  renderAyetlerList();
-});
-
-let ayetReciterEditionCache = null; // Hafız kaydı (Maher el-Muaykali tercih edilir, bulunamazsa Alafasy'ye düşer)
-let ayetReciterNameCache = null;
-async function discoverReciterEdition(){
-  if(ayetReciterEditionCache) return { id: ayetReciterEditionCache, name: ayetReciterNameCache };
-  try{
-    const res = await fetch(QURAN_API_BASE + '/edition/format/audio');
-    const json = await res.json();
-    const editions = (json && json.data) || [];
-    // Önce sure bütünü (audio-surah) ile uyumlu, "maher" veya "muaiqly" geçen bir kayıt ara
-    const maher = editions.find(e => /maher|muaiqly|mueaqly/i.test(e.identifier) || /maher|muaiqly|mueaqly/i.test(e.name||'') || /maher|muaiqly|mueaqly/i.test(e.englishName||''));
-    if(maher){
-      ayetReciterEditionCache = maher.identifier;
-      ayetReciterNameCache = 'Maher Al Muaiqly';
-    } else {
-      const alafasy = editions.find(e => /alafasy/i.test(e.identifier));
-      ayetReciterEditionCache = alafasy ? alafasy.identifier : 'ar.alafasy';
-      ayetReciterNameCache = 'Mishary Alafasy';
-    }
-  }catch(e){ ayetReciterEditionCache = 'ar.alafasy'; ayetReciterNameCache = 'Mishary Alafasy'; }
-  return { id: ayetReciterEditionCache, name: ayetReciterNameCache };
-}
-
-let ayetCurrentAudio = null;
-let ayetIsLooping = false;
-function stopAyetAudio(){
-  ayetIsLooping = false;
-  if(ayetCurrentAudio){ ayetCurrentAudio.pause(); ayetCurrentAudio.currentTime = 0; ayetCurrentAudio = null; }
-  document.getElementById('btnAyetPlayAudio').textContent = '🔊 Hafız Sesiyle Dinle' + (ayetReciterNameCache ? ' ('+ayetReciterNameCache+')' : '');
-  document.getElementById('btnAyetPlayAudio').style.background = '';
-  document.getElementById('btnAyetPlayAudio').style.color = '';
-}
-document.getElementById('btnAyetPlayAudio').addEventListener('click', async ()=>{
-  if(!currentAyetItem) return;
-  if(ayetIsLooping){ stopAyetAudio(); return; }
-  document.getElementById('ayetAudioError').style.display = 'none';
-  const btn = document.getElementById('btnAyetPlayAudio');
-  btn.disabled = true; btn.textContent = 'Hafız aranıyor…';
-  const reciter = await discoverReciterEdition();
-  btn.disabled = false;
-  const audioUrl = 'https://cdn.islamic.network/quran/audio-surah/128/' + reciter.id + '/' + currentAyetItem.no + '.mp3';
-  ayetIsLooping = true;
-  btn.textContent = '⏸️ Durdur (' + reciter.name + ' · tekrar tekrar okunuyor)';
-  btn.style.background = 'var(--tint-rust)';
-  btn.style.color = 'var(--danger)';
-  const audio = new Audio(audioUrl);
-  ayetCurrentAudio = audio;
-  audio.addEventListener('ended', ()=>{
-    if(!ayetIsLooping || ayetCurrentAudio !== audio) return;
-    document.getElementById('btnAyetReadPlusOne').click(); // her tekrarda otomatik sayaç
-    audio.currentTime = 0;
-    audio.play().catch(()=> stopAyetAudio());
-  });
-  audio.play().catch(err=>{
-    document.getElementById('ayetAudioError').textContent = 'Ses oynatılamadı (bu hafızda bu sure kaydı olmayabilir). İnternet bağlantını kontrol et.';
-    document.getElementById('ayetAudioError').style.display = 'block';
-    console.error(err);
-    stopAyetAudio();
-  });
-});
-document.getElementById('btnAyetDetailBack').addEventListener('click', stopAyetAudio);
-
-document.getElementById('btnAyetReadPlusOne').addEventListener('click', async ()=>{
-  if(!currentAyetItem || !userDocRef) return;
-  try{
-    const userData = await getAyetUserData();
-    const today = todayStr();
-    const rc = userData.readCounts[currentAyetItem.id];
-    const newCount = (rc && rc.date === today) ? rc.count + 1 : 1;
-    userData.readCounts[currentAyetItem.id] = { date: today, count: newCount };
-    await userDocRef.set({ ayetReadCounts: userData.readCounts }, {merge:true});
-    document.getElementById('ayetTodayCount').textContent = newCount;
-    document.getElementById('ayetProgressBar').style.width = Math.min(100, (newCount/25)*100) + '%';
-    if(newCount === 25) showToast('🎉 Bugünkü hedefine ulaştın!');
-  }catch(e){ showToast('Kaydedilemedi'); }
-});
-
-document.getElementById('ayetMemorizedToggle').addEventListener('change', async (e)=>{
-  if(!currentAyetItem || !userDocRef) return;
-  try{
-    const userData = await getAyetUserData();
-    let list = userData.memorizedSurahs;
-    if(e.target.checked){
-      if(!list.includes(currentAyetItem.id)) list.push(currentAyetItem.id);
-      showToast('✅ Ezberlediklerine eklendi, maşallah!');
-    } else {
-      list = list.filter(n=>n!==currentAyetItem.id);
-    }
-    await userDocRef.set({ ayetMemorizedSurahs: list }, {merge:true});
-    try{
-      await db.collection('public_profiles').doc(currentUser.uid).set({ ayetMemorizedSurahs: list }, {merge:true});
-      const p = profileByUid(currentUser.uid);
-      if(p) p.ayetMemorizedSurahs = list;
-    }catch(mirrorErr){ console.error('public_profiles yansitilamadi', mirrorErr); }
-  }catch(e){ showToast('Kaydedilemedi'); e.target.checked = !e.target.checked; }
-});
-
-document.getElementById('btnAyetAddToList').addEventListener('click', async ()=>{
-  if(!currentAyetItem || !userDocRef) return;
-  try{
-    const userData = await getAyetUserData();
-    let list = userData.selectedSurahs;
-    const isSelected = list.includes(currentAyetItem.id);
-    if(isSelected){
-      list = list.filter(n=>n!==currentAyetItem.id);
-      showToast('Listeden çıkarıldı');
-    } else {
-      list.push(currentAyetItem.id);
-      showToast('⭐ Listene eklendi');
-    }
-    await userDocRef.set({ ayetSelectedSurahs: list }, {merge:true});
-    document.getElementById('btnAyetAddToList').textContent = !isSelected ? '⭐ Listemde (çıkarmak için dokun)' : '⭐ Listeme Ekle';
-    document.getElementById('btnAyetAddToList').style.background = !isSelected ? 'var(--tint-forest)' : '';
-    document.getElementById('btnAyetAddToList').style.color = !isSelected ? '#16A34A' : '';
-  }catch(e){ showToast('Kaydedilemedi'); }
-});
-
-// ---------- ADMİN: AYET/SURE YÖNETİMİ ----------
-async function renderAdminAyetlerList(){
-  const box = document.getElementById('adminAyetlerList');
-  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
-  const extras = await loadAyetlerAdminExtras(true);
-  if(extras.length === 0){
-    box.innerHTML = '<div class="empty"><div class="icon">📖</div><div class="msg">Admin tarafından henüz sure eklenmedi.</div></div>';
-    return;
-  }
-  box.innerHTML = extras.map(item=>{
-    const range = (item.start===1 && item.end>=3) ? 'tüm sure' : (item.start+'-'+item.end+'. ayet');
-    return `<div class="card" style="display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:14px;">
-      <div style="width:38px;height:38px;border-radius:12px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--text-brass); flex-shrink:0;">${item.no}</div>
-      <div style="flex:1;"><div style="font-weight:800; font-size:13.5px;">${escapeHtml(item.name)}</div><div class="hint" style="margin:2px 0 0;">Sure ${item.no}, ${range}</div></div>
-      <button data-ayet-admin-delete="${escapeHtml(item.id)}" style="border:1.5px solid var(--tint-rust); background:var(--tint-rust); color:var(--danger); border-radius:10px; width:34px;height:34px; cursor:pointer;">🗑️</button>
-    </div>`;
-  }).join('');
-  box.querySelectorAll('[data-ayet-admin-delete]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      if(!confirm('Bu sureyi listeden kaldırmak istediğine emin misin?')) return;
-      try{
-        await db.collection('namaz_ayetleri').doc(btn.dataset.ayetAdminDelete).delete();
-        showToast('Kaldırıldı');
-        renderAdminAyetlerList();
-      }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
-    });
-  });
-}
-document.getElementById('adminAyetAddBtn').addEventListener('click', async ()=>{
-  const surahNo = parseInt(document.getElementById('adminAyetSurahNo').value, 10);
-  const displayName = document.getElementById('adminAyetDisplayName').value.trim();
-  const startVal = document.getElementById('adminAyetStart').value;
-  const endVal = document.getElementById('adminAyetEnd').value;
-  if(!surahNo || surahNo<1 || surahNo>114){ showToast('Geçerli bir sure numarası gir (1-114)'); return; }
-  if(!displayName){ showToast('Görünen isim gir'); return; }
-  const btn = document.getElementById('adminAyetAddBtn');
-  btn.disabled = true; btn.textContent = 'Ekleniyor…';
-  try{
-    let ayahEnd = parseInt(endVal, 10);
-    if(!ayahEnd){
-      // Bitiş verilmemişse, suredeki toplam ayet sayısını API'den öğren
-      const res = await fetch(QURAN_API_BASE + '/surah/' + surahNo);
-      const json = await res.json();
-      ayahEnd = (json.data && json.data.numberOfAyahs) || 1;
-    }
-    const ayahStart = parseInt(startVal, 10) || 1;
-    await db.collection('namaz_ayetleri').add({
-      surahNo, displayName, ayahStart, ayahEnd,
-      addedBy: currentUser.uid, createdAt: new Date().toISOString()
-    });
-    showToast('✅ Eklendi: ' + displayName);
-    document.getElementById('adminAyetSurahNo').value = '';
-    document.getElementById('adminAyetDisplayName').value = '';
-    document.getElementById('adminAyetStart').value = '';
-    document.getElementById('adminAyetEnd').value = '';
-    renderAdminAyetlerList();
-  }catch(e){ showToast('Eklenemedi: '+(e.message||'')); }
-  btn.disabled = false; btn.textContent = '➕ Ekle';
-});
-
 async function renderDailyQuestsScreen(){
   const box = document.getElementById('dailyQuestsList');
   box.innerHTML = '<div class="hint">Yükleniyor…</div>';
@@ -9936,6 +9443,8 @@ function quizResetToCategory(){
   document.getElementById('quizPlayStep').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'none';
   document.getElementById('quizCategoryStep').style.display = 'block';
+  const navTabsEl = document.querySelector('nav.tabs');
+  if(navTabsEl) navTabsEl.style.display = 'flex';
   loadQuizQuestions();
   refreshDailyQuestBadge();
 }
@@ -9963,6 +9472,8 @@ document.getElementById('btnQuizBackHome').addEventListener('click', ()=>{ quizR
 // ---------- Test başlat: rastgele, tekrarsız 10 soru seç ----------
 async function startQuizSession(){
   await loadQuizQuestions();
+  const navTabsEl = document.querySelector('nav.tabs');
+  if(navTabsEl) navTabsEl.style.display = 'none';
   const pool = quizQuestions.filter(q => q.category===quizSelectedCategory);
   if(pool.length === 0){
     showToast('Bu kategoride henüz soru eklenmemiş');
@@ -10082,7 +9593,7 @@ async function selectQuizAnswer(index){
   clearQuizTimer();
   const q = quizSessionQuestions[quizCurrentIndex];
   const correct = (index === q.correctIndex);
-  const points = correct ? 5 : -10;
+  const points = correct ? 10 : -15;
   quizSessionScore += points;
   if(correct) quizSessionCorrect++; else quizSessionWrong++;
 
@@ -10232,7 +9743,7 @@ document.getElementById('btnQuizGoDuel').addEventListener('click', async ()=>{
   box.innerHTML = friendUids.map(uid=>{
     const p = profileByUid(uid);
     const name = p ? getDisplayName(p) : 'Kullanıcı';
-    const inner = (p && p.photoData) ? `<img src="${p.photoData}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div class="toggle-row" data-duel-pick-uid="${escapeHtml(uid)}" style="cursor:pointer;">
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="width:40px;height:40px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; overflow:hidden; flex-shrink:0;">${inner}</div>
@@ -10258,12 +9769,14 @@ document.getElementById('duelSetupCancelBtn').addEventListener('click', ()=>{
 });
 document.getElementById('duelSetupSendBtn').addEventListener('click', async ()=>{
   if(!duelSetupOpponentUid || !currentUser) return;
+  const category = document.getElementById('duelSetupCategory').value;
+  const categoryLabel = category === 'islami' ? 'İslami Bilgiler' : 'Genel Kültür';
   const questionCount = parseInt(document.getElementById('duelSetupQuestionCount').value, 10);
   const timePerQ = parseInt(document.getElementById('duelSetupTimePerQ').value, 10);
   try{
     const duelRef = await db.collection('duels').add({
       player1Uid: currentUser.uid, player2Uid: duelSetupOpponentUid,
-      questionCount, timePerQuestion: timePerQ,
+      category, questionCount, timePerQuestion: timePerQ,
       status: 'pending',
       scores: {}, progress: {}, finishedPlayers: [],
       createdAt: new Date().toISOString()
@@ -10271,7 +9784,7 @@ document.getElementById('duelSetupSendBtn').addEventListener('click', async ()=>
     const myName = (profile && profile.fullName) || 'Bir kullanıcı';
     await db.collection('notifications').add({
       toUid: duelSetupOpponentUid, fromUid: currentUser.uid, type:'duel_invite', duelId: duelRef.id,
-      message: '⚔️ ' + myName + ' seni düelloya davet etti! (' + questionCount + ' soru)',
+      message: '⚔️ ' + myName + ' seni düelloya davet etti! (' + categoryLabel + ' · ' + questionCount + ' soru)',
       read:false, createdAt:new Date().toISOString()
     });
     document.getElementById('duelSetupOverlay').style.display = 'none';
@@ -10303,9 +9816,13 @@ document.getElementById('duelBackHomeBtn').addEventListener('click', ()=>{
   if(currentDuelUnsub){ currentDuelUnsub(); currentDuelUnsub = null; }
   switchScreen('ana');
 });
-document.getElementById('btnDuelVoice').addEventListener('click', ()=>{
-  const opponentUid = getDuelOpponentUid(window._lastDuelData);
-  if(opponentUid) startVoiceCall(opponentUid);
+document.getElementById('btnDuelSpeak').addEventListener('click', ()=>{
+  const q = duelLocalQuestions[duelLocalIndex];
+  if(!q || typeof speechSynthesis === 'undefined') return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(q.question);
+  utter.lang = 'tr-TR';
+  speechSynthesis.speak(utter);
 });
 function getDuelOpponentUid(d){
   if(!d || !currentUser) return null;
@@ -10328,7 +9845,7 @@ function renderDuelRoom(d){
       document.getElementById('duelInviteActions').style.display = 'none';
     } else {
       document.getElementById('duelWaitingText').textContent = oppName + ' seni düelloya davet etti!';
-      document.getElementById('duelWaitingSub').textContent = d.questionCount + ' soru, soru başına ' + d.timePerQuestion + ' saniye.';
+      document.getElementById('duelWaitingSub').textContent = (d.category==='islami'?'🕌 İslami Bilgiler':'🌍 Genel Kültür') + ' · ' + d.questionCount + ' soru, soru başına ' + d.timePerQuestion + ' saniye.';
       document.getElementById('duelInviteActions').style.display = 'flex';
     }
     return;
@@ -10388,9 +9905,10 @@ document.getElementById('duelAcceptBtn').addEventListener('click', async ()=>{
     const doc = await db.collection('duels').doc(currentDuelId).get();
     const d = doc.data();
     await loadQuizQuestions();
-    const pool = quizQuestions.slice();
+    const pool = quizQuestions.filter(q => !d.category || q.category === d.category);
     for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
     const selected = pool.slice(0, d.questionCount).map(q=>q.id);
+    if(selected.length === 0){ showToast('Bu kategoride yeterli soru bulunamadı'); return; }
     await db.collection('duels').doc(currentDuelId).update({ status:'active', questionIds: selected, startedAt: new Date().toISOString() });
   }catch(e){ showToast('Kabul edilemedi: '+(e.message||'')); }
 });
@@ -10520,6 +10038,12 @@ async function loadQuizStats(){
     document.getElementById('quizStatCorrect').textContent = correct;
     document.getElementById('quizStatWrong').textContent = wrong;
     document.getElementById('quizStatAccuracy').textContent = accuracy;
+    // Rütbe rozetinin gerçek soru sayısıyla senkron kalması için düzelt (eski cevaplar sayılmamış olabilir)
+    const p = profileByUid(currentUser.uid);
+    if(p && (p.quizTotalAnswered||0) < total){
+      p.quizTotalAnswered = total;
+      db.collection('public_profiles').doc(currentUser.uid).set({ quizTotalAnswered: total }, {merge:true}).catch(()=>{});
+    }
   }catch(e){ console.error('Soru istatistikleri yüklenemedi', e); }
 }
 
@@ -10546,6 +10070,9 @@ async function loadVpQuizStats(uid){
 async function loadLeaderboard(){
   const listEl = document.getElementById('leaderboardList');
   if(!listEl) return;
+  const mainScrollEl = document.querySelector('main');
+  const preservedScrollTop = mainScrollEl ? mainScrollEl.scrollTop : 0;
+  listEl.style.minHeight = listEl.offsetHeight + 'px'; // içerik yenilenirken yükseklik aniden çökmesin
   listEl.innerHTML = '<div class="hint">Yükleniyor…</div>';
   let ranked = [];
   try{
@@ -10570,7 +10097,21 @@ async function loadLeaderboard(){
       ranked = Object.keys(totals).map(uid=>({uid, score: totals[uid]})).sort((a,b)=>b.score-a.score).slice(0,14);
     }
   }catch(e){ console.error('Sıralama yüklenemedi', e); }
+  // Sıralamadaki kullanıcılardan önbellekte olmayanları tamamla (isimler eksik gelmesin diye)
+  const missingUids = ranked.map(r=>r.uid).filter(uid => !allPublicProfiles.some(p=>p.uid===uid));
+  if(missingUids.length > 0){
+    try{
+      const chunks = [];
+      for(let i=0;i<missingUids.length;i+=10) chunks.push(missingUids.slice(i,i+10));
+      const results = await Promise.all(chunks.map(chunk => db.collection('public_profiles').where(firebase.firestore.FieldPath.documentId(),'in',chunk).get()));
+      results.forEach(snap => snap.docs.forEach(d => {
+        if(!allPublicProfiles.some(p=>p.uid===d.id)) allPublicProfiles.push({uid:d.id, ...d.data()});
+      }));
+    }catch(e){ console.error('Eksik profiller yüklenemedi', e); }
+  }
   renderLeaderboardList(ranked);
+  listEl.style.minHeight = '';
+  if(mainScrollEl) mainScrollEl.scrollTop = preservedScrollTop;
 }
 function renderLeaderboardList(ranked){
   const visibleCount = leaderboardExpanded ? 14 : 7;
@@ -10589,7 +10130,7 @@ function renderLeaderboardList(ranked){
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
     const avatarInner = (p && p.photoData)
-      ? '<img src="'+p.photoData+'" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">'
+      ? '<img src="'+safeImageSrc(p.photoData)+'" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">'
       : escapeHtml(initials);
     const avatarBg = (p && p.photoData) ? 'transparent' : avatarGradient(row.uid);
     return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; '+borderStyle+'">'
