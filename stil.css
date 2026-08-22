@@ -263,8 +263,9 @@
   @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
 
   /* ---------- SATRANÇ OYUN EKRANI BUTONLARI ---------- */
-  .chess-btn{font-family:'Segoe UI',system-ui,sans-serif; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#ece2cc; background:rgba(255,255,255,0.03); border:1px solid rgba(201,162,74,0.28); border-radius:10px; padding:10px 16px; cursor:pointer; backdrop-filter:blur(6px);}
-  .chess-btn:active{transform:scale(0.96);}
+  .chess-btn{font-family:'Segoe UI',system-ui,sans-serif; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#ece2cc; background:linear-gradient(160deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01)); border:1px solid rgba(201,162,74,0.38); border-radius:10px; padding:10px 16px; cursor:pointer; backdrop-filter:blur(8px); box-shadow:0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06); transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;}
+  .chess-btn:active{transform:scale(0.96); box-shadow:0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04); border-color:rgba(201,162,74,0.55);}
+  .chess-panel{background:linear-gradient(160deg,rgba(30,22,16,0.86),rgba(14,10,7,0.86)); border:1px solid rgba(201,162,74,0.3); box-shadow:0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); backdrop-filter:blur(8px);}
 
   /* ---------- PROFİL KARTI (vp-*) — eksik olan tanımlar, esnek birimlerle ---------- */
   .vp-avatar-ring{position:relative; width:5.2rem; height:5.2rem; min-width:5.2rem; min-height:5.2rem; border-radius:50%; overflow:hidden; flex-shrink:0; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center;}

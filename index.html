@@ -678,25 +678,25 @@
   <!-- SATRANÇ OYUN EKRANI -->
   <section class="screen" id="screen-chess-game" style="padding:0; background:#0c0907;">
     <div id="chessGameContainer" style="position:relative; width:100%; height:calc(100vh - 0px); margin:-16px; margin-top:-86px;">
-      <button id="btnChessGameBack" style="position:absolute; top:14px; left:14px; z-index:30; width:36px;height:36px; border-radius:50%; border:1px solid rgba(201,162,74,0.4); background:rgba(18,13,10,0.74); color:#ece2cc; font-size:18px; cursor:pointer;">‹</button>
+      <button id="btnChessGameBack" class="chess-panel" style="position:absolute; top:14px; left:14px; z-index:30; width:38px;height:38px; border-radius:50%; color:#ece2cc; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">‹</button>
       <div id="chess-canvas-container" style="position:absolute; inset:0;"></div>
-      <div id="chess-topbar" style="position:absolute; top:14px; left:50%; transform:translateX(-50%); background:rgba(18,13,10,0.74); border:1px solid rgba(201,162,74,0.28); backdrop-filter:blur(6px); padding:10px 24px; border-radius:16px; z-index:20; display:flex; align-items:center; gap:16px; font-family:Georgia,serif; color:#ece2cc; min-width:260px; justify-content:center;">
+      <div id="chess-topbar" class="chess-panel" style="position:absolute; top:14px; left:50%; transform:translateX(-50%); padding:10px 24px; border-radius:16px; z-index:20; display:flex; align-items:center; gap:16px; font-family:Georgia,serif; color:#ece2cc; min-width:260px; justify-content:center;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <div id="chess-turn-dot" style="width:12px;height:12px;border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff8e8, #d8c79a); flex-shrink:0;"></div>
+          <div id="chess-turn-dot" style="width:12px;height:12px;border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff8e8, #d8c79a); flex-shrink:0; box-shadow:0 0 8px rgba(201,162,74,0.55);"></div>
           <div>
-            <div id="chess-turn-text" style="font-size:15px;">Beyaz Sırası</div>
+            <div id="chess-turn-text" style="font-size:15px; letter-spacing:0.3px;">Beyaz Sırası</div>
             <div id="chess-status-text" style="font-family:'Segoe UI',sans-serif; font-size:11px; color:#f5745a; min-height:13px;"></div>
           </div>
         </div>
-        <div id="chess-timer" style="font-family:'Segoe UI',sans-serif; font-size:11px; color:#c9a24a; opacity:0.85; border-left:1px solid rgba(201,162,74,0.28); padding-left:14px;">00:00</div>
-        <div id="chess-move-timer" style="font-family:'Segoe UI',sans-serif; font-size:13px; font-weight:800; color:#c9a24a; border-left:1px solid rgba(201,162,74,0.28); padding-left:14px;">30s</div>
+        <div id="chess-timer" style="font-family:'Segoe UI',sans-serif; font-size:11px; color:#c9a24a; opacity:0.85; border-left:1px solid rgba(201,162,74,0.3); padding-left:14px;">00:00</div>
+        <div id="chess-move-timer" style="font-family:'Segoe UI',sans-serif; font-size:13px; font-weight:800; color:#c9a24a; border-left:1px solid rgba(201,162,74,0.3); padding-left:14px;">30s</div>
       </div>
-      <div id="chess-captured-white" style="position:absolute; top:70px; left:12px; right:12px; padding:8px 12px; border-radius:14px; background:rgba(18,13,10,0.74); border:1px solid rgba(201,162,74,0.28); z-index:20; display:flex; align-items:center; gap:10px;">
-        <div style="font-family:'Segoe UI',sans-serif; font-size:8px; letter-spacing:1px; color:#c9a24a; white-space:nowrap; flex-shrink:0;">BEYAZ<br/>KAYIP</div>
+      <div id="chess-captured-white" class="chess-panel" style="position:absolute; top:70px; left:12px; right:12px; padding:8px 12px; border-radius:14px; z-index:20; display:flex; align-items:center; gap:10px;">
+        <div style="font-family:'Segoe UI',sans-serif; font-size:8px; letter-spacing:1.5px; color:#c9a24a; white-space:nowrap; flex-shrink:0; font-weight:700;">BEYAZ<br/>KAYIP</div>
         <div id="chess-captured-white-grid" style="display:flex; flex-wrap:wrap; gap:2px; flex:1;"></div>
       </div>
-      <div id="chess-captured-black" style="position:absolute; bottom:66px; left:12px; right:12px; padding:8px 12px; border-radius:14px; background:rgba(18,13,10,0.74); border:1px solid rgba(201,162,74,0.28); z-index:20; display:flex; align-items:center; gap:10px;">
-        <div style="font-family:'Segoe UI',sans-serif; font-size:8px; letter-spacing:1px; color:#c9a24a; white-space:nowrap; flex-shrink:0;">SİYAH<br/>KAYIP</div>
+      <div id="chess-captured-black" class="chess-panel" style="position:absolute; bottom:66px; left:12px; right:12px; padding:8px 12px; border-radius:14px; z-index:20; display:flex; align-items:center; gap:10px;">
+        <div style="font-family:'Segoe UI',sans-serif; font-size:8px; letter-spacing:1.5px; color:#c9a24a; white-space:nowrap; flex-shrink:0; font-weight:700;">SİYAH<br/>KAYIP</div>
         <div id="chess-captured-black-grid" style="display:flex; flex-wrap:wrap; gap:2px; flex:1;"></div>
       </div>
       <div id="chess-zoom-controls" style="position:absolute; bottom:18px; right:14px; z-index:20; display:flex; flex-direction:column; gap:6px;">
@@ -709,6 +709,19 @@
       </div>
     </div>
   </section>
+
+  <!-- SATRANÇ: TESLİM OLMA ONAYI (özel modal, tarayıcının confirm() penceresine güvenmiyoruz) -->
+  <div class="modal-overlay" id="chessResignConfirmOverlay" style="z-index:200; align-items:center;">
+    <div class="chess-panel" style="border-radius:18px; padding:24px 20px; max-width:300px; margin:0 16px; text-align:center; color:#ece2cc;">
+      <div style="font-size:34px; margin-bottom:10px;">🏳️</div>
+      <div style="font-weight:800; font-size:15px; margin-bottom:8px;">Teslim olmak istediğine emin misin?</div>
+      <div style="font-family:'Segoe UI',sans-serif; font-size:12px; color:#c9a24a; margin-bottom:18px;">Bu işlem geri alınamaz, oyun bitecek.</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="chess-btn" id="btnChessResignConfirmYes" style="background:linear-gradient(160deg,#B91C1C,#7F1D1D); border-color:rgba(248,113,113,0.5);">Evet, Teslim Ol</button>
+        <button class="chess-btn" id="btnChessResignConfirmNo">Vazgeç</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MARKET (puan ile joker satın alma) -->
   <section class="screen" id="screen-quiz-market">
@@ -9494,7 +9507,7 @@ function initGame(){
     // ============================================================
     var scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0c0907);
-    scene.fog = new THREE.Fog(0x0c0907, 16, 34);
+    scene.fog = new THREE.Fog(0x0c0907, 20, 44);
 
     var camera = new THREE.PerspectiveCamera(42, container.clientWidth/container.clientHeight, 0.1, 100);
 
@@ -10036,16 +10049,16 @@ function initGame(){
     // ============================================================
     var camState = {
       theta: 0.0,
-      phi: 0.68,
-      radius: 20,
+      phi: 0.58,
+      radius: 29,
       targetTheta: 0.0,
-      targetPhi: 0.68,
-      targetRadius: 20
+      targetPhi: 0.58,
+      targetRadius: 29
     };
     var camTargetPoint = new THREE.Vector3(0, 0.3, 0);
     var camTargetGoal = new THREE.Vector3(0, 0.3, 0);
     var camTargetHome = new THREE.Vector3(0, 0.3, 0);
-    var CAM_HOME = { theta: 0.0, phi: 0.68, radius: 20 };
+    var CAM_HOME = { theta: 0.0, phi: 0.58, radius: 29 };
 
     var isDragging = false, lastX=0, lastY=0;
     var THETA_LIMIT = 0.55;   // sağa/sola en fazla bu kadar (radyan)
@@ -10085,12 +10098,12 @@ function initGame(){
     renderer.domElement.addEventListener("wheel", function(e){
       e.preventDefault();
       camState.targetRadius *= (1 + e.deltaY * 0.0011);
-      camState.targetRadius = Math.max(6.5, Math.min(22, camState.targetRadius));
+      camState.targetRadius = Math.max(8, Math.min(38, camState.targetRadius));
     }, { passive:false });
 
     function zoomCamera(factor){
       camState.targetRadius *= factor;
-      camState.targetRadius = Math.max(6.5, Math.min(22, camState.targetRadius));
+      camState.targetRadius = Math.max(8, Math.min(38, camState.targetRadius));
     }
     window.chessZoomIn = function(){ zoomCamera(0.85); };
     window.chessZoomOut = function(){ zoomCamera(1.18); };
@@ -10779,19 +10792,25 @@ document.getElementById('btnChessGameBack').addEventListener('click', ()=>{
   switchScreen('oyunlar');
 });
 
-document.getElementById('btn-chess-resign').addEventListener('click', async ()=>{
-  if(!confirm('Teslim olmak istediğine emin misin?')) return;
+document.getElementById('btn-chess-resign').addEventListener('click', ()=>{
+  document.getElementById('chessResignConfirmOverlay').classList.add('show');
+});
+document.getElementById('btnChessResignConfirmNo').addEventListener('click', ()=>{
+  document.getElementById('chessResignConfirmOverlay').classList.remove('show');
+});
+document.getElementById('btnChessResignConfirmYes').addEventListener('click', async ()=>{
+  document.getElementById('chessResignConfirmOverlay').classList.remove('show');
   if(window.chessBotMode){
     if(window.chessSetResigned) window.chessSetResigned('Bilgisayar');
     return;
   }
-  if(!currentChessDuelId) return;
+  if(!currentChessDuelId){ showToast('Aktif bir oyun bulunamadı'); return; }
   try{
     const doc = await db.collection('chess_duels').doc(currentChessDuelId).get();
     const d = doc.data();
     const winnerUid = d.player1Uid === currentUser.uid ? d.player2Uid : d.player1Uid;
     await db.collection('chess_duels').doc(currentChessDuelId).update({ status:'finished', winnerUid, resignedBy: currentUser.uid });
-  }catch(e){ showToast('İşlem başarısız'); }
+  }catch(e){ console.error('Teslim olma hatası', e); showToast('İşlem başarısız'); }
 });
 
 // ================= SATRANÇ: RASTGELE RAKİP EŞLEŞTİRME =================
