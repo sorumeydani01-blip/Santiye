@@ -47,6 +47,8 @@
   #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));}
   body.chat-open header.top{display:none !important;}
   body.chat-open main{padding-top:16px;}
+  body.chess-open header.top{display:none !important;}
+  body.chess-open #roleBadgeWrap{display:none !important;}
   .card{background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow-sm); transition:box-shadow .2s ease;}
 
   .quote-card{background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; border-radius:20px; padding:20px; margin-bottom:16px; box-shadow:var(--shadow-md);}
@@ -259,6 +261,10 @@
   .allmonths-row .amval .v2{font-size:10.5px; color:var(--ink-soft); margin-top:1px;}
 
   @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+
+  /* ---------- SATRANÇ OYUN EKRANI BUTONLARI ---------- */
+  .chess-btn{font-family:'Segoe UI',system-ui,sans-serif; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#ece2cc; background:rgba(255,255,255,0.03); border:1px solid rgba(201,162,74,0.28); border-radius:10px; padding:10px 16px; cursor:pointer; backdrop-filter:blur(6px);}
+  .chess-btn:active{transform:scale(0.96);}
 
   /* ---------- PROFİL KARTI (vp-*) — eksik olan tanımlar, esnek birimlerle ---------- */
   .vp-avatar-ring{position:relative; width:5.2rem; height:5.2rem; min-width:5.2rem; min-height:5.2rem; border-radius:50%; overflow:hidden; flex-shrink:0; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center;}
