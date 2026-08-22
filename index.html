@@ -142,12 +142,28 @@
 <div id="globalPullRefreshIndicator" style="height:0; overflow:hidden; transition:height .15s ease; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:12px; font-weight:700; position:fixed; top:86px; left:0; right:0; z-index:25; background:var(--paper);"></div>
 <div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:150; background:#374151; color:#fff; text-align:center; font-size:12px; font-weight:700; padding:7px 10px calc(7px + env(safe-area-inset-top));">📴 Çevrimdışısın — verilerin cihazında görünüyor, bağlantı gelince otomatik gönderilecek</div>
 
+<!-- ARKADAŞ LİSTESİ PENCERESİ — ekrandan bağımsız (herhangi bir profil ekranından açılabilir, alt menünün altında kalmaz) -->
+<div id="followerListBar" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4); align-items:flex-end; justify-content:center;">
+  <div style="background:var(--paper); width:100%; max-width:480px; max-height:70vh; border-radius:20px 20px 0 0; padding:16px; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="font-weight:800; font-size:15px;" id="followerListBarTitle">Arkadaşlar</div>
+      <button id="followerListBarClose" style="border:none; background:var(--concrete); width:30px;height:30px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
+    </div>
+    <div id="followerListBarBody"></div>
+  </div>
+</div>
+
 <!-- İLK KAYIT (ONBOARDING) -->
 <div id="onboardOverlay" style="position:fixed; inset:0; z-index:90; background:rgba(17,24,39,0.55); display:none; align-items:flex-end; justify-content:center;">
   <div class="modal-sheet" style="max-height:92vh;">
     <div class="modal-title"><span>Profilini Oluştur</span></div>
     <div class="hint" style="margin-top:-8px; margin-bottom:16px;">Devam etmeden önce birkaç bilgi alalım — mesleğini seçmen özellikle önemli.</div>
     <div class="field"><label>Ad Soyad</label><input type="text" id="obFullName"></div>
+    <div class="field">
+      <label>Kullanıcı Adı</label>
+      <input type="text" id="obUsername" maxlength="16" placeholder="Örn: ahmet_usta" autocapitalize="off" autocorrect="off">
+      <div class="hint" id="obUsernameHint" style="margin-top:4px;">3-16 karakter, sadece harf/rakam/alt çizgi (_)</div>
+    </div>
     <div class="field">
       <label>Meslek</label>
       <select id="obProfession"></select>
@@ -1250,21 +1266,12 @@
         <button id="vpBlockBtn" class="vp-btn-block">🚫</button>
       </div>
       <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:9px; font-size:12px; font-weight:700; color:var(--ink-soft);">
-        <span id="vpFollowerCount">0 takipçi</span>
+        <span id="vpFollowerCount">0 arkadaş</span>
         <div id="vpFollowerMiniAvatars" style="display:flex; align-items:center; cursor:pointer;"></div>
       </div>
-      <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı takip özelliğini kapatmış.</div>
+      <div class="hint" id="vpHiddenNote" style="display:none;">Bu kullanıcı arkadaş listesini gizli tutuyor.</div>
     </div>
 
-    <div id="followerListBar" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4); align-items:flex-end; justify-content:center;">
-      <div style="background:var(--paper); width:100%; max-width:480px; max-height:70vh; border-radius:20px 20px 0 0; padding:16px; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div style="font-weight:800; font-size:15px;" id="followerListBarTitle">Takipçiler</div>
-          <button id="followerListBarClose" style="border:none; background:var(--concrete); width:30px;height:30px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
-        </div>
-        <div id="followerListBarBody"></div>
-      </div>
-    </div>
 
     <div class="card" id="vpQuizStatsCard" style="padding:14px; margin-bottom:14px;">
       <div class="section-title" style="margin:0 0 10px; padding:0; border:none;">🧠 Soru Çöz İstatistikleri</div>
@@ -1372,7 +1379,7 @@
 
       <details class="card" id="vpToolPermanentDelete" style="display:none; border-color:var(--danger);">
         <summary style="font-weight:700; cursor:pointer; color:var(--danger);">🗑️ Hesabı Kalıcı Olarak Sil</summary>
-        <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlem GERİ ALINAMAZ. Kullanıcının tüm verileri (profil, kayıtlar, takip ilişkileri, moderatörlük) kalıcı olarak silinir. Not: Giriş hesabı (e-posta/şifre) bu panelden silinemez, sadece verileri temizlenir.</div>
+        <div class="hint" style="margin-top:0; color:var(--danger);">Bu işlem GERİ ALINAMAZ. Kullanıcının tüm verileri (profil, kayıtlar, arkadaşlık ilişkileri, moderatörlük) kalıcı olarak silinir. Not: Giriş hesabı (e-posta/şifre) bu panelden silinemez, sadece verileri temizlenir.</div>
         <button class="submit-btn danger" id="vpPermanentDeleteBtn" style="margin-top:12px;">Kalıcı Olarak Sil</button>
       </details>
 
@@ -1930,7 +1937,7 @@
   <!-- TAKİPÇİ LİSTESİ -->
   <div class="modal-overlay" id="followerListOverlay">
     <div class="modal-sheet">
-      <div class="modal-title"><span>Takipçiler</span><button class="close" id="followerListClose">✕</button></div>
+      <div class="modal-title"><span>Arkadaşlar</span><button class="close" id="followerListClose">✕</button></div>
       <div id="followerListBody"></div>
     </div>
   </div>
@@ -2697,10 +2704,10 @@ function renderFollowerMiniAvatars(followerUids, uidForModal){
   box.onclick = () => openFollowerListBar(followerUids);
 }
 function openFollowerListBar(followerUids, title){
-  document.getElementById('followerListBarTitle').textContent = title || 'Takipçiler';
+  document.getElementById('followerListBarTitle').textContent = title || 'Arkadaşlar';
   const body = document.getElementById('followerListBarBody');
   if(followerUids.length===0){
-    body.innerHTML = `<div class="empty"><div class="icon">👥</div><div class="msg">Henüz takipçi yok.</div></div>`;
+    body.innerHTML = `<div class="empty"><div class="icon">🤝</div><div class="msg">Henüz arkadaş yok.</div></div>`;
   } else {
     body.innerHTML = followerUids.map(uid=>{
       const p = profileByUid(uid);
@@ -2754,7 +2761,7 @@ function renderFollowerAvatarsInto(containerId, followerUids, max){
 function renderFollowerListModal(followerUids){
   const box = document.getElementById('followerListBody');
   if(followerUids.length===0){
-    box.innerHTML = `<div class="empty"><div class="icon">👥</div><div class="msg">Henüz takipçi yok.</div></div>`;
+    box.innerHTML = `<div class="empty"><div class="icon">🤝</div><div class="msg">Henüz arkadaş yok.</div></div>`;
   } else {
     box.innerHTML = followerUids.map(uid=>{
       const p = profileByUid(uid);
@@ -5205,7 +5212,7 @@ async function openOrCreateConversation(targetUid){
   const allowed = await canMessageUser(targetUid);
   if(!allowed){
     const tp = profileByUid(targetUid);
-    showToast(tp && tp.selfPaused ? 'Bu kullanıcı hesabını geçici olarak duraklattı' : 'Bu kullanıcı sadece takipçilerinden mesaj kabul ediyor');
+    showToast(tp && tp.selfPaused ? 'Bu kullanıcı hesabını geçici olarak duraklattı' : 'Bu kullanıcı sadece arkadaşlarından mesaj kabul ediyor');
     return;
   }
   const cid = convId(currentUser.uid, targetUid);
@@ -5413,9 +5420,10 @@ async function refreshChatPinState(cid){
       confirmed = true;
     }
     if(diffY > 0){
+      e.preventDefault(); // tarayıcının kendi pull-to-refresh'i devreye girmesin, sadece bizimki çalışsın
       indicator.style.height = Math.min(diffY/2, 50) + 'px';
     }
-  }, {passive:true});
+  }, {passive:false});
   document.addEventListener('touchend', ()=>{
     if(!pulling) return;
     pulling = false; confirmed = false;
@@ -8170,7 +8178,7 @@ function renderProfile(){
   const warnedUntil = ownP && ownP.activeWarningUntil && new Date(ownP.activeWarningUntil).getTime() > Date.now() ? ownP.activeWarningUntil : null;
   if(warnedUntil){
     warningBanner.style.display = 'block';
-    warningBanner.innerHTML = `⚠️ Hesabın uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(ownP.activeWarningReason||'-')}<br>Bitiş: ${new Date(warnedUntil).toLocaleString('tr-TR')}<br>Bu süre içinde mesaj gönderemez, yeni sohbet başlatamaz, birini takip edemezsin.</span>`;
+    warningBanner.innerHTML = `⚠️ Hesabın uyarılı<br><span style="font-weight:400;">Sebep: ${escapeHtml(ownP.activeWarningReason||'-')}<br>Bitiş: ${new Date(warnedUntil).toLocaleString('tr-TR')}<br>Bu süre içinde mesaj gönderemez, yeni sohbet başlatamaz, birini arkadaş ekleyemezsin.</span>`;
   } else {
     warningBanner.style.display = 'none';
   }
@@ -9439,6 +9447,7 @@ async function useJokerToday(){
 
 // ---------- Kategori seçimi ----------
 function quizResetToCategory(){
+  if(typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
   clearQuizTimer();
   document.getElementById('quizPlayStep').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'none';
@@ -9504,6 +9513,7 @@ async function startQuizSession(){
 }
 
 function renderQuizQuestion(){
+  if(typeof speechSynthesis !== 'undefined') speechSynthesis.cancel(); // önceki sorunun sesi kalmasın
   quizJokerUsedThisQuestion = false;
   const q = quizSessionQuestions[quizCurrentIndex];
   document.getElementById('quizQuestionNumLbl').textContent = (quizCurrentIndex+1) + '. Soru';
@@ -9558,6 +9568,7 @@ function startQuizTimer(){
   bar.style.background = 'var(--asphalt)';
   requestAnimationFrame(()=>{ bar.style.transition = 'width 1s linear'; });
   quizTimerInterval = setInterval(()=>{
+    if(typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking) return; // soru sesle okunurken süre beklesin
     quizTimeLeft--;
     const pct = Math.max(0, (quizTimeLeft/QUIZ_QUESTION_SECONDS)*100);
     bar.style.width = pct + '%';
@@ -10125,8 +10136,9 @@ function renderLeaderboardList(ranked){
   }
   listEl.innerHTML = shown.map((row,i)=>{
     const p = profileByUid(row.uid);
-    const name = getDisplayName(p);
-    const initials = getInitials(name);
+    const username = (p && p.username) ? p.username : 'kullanici';
+    const initials = getInitials(username);
+    const rankBadge = quizRankBadgeHtml(row.score, 'font-size:9.5px; padding:1px 7px;', p ? p.quizTotalAnswered : 0);
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
     const avatarInner = (p && p.photoData)
@@ -10136,7 +10148,10 @@ function renderLeaderboardList(ranked){
     return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; '+borderStyle+'">'
       + '<div style="width:24px; text-align:center; font-weight:800; font-size:13px;">'+medal+'</div>'
       + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarBg+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">'+avatarInner+'</div>'
-      + '<div style="flex:1; font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(name)+'</div>'
+      + '<div style="flex:1; min-width:0;">'
+        + '<div style="font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(username)+'</div>'
+        + (rankBadge ? '<div style="margin-top:2px;">'+rankBadge+'</div>' : '')
+      + '</div>'
       + '<div style="font-weight:800; font-size:13px; color:var(--asphalt);">'+row.score+' pn</div>'
       + '</div>';
   }).join('');
@@ -11023,24 +11038,68 @@ function fillProfessionSelect(selectEl, selected){
   const pool = (dynamicProfessions && dynamicProfessions.length) ? dynamicProfessions : PROFESSIONS;
   selectEl.innerHTML = pool.map(p=>`<option value="${escapeHtml(p)}" ${p===selected?'selected':''}>${escapeHtml(p)}</option>`).join('');
 }
+function slugifyUsername(str){
+  return (str||'').toLowerCase()
+    .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+    .replace(/[^a-z0-9_]+/g,'_').replace(/^_+|_+$/g,'').slice(0,20);
+}
+let obUsernameCheckTimer = null;
 function showOnboarding(){
   document.getElementById('obFullName').value = currentUser && currentUser.displayName ? currentUser.displayName : '';
+  // Kullanıcı adı ASLA otomatik/rastgele atanmaz — sadece bir başlangıç önerisi konur, kullanıcı mutlaka kendi girmeli/onaylamalı
+  const suggestedUsername = currentUser && currentUser.displayName ? slugifyUsername(currentUser.displayName) : '';
+  document.getElementById('obUsername').value = suggestedUsername;
+  document.getElementById('obUsernameHint').textContent = '3-16 karakter, sadece harf/rakam/alt çizgi (_)';
+  document.getElementById('obUsernameHint').style.color = '';
   fillProfessionSelect(document.getElementById('obProfession'), '');
   document.getElementById('obCity').value = '';
   document.getElementById('onboardOverlay').style.display = 'flex';
 }
+document.getElementById('obUsername').addEventListener('input', (e)=>{
+  e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 16);
+  clearTimeout(obUsernameCheckTimer);
+  const val = e.target.value;
+  const hintEl = document.getElementById('obUsernameHint');
+  if(val.length > 0 && val.length < 3){
+    hintEl.textContent = 'En az 3 karakter olmalı';
+    hintEl.style.color = 'var(--danger)';
+    return;
+  }
+  if(val.length < 3) return;
+  hintEl.textContent = 'Kontrol ediliyor…';
+  hintEl.style.color = '';
+  obUsernameCheckTimer = setTimeout(async ()=>{
+    const taken = await usernameExists(val, currentUser ? currentUser.uid : null);
+    if(taken){ hintEl.textContent = '❌ Bu kullanıcı adı alınmış, başka bir tane dene'; hintEl.style.color = 'var(--danger)'; }
+    else { hintEl.textContent = '✅ Kullanılabilir'; hintEl.style.color = '#16A34A'; }
+  }, 400);
+});
 document.getElementById('obSave').addEventListener('click', async ()=>{
   const fullName = document.getElementById('obFullName').value.trim();
+  const usernameInput = document.getElementById('obUsername').value.trim();
+  const hintEl = document.getElementById('obUsernameHint');
+  if(usernameInput.length < 3 || usernameInput.length > 16){
+    hintEl.textContent = 'Kullanıcı adı 3-16 karakter arasında olmalı';
+    hintEl.style.color = 'var(--danger)';
+    document.getElementById('obUsername').focus();
+    return;
+  }
+  const btn = document.getElementById('obSave');
+  btn.disabled = true; btn.textContent = 'Kontrol ediliyor…';
+  const taken = await usernameExists(usernameInput, currentUser ? currentUser.uid : null);
+  btn.disabled = false; btn.textContent = 'Başla';
+  if(taken){
+    hintEl.textContent = '❌ Bu kullanıcı adı alınmış, başka bir tane dene';
+    hintEl.style.color = 'var(--danger)';
+    document.getElementById('obUsername').focus();
+    return;
+  }
   const profession = document.getElementById('obProfession').value;
   const city = document.getElementById('obCity').value.trim();
   const wage = parseFloat(document.getElementById('obDefaultWage').value) || 0;
-  const baseUsername = (fullName || 'kullanici').toLowerCase()
-    .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
-    .replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'') || 'kullanici';
-  const finalUsername = await generateUniqueUsername(baseUsername);
   profile = {
     fullName,
-    username: finalUsername,
+    username: usernameInput,
     userId: 'SD-' + randomSuffix(8).toUpperCase(),
     profession,
     city,
