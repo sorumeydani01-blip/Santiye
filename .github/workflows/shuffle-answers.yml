@@ -21,5 +21,4 @@ jobs:
       - name: Şıkları karıştır
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node shuffle-quiz-answers.js
-        
+        run: node scripts/shuffle-quiz-answers.js
