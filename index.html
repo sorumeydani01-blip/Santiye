@@ -332,14 +332,14 @@
       <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px;">Mesajlar</div>
       <div style="display:flex; gap:8px;">
         <button id="btnNewGroup" style="width:40px;height:40px;border-radius:50%; background:var(--paper); border:1.5px solid var(--line); color:var(--ink); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">👥</button>
-        <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--warm-shadow); display:flex; align-items:center; justify-content:center;">✎</button>
+        <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:linear-gradient(150deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--chat-shadow); display:flex; align-items:center; justify-content:center;">✎</button>
       </div>
     </div>
-    <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
+    <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
       <span style="font-size:15px;">🔔</span><span></span>
     </div>
     <div id="msgSearchResults" style="display:none;"></div>
-    <div id="convSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border-radius:14px; margin-bottom:14px;">
+    <div id="convSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; border-radius:14px; margin-bottom:14px;">
       <span style="font-weight:700; font-size:13px;"><span id="convSelectCount">0</span> sohbet seçildi</span>
       <div style="display:flex; gap:8px;">
         <button id="convSelectReadBtn" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer;">✓ Okundu</button>
@@ -368,7 +368,7 @@
   <section class="screen" id="screen-chat" style="flex-direction:column;">
     <div style="display:flex; align-items:center; gap:10px; padding:8px 4px; flex-shrink:0; border-bottom:1px solid var(--line); background:var(--paper);">
       <button id="btnBackFromChat" style="width:38px;height:38px;border-radius:50%; border:none; background:none; font-size:22px; cursor:pointer; color:var(--ink); flex-shrink:0;">‹</button>
-      <div id="chatHeaderAvatar" style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0; cursor:pointer;">-</div>
+      <div id="chatHeaderAvatar" style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0; cursor:pointer;">-</div>
       <div style="flex:1; min-width:0;">
         <div id="chatHeaderName" style="font-weight:800; font-size:15px; font-family:'Manrope'; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;">-</div>
         <div id="chatHeaderSub" style="font-size:11.5px; color:var(--ink-soft);">@kullanici</div>
@@ -389,7 +389,7 @@
       </div>
     </div>
     <div id="chatBlockedNote" style="display:none; text-align:center; font-size:12px; color:var(--danger); background:var(--tint-rust); padding:8px; flex-shrink:0;"></div>
-    <div id="chatSelectModeBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; flex-shrink:0;">
+    <div id="chatSelectModeBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; flex-shrink:0;">
       <span style="font-weight:700; font-size:13px;">Mesaj seç</span>
       <button id="chatSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
     </div>
@@ -424,7 +424,7 @@
         </div>
       </div>
       <button id="chatMicBtn" style="width:46px;height:46px;border-radius:50%; background:var(--paper); border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft); box-shadow:var(--shadow-sm);">🎤</button>
-      <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(232,131,15,0.4);">➤</button>
+      <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(0,128,105,0.35);">➤</button>
     </div>
   </section>
   <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}
@@ -6011,27 +6011,28 @@ document.getElementById('btnBackFromChat').addEventListener('click', ()=>{
 });
 let chatMsgTextCache = {};
 function chatTickHtml(m){
-  if(!m.id) return '<span style="color:'+ (settings.darkMode?'#9CA3AF':'#8B93A7') +';">✓</span>';
-  if(currentChatIsGroup) return '<span style="color:var(--warm-accent-2);">✓✓</span>';
+  const tickGray = settings.darkMode ? '#8696A0' : '#8B93A7';
+  if(!m.id) return '<span style="color:'+tickGray+';">✓</span>';
+  if(currentChatIsGroup) return '<span style="color:'+tickGray+';">✓✓</span>';
   const seen = currentChatOtherLastRead && m.createdAt && m.createdAt <= currentChatOtherLastRead;
-  return seen ? '<span style="color:#22C55E;">✓✓</span>' : '<span style="color:var(--warm-accent-2);">✓✓</span>';
+  return seen ? '<span style="color:var(--chat-tick-seen);">✓✓</span>' : '<span style="color:'+tickGray+';">✓✓</span>';
 }
 function chatBubbleHtml(m){
   const mine = m.senderUid===currentUser.uid;
   const time = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
   if(m.id) chatMsgTextCache[m.id] = m.text;
   const isDark = !!settings.darkMode;
-  const bubbleBg = mine ? 'var(--warm-bubble-mine)' : 'var(--warm-bubble-other)';
-  const textColor = mine ? 'var(--warm-bubble-mine-text)' : 'var(--warm-bubble-other-text)';
-  const timeColor = mine ? (isDark?'rgba(245,236,221,0.65)':'rgba(74,46,10,0.6)') : (isDark?'#8A8378':'#8A7A63');
-  const bubbleRadius = mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px';
+  const bubbleBg = mine ? 'var(--chat-bubble-mine)' : 'var(--chat-bubble-other)';
+  const textColor = mine ? 'var(--chat-bubble-mine-text)' : 'var(--chat-bubble-other-text)';
+  const timeColor = isDark ? 'rgba(233,237,239,0.6)' : 'rgba(17,27,33,0.45)';
+  const bubbleRadius = mine ? '7.5px 7.5px 0 7.5px' : '7.5px 7.5px 7.5px 0';
   if(m.deletedForEveryone){
-    return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:8px;">
-      <div style="padding:9px 14px; border-radius:14px; background:${isDark?'#241C14':'#F1E7D8'}; font-size:13px; font-style:italic; color:${timeColor}; box-shadow:var(--warm-shadow);">🚫 Bu mesaj silindi</div>
+    return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:2px; padding:0 6px;">
+      <div style="padding:8px 12px; border-radius:7.5px; background:${isDark?'#1F2C33':'#F0F2F5'}; font-size:13px; font-style:italic; color:${timeColor}; box-shadow:var(--chat-shadow);">🚫 Bu mesaj silindi</div>
     </div>`;
   }
-  const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.08)':'rgba(74,46,10,0.06)'}; border-left:3px solid var(--warm-accent); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
-      <div style="font-weight:800; color:var(--warm-accent-2);">${escapeHtml(m.replyTo.senderName||'')}</div>
+  const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.06)':'rgba(11,20,26,0.05)'}; border-left:3px solid var(--chat-accent); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
+      <div style="font-weight:800; color:var(--chat-accent);">${escapeHtml(m.replyTo.senderName||'')}</div>
       <div style="color:${timeColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.replyTo.snippet||'')}</div>
     </div>` : '';
   const bypassMedia = canViewFullMedia();
@@ -6040,27 +6041,27 @@ function chatBubbleHtml(m){
   if(m.imageData){
     if(m.viewOnce && !mine && !bypassMedia){
       if(iAlreadyViewedOnce){
-        imageHtml = `<div style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.06)':'rgba(74,46,10,0.05)'}; text-align:center; font-size:12px; color:${timeColor}; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülendi</div>`;
+        imageHtml = `<div style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.06)':'rgba(11,20,26,0.05)'}; text-align:center; font-size:12px; color:${timeColor}; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülendi</div>`;
       } else {
-        imageHtml = `<div data-view-once-img="${escapeHtml(m.id||'')}" style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.08)':'rgba(74,46,10,0.07)'}; text-align:center; font-size:12px; font-weight:700; color:var(--warm-accent-2); cursor:pointer; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülemek için dokun<br><span style="font-weight:400; font-size:10.5px;">(tek seferlik)</span></div>`;
+        imageHtml = `<div data-view-once-img="${escapeHtml(m.id||'')}" style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.08)':'rgba(11,20,26,0.06)'}; text-align:center; font-size:12px; font-weight:700; color:var(--chat-accent); cursor:pointer; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülemek için dokun<br><span style="font-weight:400; font-size:10.5px;">(tek seferlik)</span></div>`;
       }
     } else {
-      imageHtml = `<img src="${safeImageSrc(m.imageData)}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>`;
+      imageHtml = `<img src="${safeImageSrc(m.imageData)}" style="max-width:100%; border-radius:5px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>`;
       if(m.viewOnce && !mine && bypassMedia){
         imageHtml = `<div style="position:relative;">${imageHtml}<div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">👁️ Tek seferlik (yönetici görünümü)</div></div>`;
       }
     }
   } else if(m.mediaExpired && m.imageDataArchived && bypassMedia){
     const canDelArch = canDeleteArchivedMedia();
-    imageHtml = `<div style="position:relative;"><img src="${m.imageDataArchived}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:5px; opacity:0.85;" data-view-img><div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">⏱️ Süresi doldu (yönetici görünümü)</div>${canDelArch?`<button data-delete-archived="${escapeHtml(m.id||'')}" style="position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none; border-radius:6px; font-size:9px; font-weight:800; padding:3px 7px; cursor:pointer;">🗑️ Kalıcı Sil</button>`:''}</div>`;
+    imageHtml = `<div style="position:relative;"><img src="${m.imageDataArchived}" style="max-width:100%; border-radius:5px; display:block; margin-bottom:5px; opacity:0.85;" data-view-img><div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">⏱️ Süresi doldu (yönetici görünümü)</div>${canDelArch?`<button data-delete-archived="${escapeHtml(m.id||'')}" style="position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none; border-radius:6px; font-size:9px; font-weight:800; padding:3px 7px; cursor:pointer;">🗑️ Kalıcı Sil</button>`:''}</div>`;
   }
-  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(74,46,10,0.08)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(74,46,10,0.08)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
+  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${linkifyHtml(m.text)}</div>` : '';
-  const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--warm-accent-2); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
-  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:8px; user-select:none; gap:6px;">
-      <input type="checkbox" class="chat-select-box" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:19px;height:19px; flex-shrink:0; ${mine?'order:2;':''}">
-      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'9px 13px 7px 14px'}; border-radius:${bubbleRadius}; background:${bubbleBg}; box-shadow:var(--warm-shadow);">
+  const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--chat-accent); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
+  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:2px; padding:3px 6px; border-radius:12px; user-select:none; gap:8px; transition:background .15s ease;">
+      <div class="chat-select-dot" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:22px;height:22px; border-radius:50%; border:2px solid var(--ink-soft); flex-shrink:0; align-items:center; justify-content:center; font-size:12px; color:#fff; transition:background .12s ease, border-color .12s ease; ${mine?'order:2;':''}"></div>
+      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'6px 9px 8px 9px'}; border-radius:${bubbleRadius}; background:${bubbleBg}; box-shadow:var(--chat-shadow);">
         ${senderNameHtml}
         ${replyHtml}
         ${imageHtml}
@@ -6094,7 +6095,7 @@ function renderChatMessages(msgs){
   msgs.forEach(m=>{
     const d = (m.createdAt||'').slice(0,10);
     if(d && d !== lastDate){
-      html += `<div style="position:sticky; top:4px; z-index:5; text-align:center; margin:14px 0 10px;"><span style="background:var(--paper); box-shadow:var(--warm-shadow); color:var(--warm-accent-2); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
+      html += `<div style="position:sticky; top:4px; z-index:5; text-align:center; margin:14px 0 10px;"><span style="background:${settings.darkMode?'#182229':'#FFFFFF'}; box-shadow:var(--chat-shadow); color:${settings.darkMode?'#8696A0':'#54656F'}; font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:8px;">${dateSeparatorLabel(d)}</span></div>`;
       lastDate = d;
     }
     html += chatBubbleHtml(m);
@@ -6130,31 +6131,36 @@ function renderChatMessages(msgs){
     el.addEventListener('mouseleave', cancelPress);
     el.addEventListener('click', ()=>{
       if(!chatSelectMode) return;
-      const box2 = el.querySelector('.chat-select-box');
-      box2.checked = !box2.checked;
-      toggleMsgSelection(el.dataset.msgid, box2.checked);
+      const isSelected = chatSelectedIds.has(el.dataset.msgid);
+      toggleMsgSelection(el.dataset.msgid, !isSelected);
     });
   });
 }
 function toggleMsgSelection(msgId, on){
   if(on) chatSelectedIds.add(msgId); else chatSelectedIds.delete(msgId);
+  const wrap = document.querySelector(`.chat-bubble-wrap[data-msgid="${msgId}"]`);
+  const dot = document.querySelector(`.chat-select-dot[data-select-msg="${msgId}"]`);
+  if(wrap) wrap.style.background = on ? 'var(--tint-slate)' : 'transparent';
+  if(dot){
+    dot.style.background = on ? 'var(--chat-accent)' : 'transparent';
+    dot.style.borderColor = on ? 'var(--chat-accent)' : 'var(--ink-soft)';
+    dot.textContent = on ? '✓' : '';
+  }
   document.getElementById('chatSelectCount').textContent = chatSelectedIds.size;
   document.getElementById('chatSelectBar').style.display = chatSelectedIds.size>0 ? 'flex' : 'none';
 }
 function enterSelectMode(firstMsgId){
   chatSelectMode = true;
   chatSelectedIds.clear();
-  document.querySelectorAll('.chat-select-box').forEach(cb=> cb.style.display='inline-block');
+  document.querySelectorAll('.chat-select-dot').forEach(cb=> cb.style.display='flex');
   document.getElementById('chatSelectModeBar').style.display = 'flex';
-  if(firstMsgId){
-    const cb = document.querySelector(`[data-select-msg="${firstMsgId}"]`);
-    if(cb){ cb.checked = true; toggleMsgSelection(firstMsgId, true); }
-  }
+  if(firstMsgId) toggleMsgSelection(firstMsgId, true);
 }
 function exitSelectMode(){
   chatSelectMode = false;
   chatSelectedIds.clear();
-  document.querySelectorAll('.chat-select-box').forEach(cb=>{ cb.style.display='none'; cb.checked=false; });
+  document.querySelectorAll('.chat-select-dot').forEach(cb=>{ cb.style.display='none'; cb.style.background='transparent'; cb.style.borderColor='var(--ink-soft)'; cb.textContent=''; });
+  document.querySelectorAll('.chat-bubble-wrap').forEach(w=> w.style.background='transparent');
   document.getElementById('chatSelectModeBar').style.display = 'none';
   document.getElementById('chatSelectBar').style.display = 'none';
 }
@@ -6522,8 +6528,8 @@ function convRowHtml(c, today){
         <div style="font-size:13px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?600:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">${preview}</div>
       </div>
       <div style="text-align:right; flex-shrink:0; align-self:flex-start;">
-        <div style="font-size:11.5px; color:${unread?'var(--warm-accent-2)':'var(--ink-soft)'}; font-weight:${unread?700:500};">${time}</div>
-        ${unreadNum>0?'<div style="min-width:22px;height:22px;border-radius:50%; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:8px 0 0 auto; padding:0 5px;">'+(unreadNum>99?'99+':unreadNum)+'</div>':''}
+        <div style="font-size:11.5px; color:${unread?'var(--chat-accent)':'var(--ink-soft)'}; font-weight:${unread?700:500};">${time}</div>
+        ${unreadNum>0?'<div style="min-width:22px;height:22px;border-radius:50%; background:linear-gradient(120deg,var(--chat-accent),var(--chat-accent-2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:8px 0 0 auto; padding:0 5px;">'+(unreadNum>99?'99+':unreadNum)+'</div>':''}
       </div>
     </div>`;
 }
