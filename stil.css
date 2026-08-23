@@ -57,7 +57,7 @@
 
   .screen{display:none;}
   .screen.active{display:block;}
-  #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));}
+  #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px 0;}
   body.chat-open header.top{display:none !important;}
   body.chat-open main{padding-top:16px;}
   body.chat-open nav.tabs{display:none !important;}
