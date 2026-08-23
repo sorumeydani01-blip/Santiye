@@ -39,6 +39,7 @@ html[data-theme="dark"]{
 
 /* ---------- TEMA: Sıcak Toprak (amber/terracotta) ---------- */
 html[data-app-theme="sicak_toprak"]{
+  --asphalt:#E8830F; --asphalt-2:#D66D1F;
   --warm-accent:#E8830F; --warm-accent-2:#D66D1F;
   --warm-bubble-mine:linear-gradient(135deg,#FDE6BC,#FBD08A);
   --warm-bubble-mine-text:#4A2E0A;
@@ -48,6 +49,7 @@ html[data-app-theme="sicak_toprak"]{
   --chat-wallpaper:#F7EDE0;
 }
 html[data-app-theme="sicak_toprak"][data-theme="dark"]{
+  --asphalt:#E89A4A; --asphalt-2:#C97A28;
   --warm-accent:#E89A4A; --warm-accent-2:#C97A28;
   --warm-bubble-mine:linear-gradient(135deg,#7A4A18,#5A3610);
   --warm-bubble-mine-text:#F5ECDD;
@@ -69,6 +71,7 @@ html[data-app-theme="kompakt"] header.top .brand > div:last-child{
 
 /* ---------- TEMA: Gece (canlı mor/pembe kontrast) ---------- */
 html[data-app-theme="gece"]{
+  --asphalt:#8B5CF6; --asphalt-2:#D946EF;
   --warm-accent:#8B5CF6; --warm-accent-2:#D946EF;
   --warm-bubble-mine:linear-gradient(135deg,#8B5CF6,#D946EF);
   --warm-bubble-mine-text:#FFFFFF;
@@ -78,6 +81,7 @@ html[data-app-theme="gece"]{
   --chat-wallpaper:#F1EDFB;
 }
 html[data-app-theme="gece"][data-theme="dark"]{
+  --asphalt:#A78BFA; --asphalt-2:#F0ABFC;
   --warm-accent:#A78BFA; --warm-accent-2:#F0ABFC;
   --warm-bubble-mine:linear-gradient(135deg,#5B21B6,#86198F);
   --warm-bubble-mine-text:#F5F0FF;
@@ -89,6 +93,7 @@ html[data-app-theme="gece"][data-theme="dark"]{
 
 /* ---------- TEMA: Okyanus (serin mavi/turkuaz) ---------- */
 html[data-app-theme="okyanus"]{
+  --asphalt:#0EA5E9; --asphalt-2:#06B6D4;
   --warm-accent:#0EA5E9; --warm-accent-2:#06B6D4;
   --warm-bubble-mine:linear-gradient(135deg,#BAE6FD,#7DD3FC);
   --warm-bubble-mine-text:#0C4A6E;
@@ -98,6 +103,7 @@ html[data-app-theme="okyanus"]{
   --chat-wallpaper:#EAF7FC;
 }
 html[data-app-theme="okyanus"][data-theme="dark"]{
+  --asphalt:#38BDF8; --asphalt-2:#22D3EE;
   --warm-accent:#38BDF8; --warm-accent-2:#22D3EE;
   --warm-bubble-mine:linear-gradient(135deg,#0C4A6E,#155E75);
   --warm-bubble-mine-text:#E0F7FF;
@@ -109,6 +115,7 @@ html[data-app-theme="okyanus"][data-theme="dark"]{
 
 /* ---------- TEMA: Doğa (canlı/ferah yeşil) ---------- */
 html[data-app-theme="doga"]{
+  --asphalt:#22C55E; --asphalt-2:#16A34A;
   --warm-accent:#22C55E; --warm-accent-2:#16A34A;
   --warm-bubble-mine:linear-gradient(135deg,#D1F5DE,#A7EBC1);
   --warm-bubble-mine-text:#0F3D22;
@@ -118,6 +125,7 @@ html[data-app-theme="doga"]{
   --chat-wallpaper:#EBF8EF;
 }
 html[data-app-theme="doga"][data-theme="dark"]{
+  --asphalt:#4ADE80; --asphalt-2:#22C55E;
   --warm-accent:#4ADE80; --warm-accent-2:#22C55E;
   --warm-bubble-mine:linear-gradient(135deg,#14532D,#166534);
   --warm-bubble-mine-text:#EAFBF0;

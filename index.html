@@ -52,7 +52,7 @@
   </div>
 </div>
 
-<div id="authScreen" style="position:fixed; inset:0; z-index:100; background:linear-gradient(150deg,#4F46E5,#4338CA); display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
+<div id="authScreen" style="position:fixed; inset:0; z-index:100; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
   <div id="authSplashLoading" style="text-align:center; color:#fff;">
     <div style="width:64px;height:64px;border-radius:18px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15); font-size:28px;">🏗️</div>
     <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:18px;">Şantiye Defteri</div>
@@ -64,7 +64,7 @@
     <div id="authSubtitle" style="font-size:14px; opacity:0.85; margin-bottom:24px; line-height:1.5;">Kayıtların hesabınla senkronize kalsın — hangi telefondan girersen gir verilerin seninle gelir.</div>
 
     <div style="display:flex; background:rgba(255,255,255,0.15); border-radius:12px; padding:4px; margin-bottom:18px;">
-      <button id="authTabLogin" style="flex:1; padding:10px; border:none; border-radius:9px; background:#fff; color:#4338CA; font-weight:700; font-size:13px; cursor:pointer;">Giriş Yap</button>
+      <button id="authTabLogin" style="flex:1; padding:10px; border:none; border-radius:9px; background:#fff; color:var(--asphalt-2); font-weight:700; font-size:13px; cursor:pointer;">Giriş Yap</button>
       <button id="authTabSignup" style="flex:1; padding:10px; border:none; border-radius:9px; background:transparent; color:#fff; font-weight:700; font-size:13px; cursor:pointer;">Kayıt Ol</button>
     </div>
 
@@ -72,7 +72,7 @@
       <input type="email" id="authEmail" placeholder="E-posta adresin" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:10px; background:rgba(255,255,255,0.95); color:#111827;">
       <input type="password" id="authPassword" placeholder="Şifre (en az 6 karakter)" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:14px; background:rgba(255,255,255,0.95); color:#111827;">
     </div>
-    <button id="btnEmailAuth" style="width:100%; padding:15px; border:none; border-radius:14px; background:#fff; color:#4338CA; font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Giriş Yap</button>
+    <button id="btnEmailAuth" style="width:100%; padding:15px; border:none; border-radius:14px; background:#fff; color:var(--asphalt-2); font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Giriş Yap</button>
     <button id="btnForgotPassword" style="width:100%; background:none; border:none; color:#fff; font-size:12.5px; font-weight:600; opacity:0.85; padding:12px 4px 0; cursor:pointer; text-decoration:underline;">Şifremi Unuttum</button>
 
     <div style="display:flex; align-items:center; gap:10px; margin:16px 0; opacity:0.6;">
@@ -10143,11 +10143,11 @@ function setAuthMode(mode){
   const btn = document.getElementById('btnEmailAuth');
   document.getElementById('authError').textContent = '';
   if(mode==='login'){
-    loginTab.style.background = '#fff'; loginTab.style.color = '#4338CA';
+    loginTab.style.background = '#fff'; loginTab.style.color = 'var(--asphalt-2)';
     signupTab.style.background = 'transparent'; signupTab.style.color = '#fff';
     btn.textContent = 'Giriş Yap';
   } else {
-    signupTab.style.background = '#fff'; signupTab.style.color = '#4338CA';
+    signupTab.style.background = '#fff'; signupTab.style.color = 'var(--asphalt-2)';
     loginTab.style.background = 'transparent'; loginTab.style.color = '#fff';
     btn.textContent = 'Hesap Oluştur';
   }
