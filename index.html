@@ -5718,7 +5718,16 @@ async function refreshChatPinState(cid){
     if(document.querySelector('.modal-overlay.show') || document.body.classList.contains('chat-open')) return;
     if(document.getElementById('screen-chess-game') && document.getElementById('screen-chess-game').classList.contains('active')) return; // satranç kamerası sürüklenirken yenileme tetiklenmesin
     if(document.body.classList.contains('wg-open')) return; // kelime oyunu ekranları kendi içinde kaydırılıyor, yenileme tetiklenmesin
-    if(document.getElementById('screen-admin') && document.getElementById('screen-admin').classList.contains('active')) return; // admin panelinde kaydırırken yanlışlıkla sayfa yenilenmesin
+    { const activeScreenEl = document.querySelector('main > .screen.active'); if(activeScreenEl && activeScreenEl.id.indexOf('screen-admin') === 0) return; } // admin panelinin HERHANGİ bir alt ekranında (screen-admin, screen-adminusers, screen-adminreports, vs.) kaydırırken yanlışlıkla sayfa yenilenmesin
+    if(typeof roleBadgeOpen !== 'undefined' && roleBadgeOpen) return; // profildeki rütbe rozetinden açılan hızlı admin menüsü (ekran değişimi değil, üstte açılan bir panel) açıkken de yenileme tetiklenmesin
+    { // Header'daki açılır menülerden (profil/mesajlar/arkadaşlar/bildirimler) biri açıksa, o menü içinde
+      // kaydırırken de sayfa yenilenmesin — bunlar "screen" veya "modal-overlay" değil, ayrı panellerdir.
+      const openDropdownIds = ['headerProfileMenu','headerMsgDropdown','headerFriendsDropdown','headerNotifDropdown'];
+      for(const id of openDropdownIds){
+        const el = document.getElementById(id);
+        if(el && (el.style.display === 'flex' || el.style.display === 'block')) return;
+      }
+    }
     startY = e.touches[0].clientY;
     startX = e.touches[0].clientX;
     pulling = true;
