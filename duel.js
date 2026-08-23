@@ -66,41 +66,21 @@ document.getElementById('btnBuyJoker').addEventListener('click', async ()=>{
   if(score < JOKER_PURCHASE_COST){ showToast('Yeterli puanın yok'); return; }
   try{
     await applyQuizPoints(-JOKER_PURCHASE_COST, 'market_satinalma');
-    const today = todayStr();
-    const doc = await userDocRef.get();
-    const data = doc.data() || {};
-    const curBonus = (data.quizJokerBonusDate === today) ? (data.quizJokerBonusCount||0) : 0;
-    await userDocRef.set({ quizJokerBonusDate: today, quizJokerBonusCount: curBonus + 1 }, {merge:true});
+    const playStepVisible = document.getElementById('quizPlayStep').style.display === 'block';
+    if(playStepVisible){
+      // Aktif bir testin ortasındaysa hakkı hemen bu teste ekle
+      quizJokersRemainingThisTest++;
+      const jokerCountEl = document.getElementById('quizJokerCount');
+      if(jokerCountEl) jokerCountEl.textContent = quizJokersRemainingThisTest;
+      document.getElementById('btnQuizJoker').style.display = quizJokerUsedThisQuestion ? 'none' : 'block';
+    } else {
+      // Test dışındaysa, bir sonraki test başladığında eklenmek üzere biriktir
+      quizPendingBonusJokers++;
+    }
     showToast('🃏 +1 Joker satın alındı!');
-    quizJokersRemainingToday = await getJokersRemainingToday();
-    const jokerCountEl = document.getElementById('quizJokerCount');
-    if(jokerCountEl) jokerCountEl.textContent = quizJokersRemainingToday;
     document.getElementById('btnQuizGoMarket').click();
   }catch(e){ showToast('Satın alınamadı: '+(e.message||'')); }
 });
-
-async function getJokersRemainingToday(){
-  if(!userDocRef) return QUIZ_JOKERS_PER_DAY;
-  try{
-    const doc = await userDocRef.get();
-    const data = doc.data() || {};
-    const today = todayStr();
-    const bonusToday = (data.quizJokerBonusDate === today) ? (data.quizJokerBonusCount||0) : 0;
-    const totalAllowed = QUIZ_JOKERS_PER_DAY + bonusToday;
-    if(data.quizJokerDate === today) return Math.max(0, totalAllowed - (data.quizJokerUsedCount||0));
-    return totalAllowed;
-  }catch(e){ return QUIZ_JOKERS_PER_DAY; }
-}
-async function useJokerToday(){
-  if(!userDocRef) return;
-  try{
-    const today = todayStr();
-    const doc = await userDocRef.get();
-    const data = doc.data() || {};
-    const cur = (data.quizJokerDate === today) ? (data.quizJokerUsedCount||0) : 0;
-    await userDocRef.set({ quizJokerDate: today, quizJokerUsedCount: cur + 1 }, {merge:true});
-  }catch(e){ console.error('Joker kaydedilemedi', e); }
-}
 
 // ---------- Kategori seçimi ----------
 function quizResetToCategory(){
@@ -166,7 +146,8 @@ async function startQuizSession(){
   quizSessionScore = 0;
   quizSessionCorrect = 0;
   quizSessionWrong = 0;
-  quizJokersRemainingToday = await getJokersRemainingToday();
+  quizJokersRemainingThisTest = 1 + quizPendingBonusJokers;
+  quizPendingBonusJokers = 0;
   document.getElementById('quizCategoryStep').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'none';
   document.getElementById('quizPlayStep').style.display = 'block';
@@ -195,8 +176,8 @@ function renderQuizQuestion(){
   wrap.querySelectorAll('.quiz-option-btn').forEach(btn=>{
     btn.addEventListener('click', ()=> selectQuizAnswer(parseInt(btn.dataset.index,10)));
   });
-  document.getElementById('quizJokerCount').textContent = quizJokersRemainingToday;
-  document.getElementById('btnQuizJoker').style.display = quizJokersRemainingToday > 0 ? 'block' : 'none';
+  document.getElementById('quizJokerCount').textContent = quizJokersRemainingThisTest;
+  document.getElementById('btnQuizJoker').style.display = quizJokersRemainingThisTest > 0 ? 'block' : 'none';
   const hintBtn = document.getElementById('btnQuizHintToggle');
   const hintBox = document.getElementById('quizHintBox');
   hintBox.style.display = 'none';
@@ -245,7 +226,7 @@ function clearQuizTimer(){
 }
 
 document.getElementById('btnQuizJoker').addEventListener('click', async ()=>{
-  if(quizJokersRemainingToday<=0 || quizJokerUsedThisQuestion) return;
+  if(quizJokersRemainingThisTest<=0 || quizJokerUsedThisQuestion) return;
   const q = quizSessionQuestions[quizCurrentIndex];
   const wrongIdx = (q.options||[]).map((_,i)=>i).filter(i=>i!==q.correctIndex);
   const eliminate = shuffleArr(wrongIdx).slice(0,2);
@@ -254,10 +235,9 @@ document.getElementById('btnQuizJoker').addEventListener('click', async ()=>{
     if(btn){ btn.disabled = true; btn.style.opacity = '0.35'; btn.style.textDecoration = 'line-through'; }
   });
   quizJokerUsedThisQuestion = true;
-  quizJokersRemainingToday--;
-  document.getElementById('quizJokerCount').textContent = quizJokersRemainingToday;
+  quizJokersRemainingThisTest--;
+  document.getElementById('quizJokerCount').textContent = quizJokersRemainingThisTest;
   document.getElementById('btnQuizJoker').style.display = 'none';
-  await useJokerToday();
   updateDailyQuestProgress({ jokerUsed: true });
 });
 
@@ -799,7 +779,10 @@ function renderLeaderboardList(ranked){
     const p = profileByUid(row.uid);
     const username = (p && p.username) ? p.username : 'kullanici';
     const initials = getInitials(username);
-    const rankBadge = quizRankBadgeHtml(row.score, 'font-size:9.5px; padding:1px 7px;', p ? p.quizTotalAnswered : 0);
+    // Rütbe rozeti her zaman kişinin GERÇEK toplam puanına göre hesaplanır — dönemsel
+    // (günlük/haftalık) puan çok düşük/yüksek olsa bile asıl rütbe değişmemeli.
+    const realTotalScore = p ? (p.quizScore||0) : 0;
+    const rankBadge = quizRankBadgeHtml(realTotalScore, 'font-size:9.5px; padding:1px 7px;', p ? p.quizTotalAnswered : 0);
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
     const avatarInner = (p && p.photoData)
