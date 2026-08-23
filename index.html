@@ -2333,6 +2333,14 @@
 <div class="modal-overlay" id="msgActionOverlay">
   <div class="modal-sheet">
     <div class="modal-title"><span>Mesaj</span><button class="close" id="msgActionClose">✕</button></div>
+    <div id="msgActionReactionRow" style="display:flex; justify-content:space-between; padding:6px 4px; margin-bottom:14px;">
+      <button class="msg-reaction-pick" data-emoji="👍" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">👍</button>
+      <button class="msg-reaction-pick" data-emoji="❤️" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">❤️</button>
+      <button class="msg-reaction-pick" data-emoji="😂" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">😂</button>
+      <button class="msg-reaction-pick" data-emoji="😮" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">😮</button>
+      <button class="msg-reaction-pick" data-emoji="😢" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">😢</button>
+      <button class="msg-reaction-pick" data-emoji="🙏" style="background:none; border:none; font-size:26px; cursor:pointer; padding:4px 6px; border-radius:10px; transition:background .12s ease, transform .12s ease;">🙏</button>
+    </div>
     <button class="submit-btn secondary" id="msgActionReplyBtn" style="margin-bottom:10px;">↩️ Yanıtla</button>
     <button class="submit-btn secondary" id="msgActionSelectBtn" style="margin-bottom:10px;">☑️ Seç</button>
     <button class="submit-btn secondary" id="msgActionReportBtn" style="margin-bottom:10px; color:var(--danger); border-color:var(--danger);">🚩 Şikayet Et</button>
@@ -4320,7 +4328,20 @@ function chatBubbleHtml(m){
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${linkifyHtml(m.text)}</div>` : '';
   const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--chat-accent); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
-  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:2px; padding:3px 6px; border-radius:12px; user-select:none; gap:8px; transition:background .15s ease;">
+  let reactionsHtml = '';
+  if(m.reactions && typeof m.reactions === 'object'){
+    const counts = {};
+    let myReaction = null;
+    Object.entries(m.reactions).forEach(([uid,emoji])=>{
+      counts[emoji] = (counts[emoji]||0) + 1;
+      if(uid===currentUser.uid) myReaction = emoji;
+    });
+    const chips = Object.entries(counts);
+    if(chips.length){
+      reactionsHtml = `<div style="position:absolute; ${mine?'left:-4px;':'right:-4px;'} bottom:-11px; display:flex; gap:2px; background:var(--paper); border-radius:10px; padding:1px 5px; box-shadow:var(--chat-shadow); font-size:11px;">${chips.map(([emoji,count])=>`<span style="display:flex; align-items:center; gap:1px; ${emoji===myReaction?'opacity:1;':'opacity:0.85;'}">${emoji}${count>1?`<span style="font-size:9.5px; color:var(--ink-soft); font-weight:700;">${count}</span>`:''}</span>`).join('')}</div>`;
+    }
+  }
+  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:${reactionsHtml?'12px':'2px'}; padding:3px 6px; border-radius:12px; user-select:none; gap:8px; transition:background .15s ease;">
       <div class="chat-select-dot" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:22px;height:22px; border-radius:50%; border:2px solid var(--ink-soft); flex-shrink:0; align-items:center; justify-content:center; font-size:12px; color:#fff; transition:background .12s ease, border-color .12s ease; ${mine?'order:2;':''}"></div>
       <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'6px 9px 8px 9px'}; border-radius:${bubbleRadius}; background:${bubbleBg}; box-shadow:var(--chat-shadow);">
         ${senderNameHtml}
@@ -4330,6 +4351,7 @@ function chatBubbleHtml(m){
         ${expiredHtml}
         ${textHtml}
         <div style="font-size:10.5px; color:${timeColor}; margin-top:2px; text-align:right;">${time}${mine?' '+chatTickHtml(m):''}</div>
+        ${reactionsHtml}
       </div>
     </div>`;
 }
@@ -4495,6 +4517,23 @@ function openMessageActionSheet(msgId, senderUid, isMine){
   document.getElementById('msgActionOverlay').classList.add('show');
 }
 document.getElementById('msgActionClose').addEventListener('click', ()=> document.getElementById('msgActionOverlay').classList.remove('show'));
+document.querySelectorAll('.msg-reaction-pick').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    document.getElementById('msgActionOverlay').classList.remove('show');
+    const emoji = btn.dataset.emoji;
+    try{
+      const msgRef = db.collection('messages').doc(pendingActionMsgId);
+      const doc = await msgRef.get();
+      const reactions = (doc.exists && doc.data().reactions) || {};
+      // Aynı emojiye tekrar dokununca tepkiyi kaldır (aç/kapa), farklıysa değiştir.
+      if(reactions[currentUser.uid] === emoji){
+        await msgRef.update({['reactions.'+currentUser.uid]: firebase.firestore.FieldValue.delete()});
+      } else {
+        await msgRef.update({['reactions.'+currentUser.uid]: emoji});
+      }
+    }catch(e){ showToast('Tepki eklenemedi'); }
+  });
+});
 document.getElementById('msgActionReplyBtn').addEventListener('click', ()=>{
   document.getElementById('msgActionOverlay').classList.remove('show');
   const senderP = profileByUid(pendingActionSenderUid);
@@ -8804,10 +8843,10 @@ if(firebaseReady){
     : 'Firebase yapılandırması eksik olduğu için giriş yapılamıyor. Kod içindeki firebaseConfig alanını doldurup dosyayı yeniden yükle.';
 }
 </script>
-<script src="admin.js"></script>
-<script src="quiz.js"></script>
-<script src="chess.js"></script>
-<script src="wordgame.js"></script>
-<script src="duel.js"></script>
+<script src="admin.js" defer></script>
+<script src="quiz.js" defer></script>
+<script src="chess.js" defer></script>
+<script src="wordgame.js" defer></script>
+<script src="duel.js" defer></script>
 </body>
 </html>
