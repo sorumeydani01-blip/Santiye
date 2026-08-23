@@ -25,8 +25,11 @@ messaging.onBackgroundMessage((payload) => {
     .catch((err) => console.error('[SW] Bildirim gösterilemedi:', err));
 });
 
-const CACHE_NAME = 'santiye-defteri-v4';
-const CORE_ASSETS = ['./', './index.html', './stil.css', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'santiye-defteri-v5';
+const CORE_ASSETS = [
+  './', './index.html', './stil.css', './manifest.json', './icon-192.png', './icon-512.png',
+  './themes.css', './themes.js', './chess.js', './wordgame.js', './quiz.js', './duel.js'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -60,8 +63,11 @@ self.addEventListener('fetch', (event) => {
   }
   // ÖNCE İNTERNET: internet varsa her zaman en güncel dosyayı çek ve önbelleği güncelle.
   // İnternet yoksa (çevrimdışı), o zaman önbellekteki son bilinen kopyayı göster.
+  // { cache: 'no-store' } önemli: bu olmadan, tarayıcının veya GitHub'ın kendi ara
+  // HTTP önbelleği devreye girip biz "internete git" desek bile eski dosyayı
+  // verebiliyordu — dosya güncellemesinin görünmemesinin asıl sebebi buydu.
   event.respondWith(
-    fetch(event.request).then((response) => {
+    fetch(event.request, { cache: 'no-store' }).then((response) => {
       const clone = response.clone();
       caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(()=>{});
       return response;
