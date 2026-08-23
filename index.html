@@ -849,10 +849,30 @@
       <span class="cal-title">🗳️ Oylama</span>
       <span style="width:36px;"></span>
     </div>
-    <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.6); position:relative; z-index:1;">
-      <div style="font-size:44px; margin-bottom:12px;">🚧</div>
-      <div style="font-weight:700;">Oylama ekranı yakında burada olacak.</div>
+    <div class="wg-glow-card" style="padding:14px 16px; margin-bottom:14px; position:relative; z-index:1; text-align:center;">
+      <div style="color:#fff; font-weight:800; font-size:13.5px;">Tur <span id="wgVotingRoundNum"></span> / <span id="wgVotingTotalRounds"></span> — Harf: <span id="wgVotingLetter" style="color:#FFD93D;"></span></div>
+      <div style="color:rgba(255,255,255,0.55); font-size:11px; margin-top:3px;">Yanlış/şüpheli cevaba ✗ ver, doğruysa ✓</div>
     </div>
+    <div id="wgVotingCategories" style="position:relative; z-index:1; padding-bottom:110px;"></div>
+    <div style="position:fixed; bottom:0; left:0; right:0; padding:14px 16px calc(14px + env(safe-area-inset-bottom)); background:linear-gradient(0deg, #150c28 55%, transparent); z-index:10;">
+      <button id="btnWgFinishVoting" style="width:100%; padding:16px; font-size:15px; font-weight:900; color:#4A2E00; background:linear-gradient(145deg,#FFEA9E,#FFD93D 45%,#FFA500); box-shadow:0 8px 22px rgba(255,169,0,0.45); border-radius:18px; border:none; cursor:pointer; display:none;">Turu Bitir ve Puanla ✅</button>
+      <div id="wgVotingWaitingHost" style="text-align:center; color:rgba(255,255,255,0.55); font-size:12.5px; display:none;">Oda kurucusunun turu bitirmesi bekleniyor…</div>
+    </div>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: FİNAL SIRALAMA ============ -->
+  <section class="screen" id="screen-wg-final">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgFinalBack">‹</button>
+      <span class="cal-title">🏆 Final</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div style="text-align:center; margin-bottom:18px; position:relative; z-index:1;">
+      <div style="font-size:44px;">🏆</div>
+      <div style="color:#fff; font-weight:900; font-size:18px; margin-top:6px;">Oyun Bitti!</div>
+    </div>
+    <div id="wgFinalStandings" style="position:relative; z-index:1;"></div>
+    <button id="btnWgFinalDone" style="width:100%; padding:16px; margin-top:16px; font-size:15px; font-weight:900; color:#4A2E00; background:linear-gradient(145deg,#FFEA9E,#FFD93D 45%,#FFA500); box-shadow:0 8px 22px rgba(255,169,0,0.45); border-radius:18px; border:none; cursor:pointer; position:relative; z-index:1;">Ana Menüye Dön</button>
   </section>
 
   <section class="screen" id="screen-quiz-market">
@@ -11576,6 +11596,12 @@ function handleWgRoomUpdate(d){
   } else if(d.status === 'voting'){
     if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
     if(wgLastRenderedStatus !== 'voting'){ switchScreen('wg-voting'); wgLastRenderedStatus = 'voting'; }
+    renderWgVotingScreen(d);
+    maybeScheduleBotVotes(d);
+  } else if(d.status === 'finished'){
+    if(wgVotingAnswersUnsub){ wgVotingAnswersUnsub(); wgVotingAnswersUnsub = null; }
+    if(wgLastRenderedStatus !== 'finished'){ switchScreen('wg-final'); wgLastRenderedStatus = 'finished'; }
+    renderWgFinalResults(d);
   }
 }
 
@@ -11771,31 +11797,67 @@ function maybeScheduleBotAnswers(d){
 let wgWritingAnswers = {};
 let wgWritingSubmitted = false;
 let wgWritingTimerInterval = null;
+let wgWritingCurrentIndex = 0;
 
 function startWgWritingRound(d){
   wgWritingAnswers = {};
   wgWritingSubmitted = false;
-  const box = document.getElementById('wgWritingCategories');
-  box.innerHTML = WG_CATEGORIES.map(c=>`
-    <div class="wg-cat-row" style="background:${c.color};">
-      <div class="wg-cat-icon" style="background:${c.iconBg};">${c.icon}</div>
-      <div style="flex:1;">
-        <div class="wg-cat-label" style="color:${c.iconBg};">${c.label}</div>
-        <input type="text" id="wgAnswer-${c.key}" data-cat="${c.key}" class="wg-answer-input wg-cat-input" placeholder="${d.currentLetter} ile başlayan ${c.label.toLocaleLowerCase('tr')}...">
-      </div>
-    </div>`).join('');
-  document.querySelectorAll('.wg-answer-input').forEach(inp=>{
-    inp.addEventListener('input', ()=>{ wgWritingAnswers[inp.dataset.cat] = inp.value; });
-  });
+  wgWritingCurrentIndex = 0;
   document.getElementById('wgWritingRoundNum').textContent = d.currentRound;
   document.getElementById('wgWritingTotalRounds').textContent = d.totalRounds;
   document.getElementById('wgWritingLetter').textContent = d.currentLetter;
   document.getElementById('wgWritingStopInfo').style.display = 'none';
   const coinEl = document.getElementById('wgTimerCoin');
   if(coinEl) coinEl.classList.remove('wg-timer-urgent');
+  renderWgWritingCategoryCard();
   if(wgWritingTimerInterval) clearInterval(wgWritingTimerInterval);
   wgWritingTimerInterval = setInterval(tickWgWritingTimer, 250);
   tickWgWritingTimer();
+}
+
+function renderWgWritingCategoryCard(){
+  const d = wgCurrentRoomData;
+  if(!d) return;
+  const box = document.getElementById('wgWritingCategories');
+  const idx = wgWritingCurrentIndex;
+  const c = WG_CATEGORIES[idx];
+  const isLast = idx === WG_CATEGORIES.length - 1;
+  const dots = WG_CATEGORIES.map((cc,i)=>{
+    const answered = !!(wgWritingAnswers[cc.key] && wgWritingAnswers[cc.key].trim());
+    const isCurrent = i === idx;
+    const color = isCurrent ? '#FFD93D' : (answered ? '#34D399' : 'rgba(255,255,255,0.22)');
+    return `<div style="width:${isCurrent?20:8}px; height:8px; border-radius:5px; background:${color}; transition:width .2s ease;"></div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div style="display:flex; gap:5px; justify-content:center; margin-bottom:20px;">${dots}</div>
+    <div class="wg-cat-row" style="background:${c.color}; flex-direction:column; align-items:stretch; padding:24px 18px; min-height:150px; justify-content:center;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <div class="wg-cat-icon" style="background:${c.iconBg};">${c.icon}</div>
+        <div>
+          <div class="wg-cat-label" style="color:${c.iconBg}; font-size:12px;">${c.label}</div>
+          <div style="font-size:10.5px; color:${c.iconBg}; opacity:0.75; font-weight:700;">${idx+1} / ${WG_CATEGORIES.length}</div>
+        </div>
+      </div>
+      <input type="text" id="wgAnswerActive" class="wg-cat-input" style="font-size:23px; padding:8px 0;" placeholder="${d.currentLetter} ile başlayan ${c.label.toLocaleLowerCase('tr')}..." autocomplete="off">
+    </div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      ${idx>0?`<button id="btnWgCatPrev" style="flex:1; padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#fff; font-weight:800; cursor:pointer;">← Geri</button>`:''}
+      ${!isLast?`<button id="btnWgCatNext" style="flex:2; padding:14px; border-radius:14px; border:none; background:linear-gradient(145deg,#FFEA9E,#FFD93D,#FFA500); color:#4A2E00; font-weight:900; cursor:pointer; box-shadow:0 4px 14px rgba(255,169,0,0.35);">İleri →</button>`:`<div style="flex:2; text-align:center; color:rgba(255,255,255,0.55); font-size:12px; padding-top:12px; font-weight:600;">Son kategori — hazır olunca DUR'a bas! 🛑</div>`}
+    </div>`;
+
+  const activeInput = document.getElementById('wgAnswerActive');
+  activeInput.value = wgWritingAnswers[c.key] || '';
+  activeInput.addEventListener('input', ()=>{ wgWritingAnswers[c.key] = activeInput.value; });
+  activeInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); const nb = document.getElementById('btnWgCatNext'); if(nb) nb.click(); else activeInput.blur(); }
+  });
+  setTimeout(()=>{ try{ activeInput.focus(); }catch(e){} }, 60);
+
+  const prevBtn = document.getElementById('btnWgCatPrev');
+  if(prevBtn) prevBtn.addEventListener('click', ()=>{ wgWritingCurrentIndex--; renderWgWritingCategoryCard(); });
+  const nextBtn = document.getElementById('btnWgCatNext');
+  if(nextBtn) nextBtn.addEventListener('click', ()=>{ wgWritingCurrentIndex++; renderWgWritingCategoryCard(); });
 }
 
 function tickWgWritingTimer(){
@@ -11856,6 +11918,7 @@ document.getElementById('btnWgStop').addEventListener('click', async ()=>{
 function wgLeaveGameToMenu(){
   if(currentWgRoomUnsub){ currentWgRoomUnsub(); currentWgRoomUnsub = null; }
   if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
+  if(wgVotingAnswersUnsub){ wgVotingAnswersUnsub(); wgVotingAnswersUnsub = null; }
   wgCurrentRoomData = null;
   currentWgRoomId = null;
   switchScreen('oyunlar');
@@ -11863,6 +11926,219 @@ function wgLeaveGameToMenu(){
 document.getElementById('btnWgLetterBack').addEventListener('click', wgLeaveGameToMenu);
 document.getElementById('btnWgWritingBack').addEventListener('click', wgLeaveGameToMenu);
 document.getElementById('btnWgVotingBack').addEventListener('click', wgLeaveGameToMenu);
+document.getElementById('btnWgFinalBack').addEventListener('click', wgLeaveGameToMenu);
+
+// ================= İSİM ŞEHİR ÜLKE: OYLAMA EKRANI =================
+let wgVotingAnswersUnsub = null;
+let wgVotingAnswersData = [];
+let wgBotVotesScheduledFor = null;
+
+function renderWgVotingScreen(d){
+  document.getElementById('wgVotingRoundNum').textContent = d.currentRound;
+  document.getElementById('wgVotingTotalRounds').textContent = d.totalRounds;
+  document.getElementById('wgVotingLetter').textContent = d.currentLetter;
+
+  const isHost = d.hostUid === currentUser.uid;
+  const finishBtn = document.getElementById('btnWgFinishVoting');
+  finishBtn.style.display = isHost ? 'block' : 'none';
+  finishBtn.disabled = false;
+  finishBtn.textContent = 'Turu Bitir ve Puanla ✅';
+  document.getElementById('wgVotingWaitingHost').style.display = isHost ? 'none' : 'block';
+
+  if(wgVotingAnswersUnsub) wgVotingAnswersUnsub();
+  wgVotingAnswersUnsub = db.collection('word_game_rooms').doc(currentWgRoomId)
+    .collection('round_answers').where('round','==', d.currentRound)
+    .onSnapshot(snap=>{
+      wgVotingAnswersData = snap.docs.map(doc=>doc.data());
+      renderWgVotingCategories(d);
+    }, err=>{ console.error('oylama verisi alınamadı', err); });
+}
+
+function renderWgVotingCategories(d){
+  const box = document.getElementById('wgVotingCategories');
+  box.innerHTML = WG_CATEGORIES.map(c=>{
+    const rows = wgVotingAnswersData.map(ans=>{
+      const disp = wgGetPlayerDisplay(ans.uid);
+      const raw = (ans.answers && ans.answers[c.key]) || '';
+      const trimmed = raw.trim();
+      const isOwn = ans.uid === currentUser.uid;
+      const votesForCat = (ans.votes && ans.votes[c.key]) || {};
+      const myVote = votesForCat[currentUser.uid];
+      let yes = 0, no = 0;
+      Object.keys(votesForCat).forEach(v=>{ if(v === ans.uid) return; if(votesForCat[v]) yes++; else no++; });
+      const displayText = trimmed || '(boş)';
+      const wrongLetter = !!trimmed && trimmed.charAt(0).toLocaleUpperCase('tr') !== d.currentLetter;
+      const canVote = !isOwn && !!trimmed;
+      return `<div style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="width:26px;height:26px;border-radius:50%; background:${disp.bg}; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; overflow:hidden; flex-shrink:0;">${disp.inner}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:9px; color:rgba(255,255,255,0.5); font-weight:700;">${escapeHtml(disp.name)}</div>
+          <div style="font-size:14px; font-weight:800; color:${wrongLetter?'#FF6B6B':(trimmed?'#fff':'rgba(255,255,255,0.35)')}; ${wrongLetter?'text-decoration:line-through;':''}">${escapeHtml(displayText)}</div>
+        </div>
+        ${canVote ? `
+          <button class="wg-vote-btn" data-uid="${escapeHtml(ans.uid)}" data-cat="${c.key}" data-val="1" style="width:30px;height:30px; border-radius:9px; border:none; font-size:14px; cursor:pointer; background:${myVote===true?'#22C55E':'rgba(255,255,255,0.1)'}; color:#fff; flex-shrink:0;">✓</button>
+          <button class="wg-vote-btn" data-uid="${escapeHtml(ans.uid)}" data-cat="${c.key}" data-val="0" style="width:30px;height:30px; border-radius:9px; border:none; font-size:14px; cursor:pointer; background:${myVote===false?'#DC2626':'rgba(255,255,255,0.1)'}; color:#fff; flex-shrink:0;">✗</button>
+          <div style="font-size:9px; color:rgba(255,255,255,0.4); min-width:24px; text-align:center; flex-shrink:0;">${yes}/${no}</div>
+        ` : (isOwn ? `<div style="font-size:9px; color:#FFD93D; font-weight:700; flex-shrink:0;">SEN</div>` : '')}
+      </div>`;
+    }).join('');
+    return `<div class="wg-glow-card" style="padding:12px 14px; margin-bottom:10px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <div class="wg-cat-icon" style="width:28px;height:28px; font-size:14px; background:${c.iconBg};">${c.icon}</div>
+        <div style="color:#fff; font-weight:800; font-size:12.5px;">${c.label}</div>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  box.querySelectorAll('.wg-vote-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const uid = btn.dataset.uid, cat = btn.dataset.cat, val = (btn.dataset.val === '1');
+      try{
+        await db.collection('word_game_rooms').doc(currentWgRoomId)
+          .collection('round_answers').doc(uid + '_' + d.currentRound)
+          .update({ ['votes.' + cat + '.' + currentUser.uid]: val });
+      }catch(e){ console.error('oy verilemedi', e); showToast('Oy kaydedilemedi'); }
+    });
+  });
+}
+
+function maybeScheduleBotVotes(d){
+  if(!currentWgRoomId || d.hostUid !== currentUser.uid) return;
+  const bots = (d.playerUids||[]).filter(wgIsBot);
+  if(bots.length === 0) return;
+  const key = d.currentRound + '_votes';
+  if(wgBotVotesScheduledFor === key) return;
+  wgBotVotesScheduledFor = key;
+  setTimeout(async ()=>{
+    try{
+      const snap = await db.collection('word_game_rooms').doc(currentWgRoomId)
+        .collection('round_answers').where('round','==', d.currentRound).get();
+      for(const doc of snap.docs){
+        const ans = doc.data();
+        const updateData = {};
+        bots.forEach(bot=>{
+          if(ans.uid === bot) return; // kendi cevabına oy vermez
+          WG_CATEGORIES.forEach(c=>{
+            const raw = (ans.answers && ans.answers[c.key]) || '';
+            const trimmed = raw.trim();
+            const firstChar = trimmed.charAt(0).toLocaleUpperCase('tr');
+            const accept = !!trimmed && firstChar === d.currentLetter;
+            updateData['votes.' + c.key + '.' + bot] = accept;
+          });
+        });
+        if(Object.keys(updateData).length > 0){ await doc.ref.update(updateData); }
+      }
+    }catch(e){ console.error('bot oylayamadı', e); }
+  }, 2500 + Math.random()*2000);
+}
+
+// ================= İSİM ŞEHİR ÜLKE: PUANLAMA + TUR İLERLETME =================
+async function computeAndAdvanceWgRound(d){
+  try{
+    const answersSnap = await db.collection('word_game_rooms').doc(currentWgRoomId)
+      .collection('round_answers').where('round','==', d.currentRound).get();
+    const roundPoints = {};
+    (d.playerUids||[]).forEach(uid=>{ roundPoints[uid] = 0; });
+
+    WG_CATEGORIES.forEach(c=>{
+      const acceptedByUid = {};
+      answersSnap.docs.forEach(doc=>{
+        const ans = doc.data();
+        const raw = (ans.answers && ans.answers[c.key]) || '';
+        const trimmed = raw.trim();
+        if(!trimmed) return;
+        const firstChar = trimmed.charAt(0).toLocaleUpperCase('tr');
+        if(firstChar !== d.currentLetter) return; // yanlış harf, otomatik red
+        const votesForCat = (ans.votes && ans.votes[c.key]) || {};
+        let yes = 0, no = 0;
+        Object.keys(votesForCat).forEach(voterUid=>{
+          if(voterUid === ans.uid) return;
+          if(votesForCat[voterUid]) yes++; else no++;
+        });
+        if(no > yes) return; // oy çoğunluğu reddetti
+        acceptedByUid[ans.uid] = trimmed.toLocaleLowerCase('tr');
+      });
+      const groups = {};
+      Object.keys(acceptedByUid).forEach(uid=>{
+        const norm = acceptedByUid[uid];
+        if(!groups[norm]) groups[norm] = [];
+        groups[norm].push(uid);
+      });
+      Object.values(groups).forEach(uidsInGroup=>{
+        const pts = uidsInGroup.length === 1 ? 10 : 5;
+        uidsInGroup.forEach(uid=>{ roundPoints[uid] = (roundPoints[uid]||0) + pts; });
+      });
+    });
+
+    const newScores = Object.assign({}, d.scores||{});
+    Object.keys(roundPoints).forEach(uid=>{ newScores[uid] = (newScores[uid]||0) + roundPoints[uid]; });
+
+    const isLastRound = d.currentRound >= d.totalRounds;
+    if(isLastRound){
+      await db.collection('word_game_rooms').doc(currentWgRoomId).update({ scores: newScores, status: 'finished' });
+    } else {
+      const pickerIdx = (d.playerUids||[]).indexOf(d.letterPickerUid);
+      const nextPickerUid = (d.playerUids||[])[(pickerIdx + 1) % (d.playerUids||[]).length];
+      await db.collection('word_game_rooms').doc(currentWgRoomId).update({
+        scores: newScores,
+        currentRound: d.currentRound + 1,
+        letterPickerUid: nextPickerUid,
+        status: 'letter_selection',
+        currentLetter: null,
+        roundStartedAt: null,
+        roundStopAt: null,
+        roundStoppedBy: null
+      });
+    }
+    const summaryLines = (d.playerUids||[]).filter(uid=>roundPoints[uid]>0).map(uid=>{
+      const disp = wgGetPlayerDisplay(uid);
+      return disp.name + ' +' + roundPoints[uid];
+    }).join(' · ');
+    showToast('Tur bitti! ' + (summaryLines || 'Kimse puan alamadı 😅'));
+  }catch(e){
+    console.error('tur puanlanamadı', e);
+    showToast('Puanlama başarısız, tekrar dene');
+    const btn = document.getElementById('btnWgFinishVoting');
+    if(btn){ btn.disabled = false; btn.textContent = 'Turu Bitir ve Puanla ✅'; }
+  }
+}
+
+document.getElementById('btnWgFinishVoting').addEventListener('click', async ()=>{
+  if(!wgCurrentRoomData) return;
+  const btn = document.getElementById('btnWgFinishVoting');
+  btn.disabled = true;
+  btn.textContent = 'Hesaplanıyor…';
+  await computeAndAdvanceWgRound(wgCurrentRoomData);
+});
+
+// ================= İSİM ŞEHİR ÜLKE: FİNAL SIRALAMA =================
+function renderWgFinalResults(d){
+  const box = document.getElementById('wgFinalStandings');
+  const entries = Object.keys(d.scores||{}).map(uid=>({ uid, score: d.scores[uid]||0 }))
+    .sort((a,b)=> b.score - a.score);
+  box.innerHTML = entries.map((e,i)=>{
+    const disp = wgGetPlayerDisplay(e.uid);
+    const medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1)+'.'));
+    return `<div class="wg-glow-card" style="display:flex; align-items:center; gap:12px; padding:14px 16px; margin-bottom:8px; ${i===0?'border-color:#FFD93D; box-shadow:0 0 20px rgba(255,217,61,0.3);':''}">
+      <div style="font-size:20px; width:34px; text-align:center;">${medal}</div>
+      <div style="width:40px;height:40px;border-radius:50%; background:${disp.bg}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; overflow:hidden; flex-shrink:0;">${disp.inner}</div>
+      <div style="flex:1; color:#fff; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(disp.name)}</div>
+      <div style="color:#FFD93D; font-weight:900; font-size:16px; flex-shrink:0;">${e.score} pts</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('btnWgFinalDone').addEventListener('click', async ()=>{
+  if(currentWgRoomUnsub){ currentWgRoomUnsub(); currentWgRoomUnsub = null; }
+  if(wgVotingAnswersUnsub){ wgVotingAnswersUnsub(); wgVotingAnswersUnsub = null; }
+  if(currentWgRoomId && wgCurrentRoomData && wgCurrentRoomData.hostUid === currentUser.uid){
+    try{ await db.collection('word_game_rooms').doc(currentWgRoomId).delete(); }catch(e){ console.error(e); }
+  }
+  wgCurrentRoomData = null;
+  currentWgRoomId = null;
+  switchScreen('oyunlar');
+});
 
 document.querySelectorAll('.wg-round-opt').forEach(btn=>{
   btn.addEventListener('click', ()=>{

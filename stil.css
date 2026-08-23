@@ -287,13 +287,14 @@
   .vp-btn-block{background:var(--tint-rust); color:var(--danger); width:2.6rem; min-width:2.6rem; flex:0 0 auto; padding:0.65rem;}
 
   /* ================= İSİM ŞEHİR ÜLKE: PARTİ TEMASI ================= */
-  #screen-wg-lobby, #screen-wg-letter, #screen-wg-writing, #screen-wg-voting{
+  #screen-wg-lobby, #screen-wg-letter, #screen-wg-writing, #screen-wg-voting, #screen-wg-final{
     background:radial-gradient(ellipse at 20% -10%, #4A3A7A 0%, transparent 55%),
                radial-gradient(ellipse at 100% 0%, #6B3A7A 0%, transparent 50%),
                linear-gradient(160deg, #241849 0%, #1a1033 60%, #150c28 100%);
-    margin:-16px; margin-top:-86px; padding:calc(16px + 86px) 16px 100px; min-height:calc(100vh + 86px);
+    position:fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh;
+    margin:0; padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    overflow-y:auto; -webkit-overflow-scrolling:touch; box-sizing:border-box;
   }
-  #screen-wg-writing{ padding-bottom:0; }
   .wg-confetti{position:fixed; font-size:20px; opacity:0.35; pointer-events:none; z-index:0; filter:drop-shadow(0 0 4px rgba(255,255,255,0.15));}
   #screen-wg-lobby .cal-title, #screen-wg-letter .cal-title, #screen-wg-writing .cal-title, #screen-wg-voting .cal-title{ color:#fff; }
   #screen-wg-lobby .admin-back-btn, #screen-wg-letter .admin-back-btn, #screen-wg-writing .admin-back-btn, #screen-wg-voting .admin-back-btn{
