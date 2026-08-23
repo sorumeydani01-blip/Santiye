@@ -3593,7 +3593,6 @@ document.getElementById('vpSeeAllFollowers').addEventListener('click', async ()=
 });
 
 </script>
-<script src="admin.js"></script>
 <script>
 function convId(uidA, uidB){ return [uidA, uidB].sort().join('__'); }
 // ---------- ENGELLEME ----------
@@ -7817,10 +7816,6 @@ function updateQuizCategoryCounts(){
 }
 
 </script>
-<script src="quiz.js"></script>
-<script src="chess.js"></script>
-<script src="wordgame.js"></script>
-<script src="duel.js"></script>
 <script>
 // ---------- ADMİN: SORU BANKASI YÖNETİMİ (ekle / düzenle / sil) ----------
 let quizAdminEditingId = null;
@@ -8799,5 +8794,10 @@ if(firebaseReady){
     : 'Firebase yapılandırması eksik olduğu için giriş yapılamıyor. Kod içindeki firebaseConfig alanını doldurup dosyayı yeniden yükle.';
 }
 </script>
+<script src="admin.js"></script>
+<script src="quiz.js"></script>
+<script src="chess.js"></script>
+<script src="wordgame.js"></script>
+<script src="duel.js"></script>
 </body>
 </html>
