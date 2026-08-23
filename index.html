@@ -15,8 +15,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="stil.css">
-<link rel="stylesheet" href="themes.css">
-<script src="themes.js"></script>
 
 </head>
 <body>
@@ -137,7 +135,7 @@
 <div id="wgVoiceStatus" style="display:none; position:fixed; top:calc(64px + env(safe-area-inset-top)); right:14px; z-index:50; max-width:150px; text-align:right; font-family:'Segoe UI',sans-serif; font-size:9.5px; color:#FFD93D; background:rgba(0,0,0,0.55); padding:4px 9px; border-radius:9px;"></div>
 
 <div id="roleBadgeWrap" style="display:none; position:fixed; bottom:96px; right:20px; z-index:140; flex-direction:column; align-items:flex-end; gap:8px;">
-  <div id="roleBadgeMenuItems" style="display:flex; flex-direction:column; width:0; max-height:0; overflow-y:auto; overflow-x:hidden; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); opacity:0; transition:width .25s ease, max-height .25s ease, opacity .25s ease;"></div>
+  <div id="roleBadgeMenuItems" style="display:flex; flex-direction:column; width:0; max-height:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; background:var(--paper); border-radius:16px; box-shadow:var(--shadow-md); opacity:0; transition:width .25s ease, max-height .25s ease, opacity .25s ease;"></div>
 
   <button id="roleBadgeToggleBtn" style="width:44px;height:44px;flex-shrink:0; border-radius:15px; border:none; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-family:'Manrope'; font-weight:800; font-size:19px; cursor:pointer; position:relative; box-shadow:var(--shadow-md);">
     <span id="roleBadgeLetter"></span>
@@ -196,18 +194,18 @@
         </div>
       </div>
 
-      <div id="headerMsgDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
+      <div id="headerMsgDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto; overscroll-behavior-y:contain;">
         <div id="headerMsgDropdownList" style="padding:6px;"></div>
         <button id="btnHeaderMsgSeeAll" class="hdr-dropdown-seeall" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-size:12.5px; cursor:pointer; border-radius:0 0 12px 12px;">Tüm Mesajlar</button>
       </div>
-      <div id="headerFriendsDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:400px; overflow-y:auto;">
+      <div id="headerFriendsDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:400px; overflow-y:auto; overscroll-behavior-y:contain;">
         <div style="display:flex; gap:6px; padding:8px 8px 0;">
           <button id="btnFriendsTabList" class="submit-btn hdr-dropdown-tab-active" style="flex:1; padding:8px; font-size:12px;">🤝 Arkadaşlar</button>
           <button id="btnFriendsTabReqs" class="submit-btn secondary" style="flex:1; padding:8px; font-size:12px; position:relative;">📥 İstekler<span id="friendReqTabBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:14px; height:14px; line-height:14px; text-align:center; padding:0 2px;">0</span></button>
         </div>
         <div id="headerFriendsDropdownList" style="padding:8px;"></div>
       </div>
-      <div id="headerNotifDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
+      <div id="headerNotifDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto; overscroll-behavior-y:contain;">
         <div id="headerNotifDropdownList" style="padding:6px;"></div>
         <button id="btnHeaderNotifSeeAll" class="hdr-dropdown-seeall" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-size:12.5px; cursor:pointer; border-radius:0 0 12px 12px;">Tüm Bildirimler</button>
       </div>
@@ -329,18 +327,6 @@
   </section>
 
   <!-- MESAJLAR -->
-  <!-- TEMA SEÇİMİ -->
-  <section class="screen" id="screen-theme-picker">
-    <div class="cal-nav">
-      <button class="admin-back-btn" id="btnThemePickerBack">‹</button>
-      <span class="cal-title">🎨 Temalar</span>
-      <span style="width:36px;"></span>
-    </div>
-    <div class="hint" style="margin-bottom:14px;">Bir temaya dokunarak önizleyebilirsin — beğenirsen aşağıdan kaydet.</div>
-    <div id="themePickerList"></div>
-    <button class="submit-btn" id="btnSaveAppTheme" style="margin-top:14px; display:none;">Bu Temayı Kaydet ✅</button>
-  </section>
-
   <section class="screen" id="screen-mesajlar">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
       <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px;">Mesajlar</div>
@@ -2520,10 +2506,6 @@
     <div class="toggle-row">
       <div><div class="tlbl">Koyu Mod</div><div class="tsub">Karanlıkta göz yormaz</div></div>
       <label class="switch"><input type="checkbox" id="toggleDark"><span class="slider"></span></label>
-    </div>
-    <div class="toggle-row" id="btnOpenThemePicker" style="cursor:pointer;">
-      <div><div class="tlbl">🎨 Temalar</div><div class="tsub">Uygulamanın görünümünü değiştir</div></div>
-      <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>
     <div class="toggle-row">
       <div><div class="tlbl">Günlük Hatırlatma</div><div class="tsub">Uygulamayı açtığında bugün kayıt yoksa hatırlatır</div></div>
@@ -9068,7 +9050,6 @@ document.getElementById('btnSignOut').addEventListener('click', async ()=>{
   }
 });
 document.getElementById('settingsClose').addEventListener('click', ()=> settingsOverlay.classList.remove('show'));
-document.getElementById('btnOpenThemePicker').addEventListener('click', ()=> settingsOverlay.classList.remove('show'));
 document.getElementById('toggleDark').addEventListener('change', async e=>{
   settings.darkMode = e.target.checked;
   applyTheme();
@@ -10352,11 +10333,6 @@ async function enterApp(){
     try{ localStorage.setItem('santiye-defteri-theme-init','1'); }catch(e){}
   }
   applyTheme();
-  // Bu cihazda henüz görülmemiş, başka bir cihazda kaydedilmiş bir tema varsa senkronize et
-  if(typeof settings.appTheme !== 'undefined' && settings.appTheme !== getSavedAppTheme()){
-    try{ localStorage.setItem('sd_app_theme', settings.appTheme || ''); }catch(e){}
-    applyAppTheme(settings.appTheme);
-  }
   const now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
   yearForOzet = now.getFullYear();
