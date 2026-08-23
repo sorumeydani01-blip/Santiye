@@ -332,14 +332,14 @@
       <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px;">Mesajlar</div>
       <div style="display:flex; gap:8px;">
         <button id="btnNewGroup" style="width:40px;height:40px;border-radius:50%; background:var(--paper); border:1.5px solid var(--line); color:var(--ink); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">👥</button>
-        <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:var(--asphalt); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center;">✎</button>
+        <button id="btnNewChat" style="width:40px;height:40px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border:none; font-size:17px; cursor:pointer; box-shadow:var(--warm-shadow); display:flex; align-items:center; justify-content:center;">✎</button>
       </div>
     </div>
-    <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
+    <div id="msgUnreadSummary" style="display:none; align-items:center; gap:8px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; padding:10px 14px; border-radius:14px; margin-bottom:14px; font-size:12.5px; font-weight:700;">
       <span style="font-size:15px;">🔔</span><span></span>
     </div>
     <div id="msgSearchResults" style="display:none;"></div>
-    <div id="convSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--asphalt); color:#fff; border-radius:14px; margin-bottom:14px;">
+    <div id="convSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border-radius:14px; margin-bottom:14px;">
       <span style="font-weight:700; font-size:13px;"><span id="convSelectCount">0</span> sohbet seçildi</span>
       <div style="display:flex; gap:8px;">
         <button id="convSelectReadBtn" style="background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:10px; padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer;">✓ Okundu</button>
@@ -368,7 +368,7 @@
   <section class="screen" id="screen-chat" style="flex-direction:column;">
     <div style="display:flex; align-items:center; gap:10px; padding:8px 4px; flex-shrink:0; border-bottom:1px solid var(--line); background:var(--paper);">
       <button id="btnBackFromChat" style="width:38px;height:38px;border-radius:50%; border:none; background:none; font-size:22px; cursor:pointer; color:var(--ink); flex-shrink:0;">‹</button>
-      <div id="chatHeaderAvatar" style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0; cursor:pointer;">-</div>
+      <div id="chatHeaderAvatar" style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:13px; flex-shrink:0; cursor:pointer;">-</div>
       <div style="flex:1; min-width:0;">
         <div id="chatHeaderName" style="font-weight:800; font-size:15px; font-family:'Manrope'; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;">-</div>
         <div id="chatHeaderSub" style="font-size:11.5px; color:var(--ink-soft);">@kullanici</div>
@@ -389,11 +389,11 @@
       </div>
     </div>
     <div id="chatBlockedNote" style="display:none; text-align:center; font-size:12px; color:var(--danger); background:var(--tint-rust); padding:8px; flex-shrink:0;"></div>
-    <div id="chatSelectModeBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--asphalt); color:#fff; flex-shrink:0;">
+    <div id="chatSelectModeBar" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; flex-shrink:0;">
       <span style="font-weight:700; font-size:13px;">Mesaj seç</span>
       <button id="chatSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
     </div>
-    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #E9E0D2); position:relative;"></div>
+    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #F7EDE0); position:relative;"></div>
     <div id="chatSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0;">
       <span style="font-size:13px; color:var(--ink-soft);"><span id="chatSelectCount">0</span> mesaj seçildi</span>
       <button id="chatSelectDeleteBtn" class="submit-btn danger" style="width:auto; padding:9px 16px; font-size:13px;">🗑️ Sil</button>
@@ -424,7 +424,7 @@
         </div>
       </div>
       <button id="chatMicBtn" style="width:46px;height:46px;border-radius:50%; background:var(--paper); border:none; font-size:19px; flex-shrink:0; cursor:pointer; color:var(--ink-soft); box-shadow:var(--shadow-sm);">🎤</button>
-      <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(79,70,229,0.35);">➤</button>
+      <button id="chatSendBtn" style="width:46px;height:46px;border-radius:50%; background:linear-gradient(150deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; border:none; font-size:18px; flex-shrink:0; cursor:pointer; transition:transform .12s ease; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(232,131,15,0.4);">➤</button>
     </div>
   </section>
   <style>@keyframes recBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}
@@ -538,7 +538,6 @@
         <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px;">
           <div id="quizQuestionText" style="flex:1; font-weight:700; font-size:17px; line-height:1.55;">-</div>
           <div style="display:flex; gap:4px; flex-shrink:0;">
-            <button id="btnQuizSpeak" title="Soruyu sesli oku" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">🔊</button>
             <button id="btnQuizBookmark" title="Kaydet" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">☆</button>
             <button id="btnQuizReport" title="Soruyu bildir" style="border:none; background:var(--concrete); width:32px;height:32px; border-radius:10px; font-size:15px; cursor:pointer; flex-shrink:0;">🚩</button>
           </div>
@@ -548,7 +547,10 @@
         </div>
       </div>
       <div id="quizOptionsWrap"></div>
-      <button id="btnQuizHintToggle" style="width:100%; margin-top:10px; padding:10px; border-radius:12px; border:none; background:none; color:var(--ink-soft); font-weight:700; font-size:12.5px; cursor:pointer; text-align:left; display:none;">💡 İpucu</button>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+        <button id="btnQuizHintToggle" style="flex:1; padding:10px; border-radius:12px; border:none; background:none; color:var(--ink-soft); font-weight:700; font-size:12.5px; cursor:pointer; text-align:left; display:none;">💡 İpucu</button>
+        <button id="btnQuizSpeak" title="Soruyu sesli oku" style="border:none; background:var(--tint-slate); width:40px;height:40px; border-radius:50%; font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;">🔊</button>
+      </div>
       <div id="quizHintBox" class="hint" style="display:none; background:var(--tint-slate); padding:10px 12px; border-radius:10px; margin-top:4px;"></div>
       <button id="btnQuizJoker" style="width:100%; margin-top:14px; padding:12px; border-radius:14px; border:1.5px dashed var(--asphalt); background:var(--tint-slate); color:var(--asphalt); font-weight:800; font-size:13.5px; cursor:pointer;">🃏 50/50 Joker Kullan (<span id="quizJokerCount">3</span> hakkın var)</button>
     </div>
@@ -1402,7 +1404,7 @@
         <p class="hint">Bir kullanıcının profilinden "💬 Mesaj Gönder" ile sohbet başlatabilir, 👥 ikonuyla grup sohbeti oluşturabilirsin. Mesajlar sayfasında Tümü/Sohbetler/Gruplar sekmeleri, sohbete uzun basınca hızlı işlemler (sabitle/sessize al/arşivle/sil), sohbet içinde ise 😀 emoji, 📎 galeri veya 📷 kamera ile anlık fotoğraf, mesaja uzun basınca yanıtlama/silme/seçme menüsü bulunur. Fotoğraflar tek seferlik görüntülenir ve 5 gün sonra kendiliğinden silinir. Ayarlar'dan "Bana kimler mesaj atabilir" seçeneğiyle bunu herkese veya sadece arkadaşlarına açabilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">🧠 Soru Çöz nasıl çalışır?</summary>
-        <p class="hint">Üst menüdeki profil ikonundan veya Ana Sayfa'daki "🏆 Sıralama" kartından "Soru Çöz"e girebilirsin. Genel Kültür veya İslami Bilgiler kategorilerinden birini seç, her testte 10 soru çözersin. Doğru cevap +10 puan, yanlış cevap −15 puan kazandırır (toplam puanın hiçbir zaman −50'nin altına düşmez). Her soruda bir kez, günde toplam 3 kez kullanabileceğin 50/50 joker hakkın vardır — iki yanlış şıkkı eler. Beğendiğin soruları ☆ ikonuyla kaydedip "Kayıtlı Sorularım"dan tekrar bulabilir, 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
+        <p class="hint">Üst menüdeki profil ikonundan veya Ana Sayfa'daki "🏆 Sıralama" kartından "Soru Çöz"e girebilirsin. Genel Kültür veya İslami Bilgiler kategorilerinden birini seç, her testte 10 soru çözersin. Doğru cevap +10 puan, yanlış cevap −15 puan kazandırır (toplam puanın hiçbir zaman −50'nin altına düşmez). Her testte kullanabileceğin 1 tane 50/50 joker hakkın vardır — iki yanlış şıkkı eler. Beğendiğin soruları ☆ ikonuyla kaydedip "Kayıtlı Sorularım"dan tekrar bulabilir, 🔊 ikonuyla soruyu sesli dinleyebilirsin.</p>
       </details>
       <details style="margin-bottom:14px;"><summary style="font-weight:700; cursor:pointer;">Puan rütbem ne anlama geliyor?</summary>
         <p class="hint">Soru Çöz'de kazandığın toplam puana göre 🔰 Çırak'tan başlayıp 🌌 Hezarfen'e kadar yükselen ayrı bir rütbe sistemi vardır. Bu rozet, en az 5 soru çözdükten sonra profilinde ve kullanıcı listelerinde görünmeye başlar; profilindeki ilerleme çubuğundan bir sonraki rütbeye kaç puan kaldığını görebilirsin. Tüm rütbe kademelerinin tam listesini Profil → Rütbeler → "🧠 Puan Rütbeleri" sekmesinden görebilirsin.</p>
@@ -5998,26 +6000,26 @@ document.getElementById('btnBackFromChat').addEventListener('click', ()=>{
 let chatMsgTextCache = {};
 function chatTickHtml(m){
   if(!m.id) return '<span style="color:'+ (settings.darkMode?'#9CA3AF':'#8B93A7') +';">✓</span>';
-  if(currentChatIsGroup) return '<span style="color:var(--asphalt);">✓✓</span>';
+  if(currentChatIsGroup) return '<span style="color:var(--warm-accent-2);">✓✓</span>';
   const seen = currentChatOtherLastRead && m.createdAt && m.createdAt <= currentChatOtherLastRead;
-  return seen ? '<span style="color:#22C55E;">✓✓</span>' : '<span style="color:var(--asphalt);">✓✓</span>';
+  return seen ? '<span style="color:#22C55E;">✓✓</span>' : '<span style="color:var(--warm-accent-2);">✓✓</span>';
 }
 function chatBubbleHtml(m){
   const mine = m.senderUid===currentUser.uid;
   const time = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
   if(m.id) chatMsgTextCache[m.id] = m.text;
   const isDark = !!settings.darkMode;
-  const bubbleBg = mine ? (isDark ? 'var(--asphalt-2)' : '#E4E1FB') : (isDark ? '#1F2937' : '#fff');
-  const textColor = isDark ? '#F1F3F9' : '#111';
-  const timeColor = isDark ? '#9CA3AF' : '#667781';
-  const tailSide = mine ? 'right' : 'left';
+  const bubbleBg = mine ? 'var(--warm-bubble-mine)' : 'var(--warm-bubble-other)';
+  const textColor = mine ? 'var(--warm-bubble-mine-text)' : 'var(--warm-bubble-other-text)';
+  const timeColor = mine ? (isDark?'rgba(245,236,221,0.65)':'rgba(74,46,10,0.6)') : (isDark?'#8A8378':'#8A7A63');
+  const bubbleRadius = mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px';
   if(m.deletedForEveryone){
-    return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px;">
-      <div style="padding:8px 13px; border-radius:14px; background:${isDark?'#1F2937':'#f0f0f0'}; font-size:13px; font-style:italic; color:${timeColor}; box-shadow:0 2px 8px rgba(17,24,39,0.06);">🚫 Bu mesaj silindi</div>
+    return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:8px;">
+      <div style="padding:9px 14px; border-radius:14px; background:${isDark?'#241C14':'#F1E7D8'}; font-size:13px; font-style:italic; color:${timeColor}; box-shadow:var(--warm-shadow);">🚫 Bu mesaj silindi</div>
     </div>`;
   }
-  const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.05)'}; border-left:3px solid var(--asphalt); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
-      <div style="font-weight:800; color:var(--asphalt);">${escapeHtml(m.replyTo.senderName||'')}</div>
+  const replyHtml = m.replyTo ? `<div style="background:${isDark?'rgba(255,255,255,0.08)':'rgba(74,46,10,0.06)'}; border-left:3px solid var(--warm-accent); border-radius:6px; padding:5px 8px; margin-bottom:5px; font-size:12px;">
+      <div style="font-weight:800; color:var(--warm-accent-2);">${escapeHtml(m.replyTo.senderName||'')}</div>
       <div style="color:${timeColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.replyTo.snippet||'')}</div>
     </div>` : '';
   const bypassMedia = canViewFullMedia();
@@ -6026,9 +6028,9 @@ function chatBubbleHtml(m){
   if(m.imageData){
     if(m.viewOnce && !mine && !bypassMedia){
       if(iAlreadyViewedOnce){
-        imageHtml = `<div style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.04)'}; text-align:center; font-size:12px; color:${timeColor}; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülendi</div>`;
+        imageHtml = `<div style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.06)':'rgba(74,46,10,0.05)'}; text-align:center; font-size:12px; color:${timeColor}; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülendi</div>`;
       } else {
-        imageHtml = `<div data-view-once-img="${escapeHtml(m.id||'')}" style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.05)'}; text-align:center; font-size:12px; font-weight:700; color:var(--asphalt); cursor:pointer; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülemek için dokun<br><span style="font-weight:400; font-size:10.5px;">(tek seferlik)</span></div>`;
+        imageHtml = `<div data-view-once-img="${escapeHtml(m.id||'')}" style="width:180px; padding:14px 10px; border-radius:8px; background:${isDark?'rgba(255,255,255,0.08)':'rgba(74,46,10,0.07)'}; text-align:center; font-size:12px; font-weight:700; color:var(--warm-accent-2); cursor:pointer; margin-bottom:${m.text?'5px':'0'};">📷 Görüntülemek için dokun<br><span style="font-weight:400; font-size:10.5px;">(tek seferlik)</span></div>`;
       }
     } else {
       imageHtml = `<img src="${safeImageSrc(m.imageData)}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:${m.text?'5px':'0'};" data-view-img>`;
@@ -6040,13 +6042,13 @@ function chatBubbleHtml(m){
     const canDelArch = canDeleteArchivedMedia();
     imageHtml = `<div style="position:relative;"><img src="${m.imageDataArchived}" style="max-width:100%; border-radius:6px; display:block; margin-bottom:5px; opacity:0.85;" data-view-img><div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">⏱️ Süresi doldu (yönetici görünümü)</div>${canDelArch?`<button data-delete-archived="${escapeHtml(m.id||'')}" style="position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none; border-radius:6px; font-size:9px; font-weight:800; padding:3px 7px; cursor:pointer;">🗑️ Kalıcı Sil</button>`:''}</div>`;
   }
-  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:var(--concrete); color:var(--ink); border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
+  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(74,46,10,0.08)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(74,46,10,0.08)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${linkifyHtml(m.text)}</div>` : '';
-  const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--asphalt); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
-  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:6px; user-select:none; gap:6px;">
+  const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--warm-accent-2); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
+  return `<div class="chat-bubble-wrap" data-mine="${mine}" data-msgid="${escapeHtml(m.id||'')}" data-sender="${escapeHtml(m.senderUid)}" style="display:flex; align-items:center; justify-content:${mine?'flex-end':'flex-start'}; margin-bottom:8px; user-select:none; gap:6px;">
       <input type="checkbox" class="chat-select-box" data-select-msg="${escapeHtml(m.id||'')}" style="display:none; width:19px;height:19px; flex-shrink:0; ${mine?'order:2;':''}">
-      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'8px 11px 6px 12px'}; border-radius:14px; background:${bubbleBg}; box-shadow:0 2px 8px rgba(17,24,39,0.08);">
+      <div style="position:relative; max-width:${m.imageData?'70%':(m.audioData?'auto':'78%')}; padding:${m.imageData?'5px 5px 6px':'9px 13px 7px 14px'}; border-radius:${bubbleRadius}; background:${bubbleBg}; box-shadow:var(--warm-shadow);">
         ${senderNameHtml}
         ${replyHtml}
         ${imageHtml}
@@ -6080,7 +6082,7 @@ function renderChatMessages(msgs){
   msgs.forEach(m=>{
     const d = (m.createdAt||'').slice(0,10);
     if(d && d !== lastDate){
-      html += `<div style="position:sticky; top:4px; z-index:5; text-align:center; margin:14px 0 10px;"><span style="background:var(--paper); box-shadow:var(--shadow-sm); color:var(--ink-soft); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
+      html += `<div style="position:sticky; top:4px; z-index:5; text-align:center; margin:14px 0 10px;"><span style="background:var(--paper); box-shadow:var(--warm-shadow); color:var(--warm-accent-2); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px;">${dateSeparatorLabel(d)}</span></div>`;
       lastDate = d;
     }
     html += chatBubbleHtml(m);
@@ -6508,8 +6510,8 @@ function convRowHtml(c, today){
         <div style="font-size:13px; color:${unread?'var(--ink)':'var(--ink-soft)'}; font-weight:${unread?600:400}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">${preview}</div>
       </div>
       <div style="text-align:right; flex-shrink:0; align-self:flex-start;">
-        <div style="font-size:11.5px; color:${unread?'var(--asphalt)':'var(--ink-soft)'}; font-weight:${unread?700:500};">${time}</div>
-        ${unreadNum>0?'<div style="min-width:22px;height:22px;border-radius:50%; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:8px 0 0 auto; padding:0 5px;">'+(unreadNum>99?'99+':unreadNum)+'</div>':''}
+        <div style="font-size:11.5px; color:${unread?'var(--warm-accent-2)':'var(--ink-soft)'}; font-weight:${unread?700:500};">${time}</div>
+        ${unreadNum>0?'<div style="min-width:22px;height:22px;border-radius:50%; background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:8px 0 0 auto; padding:0 5px;">'+(unreadNum>99?'99+':unreadNum)+'</div>':''}
       </div>
     </div>`;
 }
@@ -9459,10 +9461,10 @@ let quizCurrentIndex = 0;
 let quizSessionScore = 0;
 let quizSessionCorrect = 0;
 let quizSessionWrong = 0;
-let quizJokersRemainingToday = 3;
+let quizJokersRemainingThisTest = 1; // her yeni testte 1'e sıfırlanır (günlük paylaşımlı havuz değil)
+let quizPendingBonusJokers = 0; // Market'ten satın al fakat aktif test yoksa, sıradaki teste eklenir
 let quizJokerUsedThisQuestion = false;
 const QUIZ_QUESTIONS_PER_TEST = 10;
-const QUIZ_JOKERS_PER_DAY = 3;
 const QUIZ_QUESTION_SECONDS = 20;
 let quizTimerInterval = null;
 let quizTimeLeft = QUIZ_QUESTION_SECONDS;
