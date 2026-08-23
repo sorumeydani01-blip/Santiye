@@ -2688,10 +2688,14 @@ if('serviceWorker' in navigator){
         }
       }catch(e){} // desteklenmiyorsa sorun değil, ön plan hatırlatıcısı zaten çalışıyor
     }).catch(()=>{});
-    let refreshedOnce = false;
+    // sessionStorage kullanıyoruz (basit bir JS değişkeni değil), çünkü değişken her
+    // sayfa yüklemesinde sıfırlanıyor — eğer tarayıcı "yeni sürüm" algısını yanlışlıkla
+    // her seferinde tekrarlarsa, bu satır olmadan sonsuz bir "yenile → tekrar yenile"
+    // döngüsüne girilebiliyordu. sessionStorage aynı sekme içinde kalıcı olduğu için
+    // bunu engelliyor.
     navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-      if(refreshedOnce) return;
-      refreshedOnce = true;
+      if(sessionStorage.getItem('sd_sw_reloaded')) return;
+      try{ sessionStorage.setItem('sd_sw_reloaded', '1'); }catch(e){}
       window.location.reload();
     });
   });
@@ -8613,12 +8617,18 @@ async function captureAndCheckIp(){
 async function startApp(){
   document.getElementById('deactivatedScreen').style.display = 'none';
   document.getElementById('ipBannedScreen').style.display = 'none';
-  const [ipBlocked] = await Promise.all([captureAndCheckIp(), loadCloudData()]);
+  // IP kontrolü ARKA PLANDA başlatılıyor — dış servise (ipify.org) gidip yanıt
+  // beklemek yavaş olabiliyor, normal (yasaklı olmayan) kullanıcıyı her seferinde
+  // bu yüzden bekletmeyelim. Ana ekran, sadece kendi verimiz (loadCloudData) gelince
+  // açılır; IP sonucu geldiğinde gerekirse (yasaklıysa) ayrıca devreye girer.
+  const ipCheckPromise = captureAndCheckIp();
+  await loadCloudData();
   const isStaffAccount = profile && (profile.role==='admin' || profile.role==='moderator');
-  if(ipBlocked && !isStaffAccount){
-    document.getElementById('ipBannedScreen').style.display = 'flex';
-    return;
-  }
+  ipCheckPromise.then(ipBlocked=>{
+    if(ipBlocked && !isStaffAccount){
+      document.getElementById('ipBannedScreen').style.display = 'flex';
+    }
+  });
   if(profile && profile.deactivated){
     document.getElementById('deactivatedReasonText').textContent = profile.deactivatedReason || 'belirtilmemiş';
     document.getElementById('deactivatedNoteText').textContent = profile.deactivatedNote || '';
