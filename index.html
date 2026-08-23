@@ -499,7 +499,6 @@
       </div>
       <button id="btnQuizGoBookmarks" class="submit-btn secondary" style="margin-bottom:10px; padding:11px;">⭐ Kayıtlı Sorularım</button>
       <button id="btnQuizGoDuel" class="submit-btn" style="margin-bottom:14px; padding:12px; background:linear-gradient(120deg,var(--danger),#B91C1C); box-shadow:0 4px 12px rgba(220,38,38,0.25);">⚔️ Arkadaşınla Düello Yap</button>
-      <button id="btnQuizGoOyunlar" class="submit-btn secondary" style="margin-bottom:14px; padding:12px;">🎮 Oyunlar</button>
       <div class="card" id="quizCategoryGenel" style="cursor:pointer; display:flex; align-items:center; gap:14px; margin-bottom:12px;">
         <div style="width:52px;height:52px;border-radius:20px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌍</div>
         <div style="flex:1;"><div style="font-weight:800; font-size:15px;">Genel Kültür</div><div class="hint" style="margin:2px 0 0;">Tarih, coğrafya, bilim, spor ve daha fazlası</div></div>
@@ -602,11 +601,19 @@
       <span style="width:36px;"></span>
     </div>
     <div class="hint" style="margin-bottom:14px;">Arkadaşınla oynayabileceğin oyunlar.</div>
-    <div class="card" id="oyunSatrancCard" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px;">
+    <div class="card" id="oyunSatrancCard" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; margin-bottom:12px;">
       <div style="width:52px;height:52px;border-radius:16px; background:#241914; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;">♟️</div>
       <div style="flex:1;">
         <div style="font-weight:800; font-size:15px;">Satranç</div>
         <div class="hint" style="margin:2px 0 0;">3D masada, arkadaşınla karşılıklı oyna</div>
+      </div>
+      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+    </div>
+    <div class="card" id="oyunWordGameCard" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+      <div style="width:52px;height:52px;border-radius:16px; background:linear-gradient(145deg,#FF9F43,#FF7A45); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; box-shadow:0 4px 10px rgba(255,122,69,0.35);">🔤</div>
+      <div style="flex:1;">
+        <div style="font-weight:800; font-size:15px;">İsim Şehir Ülke</div>
+        <div class="hint" style="margin:2px 0 0;">2-6 kişi, sesli sohbetli, harf yarışı!</div>
       </div>
       <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>
@@ -636,6 +643,7 @@
       <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>
     <div class="hint" style="margin-bottom:10px;">veya bir arkadaşını seç — sana davet gönderecek, sen beyaz o siyah oynayacak:</div>
+    <div class="search-box" style="margin-bottom:10px;"><input type="text" id="chessFriendSearchInput" placeholder="Arkadaş ara..."></div>
     <div id="chessFriendPickerList"></div>
   </section>
 
@@ -693,6 +701,7 @@
         <div id="chess-timer" style="font-family:'Segoe UI',sans-serif; font-size:11px; color:#c9a24a; opacity:0.85; border-left:1px solid rgba(201,162,74,0.3); padding-left:14px;">00:00</div>
         <div id="chess-move-timer" style="font-family:'Segoe UI',sans-serif; font-size:13px; font-weight:800; color:#c9a24a; border-left:1px solid rgba(201,162,74,0.3); padding-left:14px;">30s</div>
       </div>
+      <div id="chessCameraDebug" style="position:absolute; top:60px; left:50%; transform:translateX(-50%); font-family:'Segoe UI',sans-serif; font-size:9px; color:#f5745a; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:8px; z-index:20;"></div>
       <div id="chess-captured-white" class="chess-panel" style="position:absolute; top:70px; left:12px; right:12px; padding:8px 12px; border-radius:14px; z-index:20; display:flex; align-items:center; gap:10px;">
         <div style="font-family:'Segoe UI',sans-serif; font-size:8px; letter-spacing:1.5px; color:#c9a24a; white-space:nowrap; flex-shrink:0; font-weight:700;">BEYAZ<br/>KAYIP</div>
         <div id="chess-captured-white-grid" style="display:flex; flex-wrap:wrap; gap:2px; flex:1;"></div>
@@ -726,7 +735,126 @@
     </div>
   </div>
 
-  <!-- MARKET (puan ile joker satın alma) -->
+  <!-- ============ İSİM ŞEHİR ÜLKE: GİRİŞ (özel oda / rastgele) ============ -->
+  <section class="screen" id="screen-wg-entry">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgEntryBack">‹</button>
+      <span class="cal-title">🔤 İsim Şehir Ülke</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="card" id="btnWgCreatePrivate" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; margin-bottom:10px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+      <div style="width:44px;height:44px;border-radius:14px; background:linear-gradient(145deg,#FF9F43,#FF7A45); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🤝</div>
+      <div style="flex:1;">
+        <div style="font-weight:800; font-size:14.5px;">Arkadaşlarını Davet Et</div>
+        <div class="hint" style="margin:2px 0 0;">2-6 arkadaşını seç, davet gönder</div>
+      </div>
+      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+    </div>
+    <div class="card" id="btnWgJoinRandom" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+      <div style="width:44px;height:44px;border-radius:14px; background:linear-gradient(145deg,#34D399,#10B981); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎲</div>
+      <div style="flex:1;">
+        <div style="font-weight:800; font-size:14.5px;">Rastgele Odaya Katıl</div>
+        <div class="hint" style="margin:2px 0 0;">Açık bir odaya katıl ya da yeni bir tane aç</div>
+      </div>
+      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+    </div>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: ARKADAŞ ÇOKLU SEÇİM ============ -->
+  <section class="screen" id="screen-wg-invite-pick">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgInvitePickBack">‹</button>
+      <span class="cal-title">🤝 Davet Et</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-bottom:10px;">En az 1, en fazla 5 arkadaş seç (toplamda 6 kişiye kadar oynanır):</div>
+    <div class="search-box" style="margin-bottom:10px;"><input type="text" id="wgInviteSearchInput" placeholder="Arkadaş ara..."></div>
+    <div id="wgInvitePickList"></div>
+    <button class="submit-btn" id="btnWgSendInvites" style="margin-top:14px; background:linear-gradient(120deg,#FF9F43,#FF7A45); box-shadow:0 4px 12px rgba(255,122,69,0.3);">Odayı Kur ve Davet Gönder 🚀</button>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: LOBİ ============ -->
+  <section class="screen" id="screen-wg-lobby">
+    <div class="wg-confetti" style="top:8%; left:8%;">🎉</div>
+    <div class="wg-confetti" style="top:14%; right:10%;">✨</div>
+    <div class="wg-confetti" style="top:40%; left:4%;">🎊</div>
+    <div class="wg-confetti" style="top:60%; right:6%;">⭐</div>
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgLobbyBack">‹</button>
+      <span class="cal-title">🔤 Lobi</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="wg-glow-card" style="text-align:center; padding:22px 16px; margin-bottom:14px; position:relative; z-index:1;">
+      <div id="wgLobbyPlayers" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:8px;"></div>
+      <div style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:600;" id="wgLobbyCountText">Oyuncular bekleniyor…</div>
+    </div>
+    <div class="wg-glow-card" id="wgLobbyHostSettings" style="padding:18px; margin-bottom:14px; display:none; position:relative; z-index:1;">
+      <div style="font-weight:800; font-size:13.5px; margin-bottom:10px; color:#fff;">🎯 Tur Sayısı</div>
+      <div style="display:flex; gap:8px; margin-bottom:14px;">
+        <button class="wg-round-opt-new wg-round-opt" data-rounds="5" style="flex:1;">5 Tur<br><span style="opacity:0.7; font-weight:600; font-size:10.5px;">60sn/tur</span></button>
+        <button class="wg-round-opt-new wg-round-opt" data-rounds="8" style="flex:1;">8 Tur<br><span style="opacity:0.7; font-weight:600; font-size:10.5px;">90sn/tur</span></button>
+        <button class="wg-round-opt-new wg-round-opt" data-rounds="10" style="flex:1;">10 Tur<br><span style="opacity:0.7; font-weight:600; font-size:10.5px;">120sn/tur</span></button>
+      </div>
+      <button class="submit-btn secondary" id="btnWgAddBot" style="width:100%; padding:11px; background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.18);">🤖 Bot Ekle (kişi eksikse)</button>
+    </div>
+    <button id="btnWgStartGame" style="width:100%; padding:16px; font-size:16px; font-weight:900; color:#4A2E00; background:linear-gradient(145deg,#FFEA9E,#FFD93D 45%,#FFA500); box-shadow:0 8px 22px rgba(255,169,0,0.45), inset 0 1px 0 rgba(255,255,255,0.6); border-radius:18px; border:none; cursor:pointer; display:none; position:relative; z-index:1;">Oyunu Başlat 🚀</button>
+    <div style="text-align:center; color:rgba(255,255,255,0.55); font-size:12.5px; display:none; position:relative; z-index:1;" id="wgLobbyWaitingHostText">Oda kurucusunun oyunu başlatması bekleniyor…</div>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: HARF SEÇİMİ ============ -->
+  <section class="screen" id="screen-wg-letter">
+    <div class="wg-confetti" style="top:10%; right:8%;">🎊</div>
+    <div class="wg-confetti" style="top:50%; left:5%;">✨</div>
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgLetterBack">‹</button>
+      <span class="cal-title">🔤 Harf Seç</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="wg-glow-card" style="text-align:center; padding:22px; margin-bottom:16px; position:relative; z-index:1;">
+      <div style="font-size:17px; font-weight:800; color:#fff;" id="wgLetterPickerText">Harf seçiliyor…</div>
+      <div style="margin-top:4px; color:#FFD93D; font-weight:700; font-size:12px;" id="wgLetterRoundText"></div>
+    </div>
+    <div id="wgLetterGrid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:9px; position:relative; z-index:1;"></div>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: YAZMA ============ -->
+  <section class="screen" id="screen-wg-writing" style="padding:0;">
+    <div style="padding:0 16px 0; position:relative; z-index:1;">
+      <div class="cal-nav" style="margin-bottom:14px;">
+        <button class="admin-back-btn" id="btnWgWritingBack">‹</button>
+        <span class="cal-title">✍️ Yazma Zamanı</span>
+        <span style="width:36px;"></span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:16px;">
+        <div class="wg-timer-coin" id="wgTimerCoin">
+          <div class="wg-timer-letter" id="wgWritingLetter">-</div>
+          <div class="wg-timer-num" id="wgWritingCountdown">--</div>
+        </div>
+        <div>
+          <div style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700;">TUR <span id="wgWritingRoundNum"></span> / <span id="wgWritingTotalRounds"></span></div>
+          <div id="wgWritingStopInfo" style="margin-top:4px; display:none; color:#FF6B6B; font-weight:800; font-size:12.5px;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 16px 130px; position:relative; z-index:1;" id="wgWritingCategories"></div>
+    <div style="position:fixed; bottom:0; left:0; right:0; padding:14px 16px calc(14px + env(safe-area-inset-bottom)); background:linear-gradient(0deg, #150c28 55%, transparent); z-index:10;">
+      <button class="wg-stop-btn" id="btnWgStop">🛑 DUR!</button>
+    </div>
+  </section>
+
+  <!-- ============ İSİM ŞEHİR ÜLKE: OYLAMA (Aşama 3'te doldurulacak) ============ -->
+  <section class="screen" id="screen-wg-voting">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnWgVotingBack">‹</button>
+      <span class="cal-title">🗳️ Oylama</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div style="text-align:center; padding:60px 20px; color:rgba(255,255,255,0.6); position:relative; z-index:1;">
+      <div style="font-size:44px; margin-bottom:12px;">🚧</div>
+      <div style="font-weight:700;">Oylama ekranı yakında burada olacak.</div>
+    </div>
+  </section>
+
   <section class="screen" id="screen-quiz-market">
     <div class="cal-nav">
       <button class="admin-back-btn" id="btnQuizMarketBack">‹</button>
@@ -6792,10 +6920,10 @@ function renderNotifList(items, isFullHistory){
   box.innerHTML = items.map(n=>{
     const d = n.createdAt ? new Date(n.createdAt) : null;
     const dateStr = d ? d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
-    return `<div class="entry ${n.read?'':'yevmiye'}" data-nid="${escapeHtml(n.id)}" data-from="${escapeHtml(n.fromUid||'')}" data-duel="${escapeHtml(n.duelId||'')}" data-type="${escapeHtml(n.type||'')}" style="cursor:pointer;">
+    return `<div class="entry ${n.read?'':'yevmiye'}" data-nid="${escapeHtml(n.id)}" data-from="${escapeHtml(n.fromUid||'')}" data-duel="${escapeHtml(n.duelId||'')}" data-room="${escapeHtml(n.roomId||'')}" data-type="${escapeHtml(n.type||'')}" style="cursor:pointer;">
       <div class="bar" style="background:${n.read?'var(--line)':'var(--asphalt)'};"></div>
       <div class="info">
-        <div class="ttype" style="color:var(--ink);">${n.type==='broadcast'?'📢 Duyuru':(n.type==='suggestion_response'?'💡 Öneri Yanıtı':(n.type==='mod_update'?'🛡️ Moderatörlük':(n.type==='report_result'?'🚩 Şikayet Sonucu':(n.type==='friend_request'?'🤝 Arkadaşlık İsteği':(n.type==='friend_accept'?'✅ Arkadaşlık':(n.type==='duel_invite'?'⚔️ Düello Daveti':(n.type==='duel_result'?'🏆 Düello Sonucu':(n.type==='chess_invite'?'♟️ Satranç Daveti':'🔔 Bildirim'))))))))}</div>
+        <div class="ttype" style="color:var(--ink);">${n.type==='broadcast'?'📢 Duyuru':(n.type==='suggestion_response'?'💡 Öneri Yanıtı':(n.type==='mod_update'?'🛡️ Moderatörlük':(n.type==='report_result'?'🚩 Şikayet Sonucu':(n.type==='friend_request'?'🤝 Arkadaşlık İsteği':(n.type==='friend_accept'?'✅ Arkadaşlık':(n.type==='duel_invite'?'⚔️ Düello Daveti':(n.type==='duel_result'?'🏆 Düello Sonucu':(n.type==='chess_invite'?'♟️ Satranç Daveti':(n.type==='word_game_invite'?'🔤 İsim Şehir Ülke Daveti':'🔔 Bildirim')))))))))}</div>
         <div class="note" style="margin-top:2px;">${linkifyHtml(n.message||'')}</div>
         <div class="date">${dateStr}</div>
       </div>
@@ -6815,6 +6943,9 @@ function renderNotifList(items, isFullHistory){
       } else if(type==='chess_invite' && duelId){
         document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
         openChessDuel(duelId);
+      } else if(type==='word_game_invite' && row.dataset.room){
+        document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+        joinWordGameRoom(row.dataset.room);
       } else if(fromUid){
         document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
         openViewProfile(fromUid);
@@ -6911,7 +7042,7 @@ function renderHeaderNotifDropdown(){
   }
   box.innerHTML = items.map(n=>{
     const time = n.createdAt ? formatLastActive(n.createdAt) : '';
-    return `<div data-dd-notif-from="${escapeHtml(n.fromUid||'')}" data-dd-notif-duel="${escapeHtml(n.duelId||'')}" data-dd-notif-type="${escapeHtml(n.type||'')}" style="padding:9px 8px; border-radius:10px; cursor:pointer; ${!n.read?'background:var(--tint-slate);':''}">
+    return `<div data-dd-notif-from="${escapeHtml(n.fromUid||'')}" data-dd-notif-duel="${escapeHtml(n.duelId||'')}" data-dd-notif-room="${escapeHtml(n.roomId||'')}" data-dd-notif-type="${escapeHtml(n.type||'')}" style="padding:9px 8px; border-radius:10px; cursor:pointer; ${!n.read?'background:var(--tint-slate);':''}">
       <div style="font-size:12.5px; font-weight:${n.read?600:800};">${linkifyHtml(n.message||'')}</div>
       <div style="font-size:10px; color:var(--ink-soft); margin-top:3px;">${escapeHtml(time)}</div>
     </div>`;
@@ -6924,6 +7055,7 @@ function renderHeaderNotifDropdown(){
       const fromUid = row.dataset.ddNotifFrom;
       if((type==='duel_invite' || type==='duel_result') && duelId) openDuelRoom(duelId);
       else if(type==='chess_invite' && duelId) openChessDuel(duelId);
+      else if(type==='word_game_invite' && row.dataset.ddNotifRoom) joinWordGameRoom(row.dataset.ddNotifRoom);
       else if(fromUid) openViewProfile(fromUid);
     });
   });
@@ -7249,6 +7381,7 @@ function updateHeaderAvatar(){
 function switchScreen(name){
   document.body.classList.remove('chat-open');
   document.body.classList.remove('chess-open'); // satranç ekranından her çıkışta site başlığı geri gelsin
+  if(!name || name.indexOf('wg-') !== 0){ document.body.classList.remove('wg-open'); } // wg ekranları arası geçişte korunur, wg dışına çıkınca kalkar
   const mainScrollEl = document.querySelector('main');
   if(mainScrollEl) mainScrollEl.scrollTop = 0;
   window.scrollTo(0, 0);
@@ -10062,6 +10195,10 @@ function initGame(){
     // ============================================================
     // Siyah oynayan kişi tahtayı karşı taraftan görmeli (kendi taşları ona yakın dursun).
     var CHESS_HOME_THETA = (window.chessMyColor === 'b') ? Math.PI : 0.0;
+    (function(){
+      var dbg = document.getElementById('chessCameraDebug');
+      if(dbg) dbg.textContent = 'ben: ' + (window.chessMyColor || '?') + ' | theta: ' + CHESS_HOME_THETA.toFixed(2);
+    })();
     var camState = {
       theta: CHESS_HOME_THETA,
       phi: 0.55,
@@ -10613,32 +10750,49 @@ window.chessPlaySound = function(type){
 };
 
 // ---------- Navigasyon ----------
-document.getElementById('btnQuizGoOyunlar').addEventListener('click', ()=>{
-  switchScreen('oyunlar');
-});
-document.getElementById('btnOyunlarBack').addEventListener('click', ()=> switchScreen('quiz'));
+document.getElementById('btnOyunlarBack').addEventListener('click', ()=> switchScreen('ana'));
 document.getElementById('oyunSatrancCard').addEventListener('click', ()=>{
   switchScreen('chess-pick-friend');
   renderChessFriendPicker();
 });
 document.getElementById('btnChessPickFriendBack').addEventListener('click', ()=> switchScreen('oyunlar'));
 
+let chessFriendPickerAllUids = [];
 async function renderChessFriendPicker(){
   const box = document.getElementById('chessFriendPickerList');
   box.innerHTML = '<div class="hint">Yükleniyor…</div>';
   const friendUids = await getFriendUids(currentUser.uid);
+  chessFriendPickerAllUids = friendUids;
   if(friendUids.length === 0){
     box.innerHTML = '<div class="empty"><div class="icon">🤝</div><div class="msg">Önce bir arkadaş eklemen lazım.</div></div>';
     return;
   }
-  box.innerHTML = friendUids.map(uid=>{
+  renderChessFriendPickerFiltered('');
+}
+function renderChessFriendPickerFiltered(searchTerm){
+  const box = document.getElementById('chessFriendPickerList');
+  const term = (searchTerm||'').trim().toLocaleLowerCase('tr');
+  const rows = chessFriendPickerAllUids.map(uid=>{
     const p = profileByUid(uid);
     const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
+    return { uid, p, name, isOnline };
+  }).filter(r => !term || r.name.toLocaleLowerCase('tr').includes(term))
+    .sort((a,b) => (b.isOnline - a.isOnline) || a.name.localeCompare(b.name, 'tr'));
+
+  if(rows.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">🔍</div><div class="msg">Eşleşen arkadaş yok.</div></div>';
+    return;
+  }
+  box.innerHTML = rows.map(({uid, p, name, isOnline})=>{
     const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
     return `<div class="toggle-row" data-chess-pick-uid="${escapeHtml(uid)}" style="cursor:pointer;">
       <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px;height:40px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; overflow:hidden; flex-shrink:0;">${inner}</div>
-        <div class="tlbl">${escapeHtml(name)}</div>
+        <div style="position:relative; width:40px;height:40px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; overflow:hidden; flex-shrink:0;">${inner}${isOnline?'<span style="position:absolute; bottom:-1px; right:-1px; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}</div>
+        <div>
+          <div class="tlbl">${escapeHtml(name)}</div>
+          ${isOnline?'<div style="font-size:10px; color:#16A34A; font-weight:700;">● Çevrimiçi</div>':''}
+        </div>
       </div>
       <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>`;
@@ -10647,6 +10801,9 @@ async function renderChessFriendPicker(){
     row.addEventListener('click', ()=> sendChessInvite(row.dataset.chessPickUid));
   });
 }
+document.getElementById('chessFriendSearchInput').addEventListener('input', (e)=>{
+  renderChessFriendPickerFiltered(e.target.value);
+});
 
 const CHESS_INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -11193,6 +11350,562 @@ function setChessVoiceStatus(text){
   el.style.display = 'block';
   el.textContent = text;
 }
+
+// ================= İSİM ŞEHİR ÜLKE: ODA KURMA / LOBİ (Aşama 1) =================
+const WG_ROUND_TIME_MAP = { 5: 60, 8: 90, 10: 120 };
+const WG_LETTERS = 'ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ'.split('');
+const WG_CATEGORIES = [
+  { key:'isim', label:'İsim', icon:'👤', color:'#DBEAFE', iconBg:'#3B82F6' },
+  { key:'sehir', label:'Şehir', icon:'🏙️', color:'#CCFBF1', iconBg:'#14B8A6' },
+  { key:'ulke', label:'Ülke', icon:'🌍', color:'#DCFCE7', iconBg:'#22C55E' },
+  { key:'hayvan', label:'Hayvan', icon:'🦁', color:'#FFEDD5', iconBg:'#F97316' },
+  { key:'bitki', label:'Bitki', icon:'🌿', color:'#ECFCCB', iconBg:'#84CC16' },
+  { key:'esya', label:'Eşya', icon:'📦', color:'#FEF3C7', iconBg:'#D97706' },
+  { key:'meslek', label:'Meslek', icon:'💼', color:'#EDE9FE', iconBg:'#8B5CF6' }
+];
+
+let currentWgRoomId = null;
+let currentWgRoomUnsub = null;
+let wgSelectedInviteUids = [];
+let wgSelectedRounds = 8;
+
+document.getElementById('oyunWordGameCard').addEventListener('click', ()=>{
+  switchScreen('wg-entry');
+});
+document.getElementById('btnWgEntryBack').addEventListener('click', ()=> switchScreen('oyunlar'));
+
+document.getElementById('btnWgCreatePrivate').addEventListener('click', ()=>{
+  wgSelectedInviteUids = [];
+  switchScreen('wg-invite-pick');
+  renderWgInvitePicker();
+});
+document.getElementById('btnWgInvitePickBack').addEventListener('click', ()=> switchScreen('wg-entry'));
+
+let wgInvitePickAllUids = [];
+async function renderWgInvitePicker(){
+  const box = document.getElementById('wgInvitePickList');
+  box.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  const friendUids = await getFriendUids(currentUser.uid);
+  wgInvitePickAllUids = friendUids;
+  if(friendUids.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">🤝</div><div class="msg">Önce bir arkadaş eklemen lazım.</div></div>';
+    return;
+  }
+  renderWgInvitePickerFiltered('');
+}
+function renderWgInvitePickerFiltered(searchTerm){
+  const box = document.getElementById('wgInvitePickList');
+  const term = (searchTerm||'').trim().toLocaleLowerCase('tr');
+  const rows = wgInvitePickAllUids.map(uid=>{
+    const p = profileByUid(uid);
+    const name = p ? getDisplayName(p) : 'Kullanıcı';
+    const isOnline = p && p.lastActive && (Date.now() - new Date(p.lastActive).getTime()) < 120000;
+    return { uid, p, name, isOnline };
+  }).filter(r => !term || r.name.toLocaleLowerCase('tr').includes(term))
+    .sort((a,b) => (b.isOnline - a.isOnline) || a.name.localeCompare(b.name, 'tr'));
+
+  if(rows.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">🔍</div><div class="msg">Eşleşen arkadaş yok.</div></div>';
+    return;
+  }
+  box.innerHTML = rows.map(({uid, p, name, isOnline})=>{
+    const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+    const checked = wgSelectedInviteUids.includes(uid);
+    return `<div class="toggle-row" data-wg-invite-uid="${escapeHtml(uid)}" style="cursor:pointer; ${checked?'background:var(--tint-slate);':''}">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:40px;height:40px;border-radius:50%; background:${(p&&p.photoData)?'transparent':avatarGradient(uid)}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; overflow:hidden; flex-shrink:0;">${inner}${isOnline?'<span style="position:absolute; bottom:-1px; right:-1px; width:11px;height:11px; border-radius:50%; background:#22C55E; border:2px solid var(--paper);"></span>':''}</div>
+        <div class="tlbl">${escapeHtml(name)}</div>
+      </div>
+      <div style="font-size:20px;">${checked?'✅':'⬜'}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-wg-invite-uid]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const uid = row.dataset.wgInviteUid;
+      const idx = wgSelectedInviteUids.indexOf(uid);
+      if(idx >= 0){
+        wgSelectedInviteUids.splice(idx, 1);
+      } else {
+        if(wgSelectedInviteUids.length >= 5){ showToast('En fazla 5 arkadaş davet edebilirsin'); return; }
+        wgSelectedInviteUids.push(uid);
+      }
+      renderWgInvitePickerFiltered(document.getElementById('wgInviteSearchInput').value);
+    });
+  });
+}
+document.getElementById('wgInviteSearchInput').addEventListener('input', (e)=>{
+  renderWgInvitePickerFiltered(e.target.value);
+});
+
+function wgFreshRoomData(matchType){
+  return {
+    hostUid: currentUser.uid,
+    status: 'lobby',
+    playerUids: [currentUser.uid],
+    maxPlayers: 6,
+    matchType: matchType,
+    totalRounds: null,
+    roundTimeSeconds: null,
+    currentRound: 0,
+    usedLetters: [],
+    currentLetter: null,
+    letterPickerUid: null,
+    roundStartedAt: null,
+    roundStopAt: null,
+    roundStoppedBy: null,
+    scores: { [currentUser.uid]: 0 },
+    createdAt: new Date().toISOString()
+  };
+}
+
+document.getElementById('btnWgSendInvites').addEventListener('click', async ()=>{
+  if(wgSelectedInviteUids.length === 0){ showToast('En az 1 arkadaş seçmelisin'); return; }
+  try{
+    const roomRef = await db.collection('word_game_rooms').add(wgFreshRoomData('private'));
+    const myName = (profile && profile.fullName) || 'Bir kullanıcı';
+    for(const uid of wgSelectedInviteUids){
+      await db.collection('notifications').add({
+        toUid: uid, fromUid: currentUser.uid, type:'word_game_invite', roomId: roomRef.id,
+        message: '🔤 ' + myName + ' seni İsim Şehir Ülke oynamaya davet etti!',
+        read:false, createdAt:new Date().toISOString()
+      });
+    }
+    showToast('Davetler gönderildi 🚀');
+    openWgLobby(roomRef.id);
+  }catch(e){ console.error(e); showToast('Oda kurulamadı: '+(e.message||'')); }
+});
+
+document.getElementById('btnWgJoinRandom').addEventListener('click', async ()=>{
+  try{
+    const openRoomsSnap = await db.collection('word_game_rooms')
+      .where('matchType','==','random')
+      .where('status','==','lobby')
+      .limit(10).get();
+    let joined = false;
+    for(const doc of openRoomsSnap.docs){
+      const d = doc.data();
+      if((d.playerUids||[]).length < (d.maxPlayers||6) && !(d.playerUids||[]).includes(currentUser.uid)){
+        try{
+          await doc.ref.update({
+            playerUids: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+            ['scores.' + currentUser.uid]: 0
+          });
+          openWgLobby(doc.id);
+          joined = true;
+          break;
+        }catch(e){ continue; } // dolmuş olabilir, sıradaki açık odayı dene
+      }
+    }
+    if(!joined){
+      const roomRef = await db.collection('word_game_rooms').add(wgFreshRoomData('random'));
+      showToast('Yeni bir oda açtın, başkaları katılabilir 🎲');
+      openWgLobby(roomRef.id);
+    }
+  }catch(e){ console.error(e); showToast('Odaya katılamadı: '+(e.message||'')); }
+});
+
+async function joinWordGameRoom(roomId){
+  try{
+    const doc = await db.collection('word_game_rooms').doc(roomId).get();
+    if(!doc.exists){ showToast('Oda bulunamadı, silinmiş olabilir'); return; }
+    const d = doc.data();
+    if(!(d.playerUids||[]).includes(currentUser.uid)){
+      if((d.playerUids||[]).length >= (d.maxPlayers||6)){ showToast('Oda dolu'); return; }
+      if(d.status !== 'lobby'){ showToast('Oyun zaten başlamış'); return; }
+      await doc.ref.update({
+        playerUids: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+        ['scores.' + currentUser.uid]: 0
+      });
+    }
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    openWgLobby(roomId);
+  }catch(e){ console.error(e); showToast('Odaya katılınamadı'); }
+}
+
+function wgIsBot(uid){ return typeof uid === 'string' && uid.indexOf('bot_') === 0; }
+const WG_BOT_NAMES = { bot_1:'Robot Ahmet 🤖', bot_2:'Robot Zeynep 🤖', bot_3:'Robot Mehmet 🤖', bot_4:'Robot Ayşe 🤖', bot_5:'Robot Can 🤖' };
+function wgGetPlayerDisplay(uid){
+  if(wgIsBot(uid)){
+    return { name: WG_BOT_NAMES[uid] || 'Bot 🤖', inner: '🤖', isPhoto:false, bg:'linear-gradient(145deg,#8B95A6,#5A6472)' };
+  }
+  const p = profileByUid(uid);
+  const name = p ? getDisplayName(p) : 'Kullanıcı';
+  const inner = (p && p.photoData) ? `<img src="${safeImageSrc(p.photoData)}" style="width:100%;height:100%; object-fit:cover;">` : escapeHtml(getInitials(p?p.fullName:name));
+  return { name, inner, isPhoto: !!(p && p.photoData), bg: (p&&p.photoData)?'transparent':avatarGradient(uid) };
+}
+
+let wgLastRenderedStatus = null;
+let wgCurrentRoomData = null;
+
+function openWgLobby(roomId){
+  currentWgRoomId = roomId;
+  wgLastRenderedStatus = null;
+  document.body.classList.add('wg-open');
+  switchScreen('wg-lobby');
+  wgLastRenderedStatus = 'lobby';
+  if(currentWgRoomUnsub) currentWgRoomUnsub();
+  currentWgRoomUnsub = db.collection('word_game_rooms').doc(roomId).onSnapshot(doc=>{
+    if(!doc.exists){
+      showToast('Oda kapatıldı');
+      if(currentWgRoomUnsub){ currentWgRoomUnsub(); currentWgRoomUnsub = null; }
+      wgCurrentRoomData = null;
+      switchScreen('wg-entry');
+      return;
+    }
+    handleWgRoomUpdate(doc.data());
+  }, err=>{ console.error('lobi dinleyici hatası', err); });
+}
+
+function handleWgRoomUpdate(d){
+  wgCurrentRoomData = d;
+  if(d.status === 'lobby'){
+    if(wgLastRenderedStatus !== 'lobby'){ switchScreen('wg-lobby'); wgLastRenderedStatus = 'lobby'; }
+    renderWgLobby(d);
+  } else if(d.status === 'letter_selection'){
+    if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
+    if(wgLastRenderedStatus !== 'letter_selection'){ switchScreen('wg-letter'); wgLastRenderedStatus = 'letter_selection'; }
+    renderWgLetterSelect(d);
+    maybeRunBotLetterPick(d);
+  } else if(d.status === 'writing'){
+    if(wgLastRenderedStatus !== 'writing'){
+      switchScreen('wg-writing');
+      wgLastRenderedStatus = 'writing';
+      startWgWritingRound(d);
+    }
+    maybeScheduleBotAnswers(d);
+  } else if(d.status === 'voting'){
+    if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
+    if(wgLastRenderedStatus !== 'voting'){ switchScreen('wg-voting'); wgLastRenderedStatus = 'voting'; }
+  }
+}
+
+function renderWgLobby(d){
+  const isHost = d.hostUid === currentUser.uid;
+  const playersBox = document.getElementById('wgLobbyPlayers');
+  playersBox.innerHTML = (d.playerUids||[]).map(uid=>{
+    const disp = wgGetPlayerDisplay(uid);
+    const isHostBadge = (uid === d.hostUid) ? '<div class="wg-host-chip">👑 KURUCU</div>' : '';
+    const score = (d.scores && d.scores[uid]) || 0;
+    return `<div style="text-align:center;">
+      <div class="wg-avatar-wrap wg-idle">
+        <div class="wg-avatar-inner" style="background:${disp.bg};">${disp.inner}</div>
+        <div class="wg-online-dot"></div>
+        ${score>0?`<div class="wg-points-badge">${score} pts</div>`:''}
+      </div>
+      <div class="wg-player-name">${escapeHtml(disp.name)}</div>
+      ${isHostBadge}
+    </div>`;
+  }).join('');
+  document.getElementById('wgLobbyCountText').textContent = (d.playerUids||[]).length + ' / ' + (d.maxPlayers||6) + ' oyuncu — en az 2 kişiyle başlanabilir';
+
+  const hostSettingsEl = document.getElementById('wgLobbyHostSettings');
+  const startBtnEl = document.getElementById('btnWgStartGame');
+  const waitingTextEl = document.getElementById('wgLobbyWaitingHostText');
+
+  if(isHost){
+    hostSettingsEl.style.display = 'block';
+    startBtnEl.style.display = 'block';
+    waitingTextEl.style.display = 'none';
+    document.querySelectorAll('.wg-round-opt').forEach(btn=>{
+      const rounds = parseInt(btn.dataset.rounds, 10);
+      btn.classList.toggle('wg-round-active', rounds === wgSelectedRounds);
+    });
+    const notEnough = (d.playerUids||[]).length < 2;
+    startBtnEl.disabled = notEnough;
+    startBtnEl.style.opacity = notEnough ? '0.5' : '1';
+    const addBotBtn = document.getElementById('btnWgAddBot');
+    const roomFull = (d.playerUids||[]).length >= (d.maxPlayers||6);
+    addBotBtn.style.display = roomFull ? 'none' : 'block';
+  } else {
+    hostSettingsEl.style.display = 'none';
+    startBtnEl.style.display = 'none';
+    waitingTextEl.style.display = 'block';
+  }
+}
+
+document.getElementById('btnWgAddBot').addEventListener('click', async ()=>{
+  if(!currentWgRoomId || !wgCurrentRoomData) return;
+  const existingBots = (wgCurrentRoomData.playerUids||[]).filter(wgIsBot);
+  const nextBotUid = 'bot_' + (existingBots.length + 1);
+  if((wgCurrentRoomData.playerUids||[]).length >= (wgCurrentRoomData.maxPlayers||6)){ showToast('Oda dolu'); return; }
+  try{
+    await db.collection('word_game_rooms').doc(currentWgRoomId).update({
+      playerUids: firebase.firestore.FieldValue.arrayUnion(nextBotUid),
+      ['scores.' + nextBotUid]: 0
+    });
+  }catch(e){ console.error(e); showToast('Bot eklenemedi'); }
+});
+
+// ================= İSİM ŞEHİR ÜLKE: BOT KELİME LİSTESİ =================
+const WG_BOT_WORDS = {
+  A:{isim:['Ahmet','Ayşe','Ali'],sehir:['Adana','Ankara','Antalya'],ulke:['Almanya','Amerika','Arnavutluk'],hayvan:['Ayı','Aslan','At'],bitki:['Ardıç','Akasya'],esya:['Ayna','Anahtar'],meslek:['Avukat','Aşçı']},
+  B:{isim:['Berkay','Buse','Burak'],sehir:['Bursa','Bolu','Balıkesir'],ulke:['Belçika','Brezilya','Bulgaristan'],hayvan:['Balık','Baykuş','Böcek'],bitki:['Begonya','Bambu'],esya:['Bardak','Bavul'],meslek:['Berber','Bakkal']},
+  C:{isim:['Cem','Canan','Caner'],sehir:['Ceyhan'],ulke:['Cezayir'],hayvan:['Ceylan'],bitki:[],esya:['Cüzdan','Cetvel'],meslek:['Cerrah']},
+  Ç:{isim:['Çağla','Çağatay'],sehir:['Çanakkale','Çorum'],ulke:['Çin'],hayvan:['Çakal','Çita'],bitki:['Çınar','Çiçek'],esya:['Çanta','Çatal'],meslek:['Çiftçi','Çoban']},
+  D:{isim:['Deniz','Duygu','Doğan'],sehir:['Diyarbakır','Denizli'],ulke:['Danimarka'],hayvan:['Deve','Domuz'],bitki:['Defne'],esya:['Defter','Dolap'],meslek:['Doktor']},
+  E:{isim:['Emre','Ebru','Ege'],sehir:['Edirne','Erzurum','Elazığ'],ulke:['Endonezya','Ekvador'],hayvan:['Eşek'],bitki:['Erik ağacı'],esya:['Eldiven'],meslek:['Eczacı','Elektrikçi']},
+  F:{isim:['Fatma','Furkan'],sehir:['Fethiye'],ulke:['Fransa','Finlandiya'],hayvan:['Fil','Fare'],bitki:['Fesleğen'],esya:['Fincan'],meslek:['Fotoğrafçı','Futbolcu']},
+  G:{isim:['Gizem','Gökhan'],sehir:['Gaziantep','Giresun'],ulke:['Gürcistan','Guatemala'],hayvan:['Gergedan','Güvercin'],bitki:['Gül','Gelincik'],esya:['Gözlük'],meslek:['Gazeteci','Garson']},
+  Ğ:{isim:[],sehir:[],ulke:[],hayvan:[],bitki:[],esya:[],meslek:[]},
+  H:{isim:['Hakan','Hale'],sehir:['Hatay'],ulke:['Hollanda','Hindistan'],hayvan:['Horoz','Hamster'],bitki:[],esya:['Halı'],meslek:['Hemşire','Hakim']},
+  I:{isim:['Işık'],sehir:['Isparta'],ulke:[],hayvan:['Iguana'],bitki:['Ispanak'],esya:['Iskarpin'],meslek:[]},
+  İ:{isim:['İrem','İlker'],sehir:['İstanbul','İzmir'],ulke:['İtalya','İngiltere'],hayvan:['İnek'],bitki:[],esya:['İp'],meslek:['İtfaiyeci','İşçi']},
+  J:{isim:[],sehir:[],ulke:['Jamaika'],hayvan:['Jaguar'],bitki:[],esya:[],meslek:['Jeolog','Jandarma']},
+  K:{isim:['Kemal','Kerem'],sehir:['Kayseri','Konya','Kastamonu'],ulke:['Kanada','Kenya'],hayvan:['Kedi','Kaplan','Kurt'],bitki:['Karanfil'],esya:['Kalem','Kitap'],meslek:['Kuaför','Kaptan']},
+  L:{isim:['Leyla','Levent'],sehir:[],ulke:['Lübnan','Letonya'],hayvan:['Leopar'],bitki:['Lale'],esya:['Lamba'],meslek:['Lokantacı']},
+  M:{isim:['Mehmet','Merve'],sehir:['Mersin','Manisa','Muğla'],ulke:['Meksika','Mısır'],hayvan:['Maymun','Martı'],bitki:['Menekşe'],esya:['Masa'],meslek:['Mühendis','Muhasebeci']},
+  N:{isim:['Nihan','Naz'],sehir:['Nevşehir','Niğde'],ulke:['Norveç'],hayvan:[],bitki:['Nergis'],esya:['Not defteri'],meslek:['Noter']},
+  O:{isim:['Onur','Oya'],sehir:['Ordu'],ulke:['Özbekistan'],hayvan:['Ördek'],bitki:['Orkide'],esya:['Ocak'],meslek:['Oyuncu']},
+  Ö:{isim:['Ömer','Özge'],sehir:[],ulke:[],hayvan:[],bitki:[],esya:['Örtü'],meslek:['Öğretmen']},
+  P:{isim:['Pelin','Poyraz'],sehir:[],ulke:['Portekiz','Peru'],hayvan:['Papağan','Panda'],bitki:['Papatya'],esya:['Peçete'],meslek:['Pilot','Polis']},
+  R:{isim:['Rüya','Recep'],sehir:['Rize'],ulke:['Rusya','Romanya'],hayvan:['Rakun'],bitki:[],esya:['Radyo'],meslek:['Ressam']},
+  S:{isim:['Selin','Serkan'],sehir:['Sivas','Samsun'],ulke:['Suriye'],hayvan:['Serçe','Sincap'],bitki:['Sarmaşık'],esya:['Sandalye'],meslek:['Satıcı','Subay']},
+  Ş:{isim:['Şeyma','Şevket'],sehir:['Şanlıurfa','Şırnak'],ulke:[],hayvan:['Şahin'],bitki:[],esya:['Şemsiye'],meslek:['Şoför']},
+  T:{isim:['Talha','Tuğba'],sehir:['Trabzon','Tokat'],ulke:['Tayland','Tunus'],hayvan:['Tavşan','Tilki'],bitki:['Turp'],esya:['Televizyon'],meslek:['Terzi','Tercüman']},
+  U:{isim:['Utku'],sehir:['Uşak'],ulke:['Uganda','Ukrayna'],hayvan:['Uğur böceği'],bitki:[],esya:['Uçurtma'],meslek:[]},
+  Ü:{isim:['Ülkü'],sehir:[],ulke:['Ürdün'],hayvan:[],bitki:['Üzüm'],esya:['Ütü'],meslek:[]},
+  V:{isim:['Volkan','Vildan'],sehir:['Van'],ulke:['Venezuela','Vietnam'],hayvan:['Vaşak'],bitki:[],esya:['Vazo'],meslek:['Veteriner']},
+  Y:{isim:['Yusuf','Yasemin'],sehir:['Yozgat'],ulke:['Yunanistan'],hayvan:['Yılan','Yunus'],bitki:['Yasemin'],esya:['Yastık'],meslek:['Yazar']},
+  Z:{isim:['Zeynep','Zafer'],sehir:['Zonguldak'],ulke:['Zambiya'],hayvan:['Zebra','Zürafa'],bitki:[],esya:['Zil'],meslek:['Zabıta']}
+};
+function wgPickBotWord(letter, categoryKey, excludeSet){
+  const table = WG_BOT_WORDS[letter];
+  if(!table) return '';
+  const list = table[categoryKey] || [];
+  const candidates = list.filter(w => !excludeSet.has(w.toLocaleLowerCase('tr')));
+  if(candidates.length === 0) return '';
+  return candidates[Math.floor(Math.random()*candidates.length)];
+}
+
+// ================= İSİM ŞEHİR ÜLKE: HARF SEÇİMİ =================
+function renderWgLetterSelect(d){
+  const isPicker = d.letterPickerUid === currentUser.uid;
+  const pickerDisp = wgGetPlayerDisplay(d.letterPickerUid);
+  document.getElementById('wgLetterPickerText').textContent = isPicker ? 'Bir harf seç!' : (pickerDisp.name + ' harf seçiyor…');
+  document.getElementById('wgLetterRoundText').textContent = 'Tur ' + d.currentRound + ' / ' + d.totalRounds;
+  const grid = document.getElementById('wgLetterGrid');
+  const used = d.usedLetters || [];
+  grid.innerHTML = WG_LETTERS.map(L=>{
+    const isUsed = used.includes(L);
+    const disabled = isUsed || !isPicker;
+    return `<button class="wg-letter-tile wg-letter-btn" data-letter="${L}" ${disabled?'disabled':''} style="${(!isUsed && !isPicker)?'opacity:0.55; text-decoration:none;':''}">${L}</button>`;
+  }).join('');
+  if(isPicker){
+    grid.querySelectorAll('.wg-letter-btn:not([disabled])').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const letter = btn.dataset.letter;
+        try{
+          await db.collection('word_game_rooms').doc(currentWgRoomId).update({
+            currentLetter: letter,
+            usedLetters: firebase.firestore.FieldValue.arrayUnion(letter),
+            status: 'writing',
+            roundStartedAt: new Date().toISOString(),
+            roundStopAt: null,
+            roundStoppedBy: null
+          });
+        }catch(e){ console.error(e); showToast('Harf seçilemedi'); }
+      });
+    });
+  }
+}
+
+let wgBotActionScheduledFor = null;
+let wgBotAnswersScheduledFor = null;
+
+function maybeRunBotLetterPick(d){
+  if(!currentWgRoomId || !wgIsBot(d.letterPickerUid)) return;
+  if(d.hostUid !== currentUser.uid) return; // botların hamlesini yalnızca host simüle eder
+  const key = d.currentRound + '_letter';
+  if(wgBotActionScheduledFor === key) return;
+  wgBotActionScheduledFor = key;
+  const used = d.usedLetters || [];
+  const remaining = WG_LETTERS.filter(L => !used.includes(L));
+  if(remaining.length === 0) return;
+  setTimeout(async ()=>{
+    const letter = remaining[Math.floor(Math.random()*remaining.length)];
+    try{
+      await db.collection('word_game_rooms').doc(currentWgRoomId).update({
+        currentLetter: letter,
+        usedLetters: firebase.firestore.FieldValue.arrayUnion(letter),
+        status: 'writing',
+        roundStartedAt: new Date().toISOString(),
+        roundStopAt: null,
+        roundStoppedBy: null
+      });
+    }catch(e){ console.error('bot harf seçemedi', e); }
+  }, 1200 + Math.random()*1000);
+}
+
+function maybeScheduleBotAnswers(d){
+  if(!currentWgRoomId || d.hostUid !== currentUser.uid) return; // botlar adına yalnızca host cevap gönderir
+  const bots = (d.playerUids||[]).filter(wgIsBot);
+  if(bots.length === 0) return;
+  const key = d.currentRound + '_answers';
+  if(wgBotAnswersScheduledFor === key) return;
+  wgBotAnswersScheduledFor = key;
+  bots.forEach(botUid=>{
+    const delay = 2000 + Math.random()*Math.max(3000, (d.roundTimeSeconds||90)*1000*0.5);
+    setTimeout(async ()=>{
+      try{
+        const freshDoc = await db.collection('word_game_rooms').doc(currentWgRoomId).get();
+        const freshD = freshDoc.data();
+        if(!freshD || freshD.status !== 'writing' || freshD.currentRound !== d.currentRound) return;
+        const usedWords = new Set();
+        const answers = {};
+        WG_CATEGORIES.forEach(c=>{
+          const w = wgPickBotWord(d.currentLetter, c.key, usedWords);
+          answers[c.key] = w;
+          if(w) usedWords.add(w.toLocaleLowerCase('tr'));
+        });
+        await db.collection('word_game_rooms').doc(currentWgRoomId).collection('round_answers')
+          .doc(botUid + '_' + d.currentRound).set({
+            uid: botUid, round: d.currentRound, letter: d.currentLetter,
+            answers, votes: {}, submittedAt: new Date().toISOString()
+          });
+      }catch(e){ console.error('bot cevabı gönderilemedi', e); }
+    }, delay);
+  });
+}
+
+// ================= İSİM ŞEHİR ÜLKE: YAZMA EKRANI =================
+let wgWritingAnswers = {};
+let wgWritingSubmitted = false;
+let wgWritingTimerInterval = null;
+
+function startWgWritingRound(d){
+  wgWritingAnswers = {};
+  wgWritingSubmitted = false;
+  const box = document.getElementById('wgWritingCategories');
+  box.innerHTML = WG_CATEGORIES.map(c=>`
+    <div class="wg-cat-row" style="background:${c.color};">
+      <div class="wg-cat-icon" style="background:${c.iconBg};">${c.icon}</div>
+      <div style="flex:1;">
+        <div class="wg-cat-label" style="color:${c.iconBg};">${c.label}</div>
+        <input type="text" id="wgAnswer-${c.key}" data-cat="${c.key}" class="wg-answer-input wg-cat-input" placeholder="${d.currentLetter} ile başlayan ${c.label.toLocaleLowerCase('tr')}...">
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.wg-answer-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{ wgWritingAnswers[inp.dataset.cat] = inp.value; });
+  });
+  document.getElementById('wgWritingRoundNum').textContent = d.currentRound;
+  document.getElementById('wgWritingTotalRounds').textContent = d.totalRounds;
+  document.getElementById('wgWritingLetter').textContent = d.currentLetter;
+  document.getElementById('wgWritingStopInfo').style.display = 'none';
+  const coinEl = document.getElementById('wgTimerCoin');
+  if(coinEl) coinEl.classList.remove('wg-timer-urgent');
+  if(wgWritingTimerInterval) clearInterval(wgWritingTimerInterval);
+  wgWritingTimerInterval = setInterval(tickWgWritingTimer, 250);
+  tickWgWritingTimer();
+}
+
+function tickWgWritingTimer(){
+  if(!wgCurrentRoomData || wgCurrentRoomData.status !== 'writing') return;
+  const d = wgCurrentRoomData;
+  const startedAt = new Date(d.roundStartedAt).getTime();
+  const fullDeadline = startedAt + (d.roundTimeSeconds||90)*1000;
+  let deadline = fullDeadline;
+  if(d.roundStopAt){
+    const stopDeadline = new Date(d.roundStopAt).getTime() + 10000;
+    deadline = Math.min(fullDeadline, stopDeadline);
+    const infoEl = document.getElementById('wgWritingStopInfo');
+    if(infoEl){
+      const stopperDisp = wgGetPlayerDisplay(d.roundStoppedBy);
+      const stopperName = (d.roundStoppedBy === currentUser.uid) ? 'Sen' : stopperDisp.name;
+      infoEl.style.display = 'block';
+      infoEl.textContent = '🛑 ' + stopperName + ' DUR dedi!';
+    }
+  }
+  const remainingMs = deadline - Date.now();
+  const remainingSec = Math.max(0, Math.ceil(remainingMs/1000));
+  const cdEl = document.getElementById('wgWritingCountdown');
+  if(cdEl) cdEl.textContent = remainingSec + 's';
+  const coinEl = document.getElementById('wgTimerCoin');
+  if(coinEl) coinEl.classList.toggle('wg-timer-urgent', remainingSec <= 10);
+
+  if(remainingMs <= 0 && !wgWritingSubmitted){
+    wgWritingSubmitted = true;
+    submitWgAnswers(d);
+  }
+}
+
+async function submitWgAnswers(d){
+  if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
+  try{
+    await db.collection('word_game_rooms').doc(currentWgRoomId).collection('round_answers')
+      .doc(currentUser.uid + '_' + d.currentRound).set({
+        uid: currentUser.uid, round: d.currentRound, letter: d.currentLetter,
+        answers: Object.assign({}, wgWritingAnswers), votes: {}, submittedAt: new Date().toISOString()
+      });
+  }catch(e){ console.error('cevap gönderilemedi', e); }
+  try{
+    await db.collection('word_game_rooms').doc(currentWgRoomId).update({ status: 'voting' });
+  }catch(e){ console.error('oylamaya geçilemedi', e); }
+}
+
+document.getElementById('btnWgStop').addEventListener('click', async ()=>{
+  if(!currentWgRoomId || !wgCurrentRoomData) return;
+  if(wgCurrentRoomData.roundStopAt) return;
+  try{
+    await db.collection('word_game_rooms').doc(currentWgRoomId).update({
+      roundStopAt: new Date().toISOString(),
+      roundStoppedBy: currentUser.uid
+    });
+  }catch(e){ console.error(e); showToast('DUR gönderilemedi'); }
+});
+
+function wgLeaveGameToMenu(){
+  if(currentWgRoomUnsub){ currentWgRoomUnsub(); currentWgRoomUnsub = null; }
+  if(wgWritingTimerInterval){ clearInterval(wgWritingTimerInterval); wgWritingTimerInterval = null; }
+  wgCurrentRoomData = null;
+  currentWgRoomId = null;
+  switchScreen('oyunlar');
+}
+document.getElementById('btnWgLetterBack').addEventListener('click', wgLeaveGameToMenu);
+document.getElementById('btnWgWritingBack').addEventListener('click', wgLeaveGameToMenu);
+document.getElementById('btnWgVotingBack').addEventListener('click', wgLeaveGameToMenu);
+
+document.querySelectorAll('.wg-round-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    wgSelectedRounds = parseInt(btn.dataset.rounds, 10);
+    document.querySelectorAll('.wg-round-opt').forEach(b=>{
+      const r = parseInt(b.dataset.rounds, 10);
+      b.style.outline = (r === wgSelectedRounds) ? '2px solid #FF7A45' : 'none';
+    });
+  });
+});
+
+document.getElementById('btnWgStartGame').addEventListener('click', async ()=>{
+  if(!currentWgRoomId) return;
+  try{
+    const doc = await db.collection('word_game_rooms').doc(currentWgRoomId).get();
+    const d = doc.data();
+    if((d.playerUids||[]).length < 2){ showToast('En az 2 oyuncu gerekli'); return; }
+    await doc.ref.update({
+      status: 'letter_selection',
+      totalRounds: wgSelectedRounds,
+      roundTimeSeconds: WG_ROUND_TIME_MAP[wgSelectedRounds],
+      currentRound: 1,
+      letterPickerUid: d.playerUids[0]
+    });
+  }catch(e){ console.error(e); showToast('Oyun başlatılamadı'); }
+});
+
+document.getElementById('btnWgLobbyBack').addEventListener('click', async ()=>{
+  if(currentWgRoomUnsub){ currentWgRoomUnsub(); currentWgRoomUnsub = null; }
+  if(currentWgRoomId){
+    try{
+      const doc = await db.collection('word_game_rooms').doc(currentWgRoomId).get();
+      const d = doc.data();
+      if(d && d.hostUid === currentUser.uid){
+        await doc.ref.delete(); // host çıkarsa oda kapanır
+      } else if(d) {
+        await doc.ref.update({ playerUids: firebase.firestore.FieldValue.arrayRemove(currentUser.uid) });
+      }
+    }catch(e){ console.error(e); }
+  }
+  currentWgRoomId = null;
+  switchScreen('oyunlar');
+});
 
 async function renderDailyQuestsScreen(){
   const box = document.getElementById('dailyQuestsList');
