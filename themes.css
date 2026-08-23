@@ -81,7 +81,8 @@ html[data-app-theme="kompakt"]{
 }
 html[data-app-theme="kompakt"] header.top .brand-left{ max-width:60%; }
 html[data-app-theme="kompakt"] header.top .brand > div:last-child{
-  position:fixed; bottom:78px; left:50%; transform:translateX(-50%);
+  position:fixed !important; bottom:78px !important; left:50% !important; right:auto !important;
+  transform:translateX(-50%); top:auto !important;
   background:var(--paper); border-radius:var(--theme-radius-md,10px); padding:7px 12px;
   box-shadow:var(--shadow-md); z-index:25; gap:16px; border:1px solid var(--line);
 }
