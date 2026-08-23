@@ -887,12 +887,16 @@ function initGame(){
     var statusTextEl = document.getElementById("chess-status-text");
     var timerEl = document.getElementById("chess-timer");
 
+    var checkBannerEl = document.getElementById("chess-check-banner");
+    var wasInCheck = false;
+
     function updateStatus(){
       var turn = game.turn();
       turnDotEl.style.background = turn === "b" ? "radial-gradient(circle at 35% 30%, #4a3a2c, #100b08)" : "radial-gradient(circle at 35% 30%, #fff8e8, #d8c79a)";
       turnTextEl.textContent = turn === "w" ? "Beyaz Sırası" : "Siyah Sırası";
 
       var extra = "";
+      var nowInCheck = false;
       if (game.in_checkmate()){
         var winner = turn === "w" ? "Siyah" : "Beyaz";
         extra = "Şah Mat! " + winner + " kazandı.";
@@ -906,8 +910,17 @@ function initGame(){
         extra = "Berabere.";
       } else if (game.in_check()){
         extra = "Şah!";
+        nowInCheck = true;
       }
       statusTextEl.textContent = extra;
+      // Belirgin "ŞAH!" banner'ı: sadece şah durumunda göster (mat/pat gibi oyun biten
+      // durumlarda değil, o zaten kendi mesajıyla ayrı gösteriliyor)
+      if(checkBannerEl){
+        checkBannerEl.style.display = nowInCheck ? 'block' : 'none';
+        // Şah YENİ başladıysa (önceki hamlede yoktu) kısa bir titreşimle dikkat çek
+        if(nowInCheck && !wasInCheck && navigator.vibrate){ try{ navigator.vibrate([80,40,80]); }catch(e){} }
+      }
+      wasInCheck = nowInCheck;
     }
     updateStatus();
     renderCapturedPanels();

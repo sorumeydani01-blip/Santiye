@@ -61,17 +61,21 @@ self.addEventListener('fetch', (event) => {
       event.request.url.includes('ipify.org')) {
     return;
   }
-  // ÖNCE İNTERNET: internet varsa her zaman en güncel dosyayı çek ve önbelleği güncelle.
-  // İnternet yoksa (çevrimdışı), o zaman önbellekteki son bilinen kopyayı göster.
-  // { cache: 'no-store' } önemli: bu olmadan, tarayıcının veya GitHub'ın kendi ara
-  // HTTP önbelleği devreye girip biz "internete git" desek bile eski dosyayı
-  // verebiliyordu — dosya güncellemesinin görünmemesinin asıl sebebi buydu.
+  // STALE-WHILE-REVALIDATE: önbellekte varsa HEMEN onu göster (hızlı açılış),
+  // aynı anda arka planda internetten taze kopyayı çek ve önbelleği güncelle
+  // (bir sonraki açılışta güncel içerik zaten hazır olur). Önbellekte hiç
+  // yoksa (ilk ziyaret), internete gitmeyi bekle.
+  // { cache: 'no-store' } burada da önemli: arka plan güncellemesinin GERÇEKTEN
+  // taze veri çekmesini sağlar, ara HTTP önbelleğine takılmaz.
   event.respondWith(
-    fetch(event.request, { cache: 'no-store' }).then((response) => {
-      const clone = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(()=>{});
-      return response;
-    }).catch(() => caches.match(event.request))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cached = await cache.match(event.request);
+      const networkFetch = fetch(event.request, { cache: 'no-store' }).then((response) => {
+        cache.put(event.request, response.clone()).catch(()=>{});
+        return response;
+      }).catch(() => cached);
+      return cached || networkFetch;
+    })
   );
 });
 
