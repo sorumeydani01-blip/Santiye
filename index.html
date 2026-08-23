@@ -680,6 +680,7 @@
     <div id="chessGameContainer" style="position:fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh;">
       <button id="btnChessGameBack" class="chess-panel" style="position:absolute; top:14px; left:14px; z-index:30; width:38px;height:38px; border-radius:50%; color:#ece2cc; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">‹</button>
       <button id="btnChessVoiceCall" class="chess-panel" style="position:absolute; top:14px; right:14px; z-index:30; width:38px;height:38px; border-radius:50%; color:#ece2cc; font-size:16px; cursor:pointer; display:none; align-items:center; justify-content:center;">🎤</button>
+      <div id="chessVoiceStatus" class="chess-panel" style="position:absolute; top:58px; right:14px; z-index:30; padding:5px 10px; border-radius:10px; font-family:'Segoe UI',sans-serif; font-size:9.5px; color:#c9a24a; display:none; max-width:150px; text-align:right;"></div>
       <div id="chess-canvas-container" style="position:absolute; inset:0;"></div>
       <div id="chess-topbar" class="chess-panel" style="position:absolute; top:14px; left:50%; transform:translateX(-50%); padding:10px 24px; border-radius:16px; z-index:20; display:flex; align-items:center; gap:16px; font-family:Georgia,serif; color:#ece2cc; min-width:260px; justify-content:center;">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -10059,18 +10060,20 @@ function initGame(){
     // ============================================================
     // CAMERA CONTROLS (custom lightweight orbit/pan/zoom)
     // ============================================================
+    // Siyah oynayan kişi tahtayı karşı taraftan görmeli (kendi taşları ona yakın dursun).
+    var CHESS_HOME_THETA = (window.chessMyColor === 'b') ? Math.PI : 0.0;
     var camState = {
-      theta: 0.0,
+      theta: CHESS_HOME_THETA,
       phi: 0.55,
       radius: 30,
-      targetTheta: 0.0,
+      targetTheta: CHESS_HOME_THETA,
       targetPhi: 0.55,
       targetRadius: 30
     };
     var camTargetPoint = new THREE.Vector3(0, 0.3, 0);
     var camTargetGoal = new THREE.Vector3(0, 0.3, 0);
     var camTargetHome = new THREE.Vector3(0, 0.3, 0);
-    var CAM_HOME = { theta: 0.0, phi: 0.55, radius: 30 };
+    var CAM_HOME = { theta: CHESS_HOME_THETA, phi: 0.55, radius: 30 };
 
     var isDragging = false, lastX=0, lastY=0;
     var THETA_LIMIT = 0.55;   // sağa/sola en fazla bu kadar (radyan)
@@ -11055,6 +11058,7 @@ let chessVoiceStream = null;
 let chessVoiceUnsub = null;
 let chessVoiceRole = null; // 'offerer' | 'answerer' — kim teklif eder, uid karşılaştırmasıyla deterministik belirlenir
 let chessVoiceAppliedRemoteCandidates = 0;
+let chessVoiceSentCandidates = 0;
 
 function chessVoiceMyCandidateField(){ return chessVoiceRole === 'offerer' ? 'voiceCallerCandidates' : 'voiceCalleeCandidates'; }
 function chessVoiceRemoteCandidateField(){ return chessVoiceRole === 'offerer' ? 'voiceCalleeCandidates' : 'voiceCallerCandidates'; }
@@ -11064,20 +11068,24 @@ async function toggleChessVoice(){
   if(!window.chessOpponentUid){ showToast('Rakip henüz belli değil'); return; }
   if(!currentChessDuelId){ showToast('Bu modda sesli sohbet yok'); return; }
 
+  setChessVoiceStatus('Mikrofon izni isteniyor…');
   let stream;
   try{
     stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
   }catch(e){
     showToast('Mikrofon izni verilmedi');
+    setChessVoiceStatus('');
     return;
   }
 
   chessVoiceStream = stream;
   chessVoiceActive = true;
   chessVoiceAppliedRemoteCandidates = 0;
+  chessVoiceSentCandidates = 0;
   // Kim teklif eden (offerer) olacağı, iki tarafın da aynı sonuca varması için uid karşılaştırmasıyla belirleniyor.
   chessVoiceRole = (currentUser.uid < window.chessOpponentUid) ? 'offerer' : 'answerer';
   updateChessVoiceButtonUI();
+  setChessVoiceStatus(chessVoiceRole === 'offerer' ? 'Teklif hazırlanıyor…' : 'Rakip bekleniyor…');
 
   const duelRef = db.collection('chess_duels').doc(currentChessDuelId);
 
@@ -11086,19 +11094,39 @@ async function toggleChessVoice(){
   chessVoicePc.ontrack = (event) => {
     const audioEl = document.getElementById('chessRemoteAudio');
     if(audioEl) audioEl.srcObject = event.streams[0];
+    setChessVoiceStatus('Bağlandı ✅');
   };
   chessVoicePc.onicecandidate = (event) => {
     if(event.candidate){
-      duelRef.update({ [chessVoiceMyCandidateField()]: firebase.firestore.FieldValue.arrayUnion(event.candidate.toJSON()) }).catch(()=>{});
+      chessVoiceSentCandidates++;
+      duelRef.update({ [chessVoiceMyCandidateField()]: firebase.firestore.FieldValue.arrayUnion(event.candidate.toJSON()) }).catch(e=>console.error('candidate yazılamadı', e));
+      setChessVoiceStatus('Bağlantı kuruluyor… (' + chessVoiceSentCandidates + ' adres gönderildi)');
+    }
+  };
+  chessVoicePc.oniceconnectionstatechange = () => {
+    if(!chessVoicePc) return;
+    console.log('chess voice ICE state:', chessVoicePc.iceConnectionState);
+    if(chessVoicePc.iceConnectionState === 'connected' || chessVoicePc.iceConnectionState === 'completed'){
+      setChessVoiceStatus('Bağlandı ✅');
+    } else if(chessVoicePc.iceConnectionState === 'failed'){
+      setChessVoiceStatus('Bağlantı kurulamadı ❌');
+    } else if(chessVoicePc.iceConnectionState === 'disconnected'){
+      setChessVoiceStatus('Bağlantı koptu');
     }
   };
 
+  // Önce olası eski (bir önceki oturumdan kalma) sinyalleri temizliyoruz — bunu description
+  // yazma işleminden AYRI ve ÖNCE yapıyoruz ki, biraz sonra hızlıca gelmeye başlayacak ICE
+  // candidate'ları yanlışlıkla silinmesin (aynı yazma isteğinde hem description hem "boş dizi"
+  // göndermek, candidate'larla yarış durumuna girip onları silebiliyordu — asıl hataydı bu).
   if(chessVoiceRole === 'offerer'){
     try{
+      await duelRef.set({ voiceOffer: null, voiceAnswer: null, voiceCallerCandidates: [], voiceCalleeCandidates: [] }, { merge:true });
       const offer = await chessVoicePc.createOffer();
       await chessVoicePc.setLocalDescription(offer);
-      await duelRef.set({ voiceOffer: { type: offer.type, sdp: offer.sdp }, voiceCallerCandidates: [] }, { merge:true });
-    }catch(e){ console.error('Sesli sohbet teklifi oluşturulamadı', e); showToast('Sesli sohbet başlatılamadı'); stopChessVoice(); return; }
+      await duelRef.set({ voiceOffer: { type: offer.type, sdp: offer.sdp } }, { merge:true });
+      setChessVoiceStatus('Teklif gönderildi, rakip bekleniyor…');
+    }catch(e){ console.error('Sesli sohbet teklifi oluşturulamadı', e); showToast('Sesli sohbet başlatılamadı'); setChessVoiceStatus('Hata: teklif oluşturulamadı'); stopChessVoice(); return; }
   }
 
   if(chessVoiceUnsub) chessVoiceUnsub();
@@ -11109,24 +11137,27 @@ async function toggleChessVoice(){
 
     try{
       if(chessVoiceRole === 'answerer' && d.voiceOffer && !chessVoicePc.currentRemoteDescription){
+        setChessVoiceStatus('Teklif alındı, cevap hazırlanıyor…');
         await chessVoicePc.setRemoteDescription(new RTCSessionDescription(d.voiceOffer));
         const answer = await chessVoicePc.createAnswer();
         await chessVoicePc.setLocalDescription(answer);
-        await duelRef.set({ voiceAnswer: { type: answer.type, sdp: answer.sdp }, voiceCalleeCandidates: [] }, { merge:true });
+        await duelRef.set({ voiceAnswer: { type: answer.type, sdp: answer.sdp } }, { merge:true });
+        setChessVoiceStatus('Cevap gönderildi…');
       }
       if(chessVoiceRole === 'offerer' && d.voiceAnswer && chessVoicePc.currentLocalDescription && !chessVoicePc.currentRemoteDescription){
+        setChessVoiceStatus('Cevap alındı…');
         await chessVoicePc.setRemoteDescription(new RTCSessionDescription(d.voiceAnswer));
       }
-    }catch(e){ console.error('Sesli sohbet SDP hatası', e); }
+    }catch(e){ console.error('Sesli sohbet SDP hatası', e); setChessVoiceStatus('Hata: SDP işlenemedi'); }
 
     const remoteField = chessVoiceRemoteCandidateField();
     const remoteCandidates = d[remoteField] || [];
     if(remoteCandidates.length > chessVoiceAppliedRemoteCandidates){
       const newOnes = remoteCandidates.slice(chessVoiceAppliedRemoteCandidates);
       chessVoiceAppliedRemoteCandidates = remoteCandidates.length;
-      newOnes.forEach(c => { chessVoicePc.addIceCandidate(new RTCIceCandidate(c)).catch(()=>{}); });
+      newOnes.forEach(c => { chessVoicePc.addIceCandidate(new RTCIceCandidate(c)).catch(e=>console.error('candidate eklenemedi', e)); });
     }
-  }, (err)=>{ console.error('Sesli sohbet dinleyici hatası', err); });
+  }, (err)=>{ console.error('Sesli sohbet dinleyici hatası', err); setChessVoiceStatus('Hata: dinleyici çöktü'); });
 }
 
 function stopChessVoice(){
@@ -11139,18 +11170,28 @@ function stopChessVoice(){
   if(audioEl) audioEl.srcObject = null;
   chessVoiceRole = null;
   chessVoiceAppliedRemoteCandidates = 0;
+  chessVoiceSentCandidates = 0;
   if(currentChessDuelId){
     db.collection('chess_duels').doc(currentChessDuelId).set({
       voiceOffer: null, voiceAnswer: null, voiceCallerCandidates: [], voiceCalleeCandidates: []
     }, { merge:true }).catch(()=>{});
   }
   updateChessVoiceButtonUI();
+  setChessVoiceStatus('');
 }
 
 function updateChessVoiceButtonUI(){
   const btn = document.getElementById('btnChessVoiceCall');
   if(!btn) return;
   btn.textContent = chessVoiceActive ? '🔴' : '🎤';
+}
+
+function setChessVoiceStatus(text){
+  const el = document.getElementById('chessVoiceStatus');
+  if(!el) return;
+  if(!text){ el.style.display = 'none'; el.textContent = ''; return; }
+  el.style.display = 'block';
+  el.textContent = text;
 }
 
 async function renderDailyQuestsScreen(){
