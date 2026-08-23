@@ -129,7 +129,25 @@ html[data-app-theme="doga"][data-theme="dark"]{
 
 /* ---------- AYARLAR EKRANI: Tema seçim kartları ---------- */
 .theme-card{border:2px solid var(--line); border-radius:18px; padding:14px; margin-bottom:10px; cursor:pointer; background:var(--paper); transition:border-color .15s ease, transform .1s ease;}
-.theme-card.theme-card-active{border-color:var(--asphalt); box-shadow:0 0 0 3px rgba(79,70,229,0.12);}
+.theme-card.theme-card-active{border-color:var(--warm-accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--warm-accent) 15%, transparent);}
 .theme-card:active{transform:scale(0.98);}
 .theme-card-swatches{display:flex; gap:6px; margin-top:10px;}
 .theme-card-swatch{width:28px;height:28px;border-radius:50%; border:2px solid rgba(255,255,255,0.6); box-shadow:0 1px 4px rgba(0,0,0,0.15); flex-shrink:0;}
+
+/* ---------- HEADER AÇILIR MENÜLERİ (profil / mesajlar / arkadaşlar / bildirimler) ---------- */
+@keyframes hdrDropdownIn{
+  from{ opacity:0; transform:translateY(-8px) scale(0.97); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+.hdr-dropdown{
+  animation:hdrDropdownIn .16s cubic-bezier(.2,.9,.3,1.2);
+  border-radius:18px !important;
+  border:1px solid color-mix(in srgb, var(--warm-accent) 18%, var(--line)) !important;
+  box-shadow:0 12px 32px rgba(17,24,39,0.16), 0 2px 8px rgba(17,24,39,0.08) !important;
+  overflow:hidden;
+}
+.hdr-dropdown-item{transition:background .12s ease, padding-left .12s ease;}
+.hdr-dropdown-item:active, .hdr-dropdown-item:hover{background:color-mix(in srgb, var(--warm-accent) 10%, transparent) !important; padding-left:16px !important;}
+.hdr-dropdown-seeall{color:var(--warm-accent) !important; font-weight:800; transition:background .12s ease;}
+.hdr-dropdown-seeall:active{background:color-mix(in srgb, var(--warm-accent) 12%, transparent) !important;}
+.hdr-dropdown-tab-active{background:linear-gradient(120deg,var(--warm-accent),var(--warm-accent-2)) !important; box-shadow:0 4px 10px color-mix(in srgb, var(--warm-accent) 30%, transparent);}

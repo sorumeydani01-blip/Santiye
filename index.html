@@ -188,28 +188,28 @@
       <button class="gear-btn" id="btnNotifBell" aria-label="Bildirimler" style="position:relative;">🔔<span id="notifBadge" style="display:none; position:absolute; top:2px; right:2px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:15px; height:15px; line-height:15px; text-align:center; padding:0 3px;">0</span></button>
       <div style="position:relative; flex-shrink:0;">
         <button class="gear-btn" id="btnHeaderProfile" aria-label="Profil" style="padding:0; width:36px;height:36px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; font-family:'Manrope';"></button>
-        <div id="headerProfileMenu" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); padding:6px; min-width:170px;">
-          <button id="btnHeaderMenuProfile" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
-          <button id="btnHeaderMenuQuiz" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
-          <button id="btnHeaderMenuOyunlar" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🎮 Oyunlar</button>
-          <button id="btnHeaderMenuSettings" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
+        <div id="headerProfileMenu" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; background:var(--paper); padding:6px; min-width:170px;">
+          <button id="btnHeaderMenuProfile" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">👤 Profil</button>
+          <button id="btnHeaderMenuQuiz" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
+          <button id="btnHeaderMenuOyunlar" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🎮 Oyunlar</button>
+          <button id="btnHeaderMenuSettings" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
         </div>
       </div>
 
-      <div id="headerMsgDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
+      <div id="headerMsgDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
         <div id="headerMsgDropdownList" style="padding:6px;"></div>
-        <button id="btnHeaderMsgSeeAll" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-weight:800; font-size:12.5px; color:var(--asphalt); cursor:pointer; border-radius:0 0 12px 12px;">Tüm Mesajlar</button>
+        <button id="btnHeaderMsgSeeAll" class="hdr-dropdown-seeall" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-size:12.5px; cursor:pointer; border-radius:0 0 12px 12px;">Tüm Mesajlar</button>
       </div>
-      <div id="headerFriendsDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:min(280px, 82vw); max-height:400px; overflow-y:auto;">
+      <div id="headerFriendsDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:400px; overflow-y:auto;">
         <div style="display:flex; gap:6px; padding:8px 8px 0;">
-          <button id="btnFriendsTabList" class="submit-btn" style="flex:1; padding:8px; font-size:12px;">🤝 Arkadaşlar</button>
+          <button id="btnFriendsTabList" class="submit-btn hdr-dropdown-tab-active" style="flex:1; padding:8px; font-size:12px;">🤝 Arkadaşlar</button>
           <button id="btnFriendsTabReqs" class="submit-btn secondary" style="flex:1; padding:8px; font-size:12px; position:relative;">📥 İstekler<span id="friendReqTabBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:9px; font-weight:800; border-radius:10px; min-width:14px; height:14px; line-height:14px; text-align:center; padding:0 2px;">0</span></button>
         </div>
         <div id="headerFriendsDropdownList" style="padding:8px;"></div>
       </div>
-      <div id="headerNotifDropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); border:1.5px solid var(--line); border-radius:14px; box-shadow:var(--shadow-md); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
+      <div id="headerNotifDropdown" class="hdr-dropdown" style="display:none; position:absolute; top:44px; right:0; z-index:70; max-width:none; background:var(--paper); width:min(280px, 82vw); max-height:360px; overflow-y:auto;">
         <div id="headerNotifDropdownList" style="padding:6px;"></div>
-        <button id="btnHeaderNotifSeeAll" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-weight:800; font-size:12.5px; color:var(--asphalt); cursor:pointer; border-radius:0 0 12px 12px;">Tüm Bildirimler</button>
+        <button id="btnHeaderNotifSeeAll" class="hdr-dropdown-seeall" style="width:100%; padding:12px; border:none; border-top:1px solid var(--line); background:var(--concrete); font-size:12.5px; cursor:pointer; border-radius:0 0 12px 12px;">Tüm Bildirimler</button>
       </div>
     </div>
   </div>
@@ -7129,8 +7129,8 @@ function setFriendsDropdownTab(mode){
   friendsDropdownMode = mode;
   const listBtn = document.getElementById('btnFriendsTabList');
   const reqBtn = document.getElementById('btnFriendsTabReqs');
-  listBtn.className = mode==='list' ? 'submit-btn' : 'submit-btn secondary';
-  reqBtn.className = mode==='requests' ? 'submit-btn' : 'submit-btn secondary';
+  listBtn.className = mode==='list' ? 'submit-btn hdr-dropdown-tab-active' : 'submit-btn secondary';
+  reqBtn.className = mode==='requests' ? 'submit-btn hdr-dropdown-tab-active' : 'submit-btn secondary';
   if(mode==='list') renderFriendsTabList(); else renderFriendsTabRequests();
 }
 document.getElementById('btnFriendsTabList').addEventListener('click', (e)=>{ e.stopPropagation(); setFriendsDropdownTab('list'); });
