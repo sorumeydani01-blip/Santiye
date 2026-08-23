@@ -6017,6 +6017,29 @@ function chatTickHtml(m){
   const seen = currentChatOtherLastRead && m.createdAt && m.createdAt <= currentChatOtherLastRead;
   return seen ? '<span style="color:var(--chat-tick-seen);">✓✓</span>' : '<span style="color:'+tickGray+';">✓✓</span>';
 }
+function voiceWaveformBars(seed){
+  // Mesaj id'sinden basit bir hash türetip, o mesaj için hep AYNI (ama mesajdan
+  // mesaja farklı) rastgele görünümlü çubuk yükseklikleri üretir — gerçek ses
+  // analizi yapmadan, WhatsApp'takine benzer bir dalga formu hissi verir.
+  let h = 0;
+  for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i)) >>> 0; }
+  const bars = [];
+  for(let i=0;i<26;i++){
+    h = (h*1103515245 + 12345) >>> 0;
+    bars.push(5 + (h % 17)); // 5-21px arası yükseklik
+  }
+  return bars;
+}
+function voiceMsgPlayerHtml(src, msgId, textColor, isDark){
+  const bars = voiceWaveformBars(msgId||src.slice(0,20));
+  const barsHtml = bars.map((h,i)=>`<div class="voice-bar" data-bar-idx="${i}" style="width:2.5px; height:${h}px; border-radius:2px; background:${isDark?'rgba(255,255,255,0.28)':'rgba(11,20,26,0.22)'}; flex-shrink:0; transition:background .1s ease;"></div>`).join('');
+  return `<div class="voice-msg-player" style="display:flex; align-items:center; gap:8px;">
+    <audio src="${src}" class="chat-audio-el" style="display:none;"></audio>
+    <button class="voice-play-btn" style="width:32px;height:32px; border-radius:50%; border:none; background:var(--chat-accent); color:#fff; font-size:13px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;">▶</button>
+    <div class="voice-waveform" style="display:flex; align-items:center; gap:2px; height:22px; cursor:pointer;">${barsHtml}</div>
+    <div class="voice-duration" style="font-size:10.5px; color:${textColor}; opacity:0.75; flex-shrink:0; min-width:28px;">0:00</div>
+  </div>`;
+}
 function chatBubbleHtml(m){
   const mine = m.senderUid===currentUser.uid;
   const time = m.createdAt ? new Date(m.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : '';
@@ -6055,7 +6078,7 @@ function chatBubbleHtml(m){
     const canDelArch = canDeleteArchivedMedia();
     imageHtml = `<div style="position:relative;"><img src="${m.imageDataArchived}" style="max-width:100%; border-radius:5px; display:block; margin-bottom:5px; opacity:0.85;" data-view-img><div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px;">⏱️ Süresi doldu (yönetici görünümü)</div>${canDelArch?`<button data-delete-archived="${escapeHtml(m.id||'')}" style="position:absolute; top:4px; right:4px; background:var(--danger); color:#fff; border:none; border-radius:6px; font-size:9px; font-weight:800; padding:3px 7px; cursor:pointer;">🗑️ Kalıcı Sil</button>`:''}</div>`;
   }
-  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};"><audio controls src="${m.audioData}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;"><audio controls src="${m.audioDataArchived}" class="chat-audio-el" style="width:190px; height:36px;"></audio><button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer;">1x</button></div>` : '');
+  const audioHtml = m.audioData ? `<div style="display:flex; align-items:center; gap:6px; margin-bottom:${m.text?'5px':'0'};">${voiceMsgPlayerHtml(m.audioData, m.id||'', textColor, isDark)}<button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer; flex-shrink:0;">1x</button></div>` : (m.mediaExpired && m.audioDataArchived && bypassMedia ? `<div style="font-size:11px; color:${timeColor}; margin-bottom:5px;">⏱️ Süresi dolmuş ses (yönetici görünümü):</div><div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;">${voiceMsgPlayerHtml(m.audioDataArchived, (m.id||'')+'_arch', textColor, isDark)}<button class="chat-speed-btn" data-speed="1" style="border:none; background:${isDark?'rgba(255,255,255,0.1)':'rgba(11,20,26,0.07)'}; color:${textColor}; border-radius:10px; font-size:11px; font-weight:800; padding:6px 8px; cursor:pointer; flex-shrink:0;">1x</button></div>` : '');
   const expiredHtml = (m.mediaExpired && !m.imageData && !m.audioData && !(bypassMedia && (m.imageDataArchived||m.audioDataArchived))) ? `<div style="font-size:13px; font-style:italic; color:${timeColor};">⏱️ Medyanın süresi doldu (5 gün)</div>` : '';
   const textHtml = m.text ? `<div style="font-size:14.5px; white-space:pre-wrap; word-break:break-word; line-height:1.35; color:${textColor};">${linkifyHtml(m.text)}</div>` : '';
   const senderNameHtml = (currentChatIsGroup && !mine) ? `<div style="font-size:11.5px; font-weight:800; color:var(--chat-accent); margin-bottom:3px;">${escapeHtml(getDisplayName(profileByUid(m.senderUid)))}</div>` : '';
@@ -6105,7 +6128,8 @@ function renderChatMessages(msgs){
   box.querySelectorAll('.chat-speed-btn').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
-      const audioEl = btn.previousElementSibling;
+      const player = btn.previousElementSibling;
+      const audioEl = player ? player.querySelector('.chat-audio-el') : null;
       const speeds = [1, 1.5, 2];
       const cur = parseFloat(btn.dataset.speed);
       const next = speeds[(speeds.indexOf(cur)+1) % speeds.length];
@@ -6113,6 +6137,55 @@ function renderChatMessages(msgs){
       btn.textContent = next + 'x';
       if(audioEl) audioEl.playbackRate = next;
     });
+  });
+  function fmtVoiceTime(sec){
+    if(!isFinite(sec) || sec<0) sec = 0;
+    const m = Math.floor(sec/60), s = Math.floor(sec%60);
+    return m+':'+String(s).padStart(2,'0');
+  }
+  box.querySelectorAll('.voice-msg-player').forEach(player=>{
+    const audioEl = player.querySelector('.chat-audio-el');
+    const playBtn = player.querySelector('.voice-play-btn');
+    const waveform = player.querySelector('.voice-waveform');
+    const durationEl = player.querySelector('.voice-duration');
+    const bars = Array.from(player.querySelectorAll('.voice-bar'));
+    const activeColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-accent').trim() || '#008069';
+    if(!audioEl || !playBtn) return;
+    audioEl.addEventListener('loadedmetadata', ()=>{
+      if(isFinite(audioEl.duration)) durationEl.textContent = fmtVoiceTime(audioEl.duration);
+    });
+    audioEl.addEventListener('play', ()=>{
+      // Aynı sohbette çalan başka bir ses varsa durdur (aynı anda tek ses çalsın)
+      box.querySelectorAll('.chat-audio-el').forEach(a=>{ if(a!==audioEl && !a.paused) a.pause(); });
+      playBtn.textContent = '⏸';
+    });
+    audioEl.addEventListener('pause', ()=>{ playBtn.textContent = '▶'; });
+    audioEl.addEventListener('ended', ()=>{
+      playBtn.textContent = '▶';
+      bars.forEach(b=> b.style.background = isDark_placeholder());
+      durationEl.textContent = fmtVoiceTime(audioEl.duration||0);
+    });
+    function isDark_placeholder(){ return settings.darkMode ? 'rgba(255,255,255,0.28)' : 'rgba(11,20,26,0.22)'; }
+    audioEl.addEventListener('timeupdate', ()=>{
+      if(!isFinite(audioEl.duration) || audioEl.duration<=0) return;
+      const progress = audioEl.currentTime / audioEl.duration;
+      const activeBars = Math.round(progress * bars.length);
+      bars.forEach((b,i)=>{ b.style.background = i<activeBars ? activeColor : isDark_placeholder(); });
+      durationEl.textContent = fmtVoiceTime(audioEl.duration - audioEl.currentTime);
+    });
+    playBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(audioEl.paused) audioEl.play().catch(()=>{}); else audioEl.pause();
+    });
+    if(waveform){
+      waveform.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(!isFinite(audioEl.duration) || audioEl.duration<=0) return;
+        const rect = waveform.getBoundingClientRect();
+        const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+        audioEl.currentTime = ratio * audioEl.duration;
+      });
+    }
   });
   box.querySelectorAll('.chat-bubble-wrap').forEach(el=>{
     let pressTimer = null;
