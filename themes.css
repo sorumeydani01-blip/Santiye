@@ -1,0 +1,135 @@
+/* ============================================================
+   ŞANTİYE DEFTERİ — TEMA MOTORU
+   ============================================================
+   Bu dosya, uygulamanın "app teması" katmanını içerir. Koyu/açık
+   mod (data-theme="dark") ile TAMAMEN AYRI, bağımsız bir boyuttur —
+   herhangi bir tema, hem açık hem koyu modda çalışır.
+
+   ÇALIŞMA MANTIĞI:
+   - Hiçbir tema seçilmediğinde (data-app-theme yok), aşağıdaki
+     "VARSAYILAN" blok devreye girer — bu blok, uygulamanın ORİJİNAL
+     tasarımıyla birebir aynı sonucu verir (indigo/mor vurgu rengi).
+     Yani hiçbir kullanıcı ayarı değiştirmeden, uygulama HİÇBİR
+     ZAMAN eskisinden farklı görünmez.
+   - Bir tema seçilince <html data-app-theme="tema_id"> class'ı
+     eklenir, o temanın CSS bloğu devreye girer ve VARSAYILAN
+     bloğun üstüne yazar (aynı değişkenleri geçersiz kılar).
+   - themes.js dosyası bu attribute'u yönetir, kaydeder, önizler.
+   ============================================================ */
+
+/* ---------- VARSAYILAN (tema seçilmemişse — orijinal tasarım) ---------- */
+:root{
+  --warm-accent: var(--asphalt);
+  --warm-accent-2: var(--asphalt-2);
+  --warm-bubble-mine:#E4E1FB;
+  --warm-bubble-mine-text:#111827;
+  --warm-bubble-other:#FFFFFF;
+  --warm-bubble-other-text:#111827;
+  --warm-shadow:0 2px 8px rgba(17,24,39,0.08);
+}
+html[data-theme="dark"]{
+  --warm-accent: var(--asphalt);
+  --warm-accent-2: var(--asphalt-2);
+  --warm-bubble-mine: var(--asphalt-2);
+  --warm-bubble-mine-text:#F1F3F9;
+  --warm-bubble-other:#1F2937;
+  --warm-bubble-other-text:#F1F3F9;
+  --warm-shadow:0 2px 8px rgba(0,0,0,0.35);
+}
+
+/* ---------- TEMA: Sıcak Toprak (amber/terracotta) ---------- */
+html[data-app-theme="sicak_toprak"]{
+  --warm-accent:#E8830F; --warm-accent-2:#D66D1F;
+  --warm-bubble-mine:linear-gradient(135deg,#FDE6BC,#FBD08A);
+  --warm-bubble-mine-text:#4A2E0A;
+  --warm-bubble-other:#FFFFFF;
+  --warm-bubble-other-text:#2B2116;
+  --warm-shadow:0 3px 10px rgba(180,120,40,0.16);
+  --chat-wallpaper:#F7EDE0;
+}
+html[data-app-theme="sicak_toprak"][data-theme="dark"]{
+  --warm-accent:#E89A4A; --warm-accent-2:#C97A28;
+  --warm-bubble-mine:linear-gradient(135deg,#7A4A18,#5A3610);
+  --warm-bubble-mine-text:#F5ECDD;
+  --warm-bubble-other:#2A2119;
+  --warm-bubble-other-text:#F1F3F9;
+  --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
+  --chat-wallpaper:#1A1409;
+}
+
+/* ---------- TEMA: Kompakt (üst ikonlar alt menünün üstüne taşınır) ---------- */
+/* Not: DOM/JS'e hiç dokunulmaz — aynı butonlar, sadece CSS ile ekranda
+   farklı bir yere (position:fixed) yerleştirilir. İşlevsellik aynı kalır. */
+html[data-app-theme="kompakt"] header.top .brand-left{ max-width:60%; }
+html[data-app-theme="kompakt"] header.top .brand > div:last-child{
+  position:fixed; bottom:78px; left:50%; transform:translateX(-50%);
+  background:var(--paper); border-radius:22px; padding:7px 12px;
+  box-shadow:var(--shadow-md); z-index:25; gap:16px; border:1px solid var(--line);
+}
+
+/* ---------- TEMA: Gece (canlı mor/pembe kontrast) ---------- */
+html[data-app-theme="gece"]{
+  --warm-accent:#8B5CF6; --warm-accent-2:#D946EF;
+  --warm-bubble-mine:linear-gradient(135deg,#8B5CF6,#D946EF);
+  --warm-bubble-mine-text:#FFFFFF;
+  --warm-bubble-other:#FFFFFF;
+  --warm-bubble-other-text:#1E1B2E;
+  --warm-shadow:0 3px 12px rgba(139,92,246,0.25);
+  --chat-wallpaper:#F1EDFB;
+}
+html[data-app-theme="gece"][data-theme="dark"]{
+  --warm-accent:#A78BFA; --warm-accent-2:#F0ABFC;
+  --warm-bubble-mine:linear-gradient(135deg,#5B21B6,#86198F);
+  --warm-bubble-mine-text:#F5F0FF;
+  --warm-bubble-other:#1E1B2E;
+  --warm-bubble-other-text:#F1F3F9;
+  --warm-shadow:0 3px 14px rgba(0,0,0,0.5);
+  --chat-wallpaper:#120E1C;
+}
+
+/* ---------- TEMA: Okyanus (serin mavi/turkuaz) ---------- */
+html[data-app-theme="okyanus"]{
+  --warm-accent:#0EA5E9; --warm-accent-2:#06B6D4;
+  --warm-bubble-mine:linear-gradient(135deg,#BAE6FD,#7DD3FC);
+  --warm-bubble-mine-text:#0C4A6E;
+  --warm-bubble-other:#FFFFFF;
+  --warm-bubble-other-text:#0F172A;
+  --warm-shadow:0 3px 10px rgba(14,165,233,0.18);
+  --chat-wallpaper:#EAF7FC;
+}
+html[data-app-theme="okyanus"][data-theme="dark"]{
+  --warm-accent:#38BDF8; --warm-accent-2:#22D3EE;
+  --warm-bubble-mine:linear-gradient(135deg,#0C4A6E,#155E75);
+  --warm-bubble-mine-text:#E0F7FF;
+  --warm-bubble-other:#0F2536;
+  --warm-bubble-other-text:#F1F3F9;
+  --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
+  --chat-wallpaper:#081B26;
+}
+
+/* ---------- TEMA: Doğa (canlı/ferah yeşil) ---------- */
+html[data-app-theme="doga"]{
+  --warm-accent:#22C55E; --warm-accent-2:#16A34A;
+  --warm-bubble-mine:linear-gradient(135deg,#D1F5DE,#A7EBC1);
+  --warm-bubble-mine-text:#0F3D22;
+  --warm-bubble-other:#FFFFFF;
+  --warm-bubble-other-text:#12291C;
+  --warm-shadow:0 3px 10px rgba(34,197,94,0.18);
+  --chat-wallpaper:#EBF8EF;
+}
+html[data-app-theme="doga"][data-theme="dark"]{
+  --warm-accent:#4ADE80; --warm-accent-2:#22C55E;
+  --warm-bubble-mine:linear-gradient(135deg,#14532D,#166534);
+  --warm-bubble-mine-text:#EAFBF0;
+  --warm-bubble-other:#132B1D;
+  --warm-bubble-other-text:#F1F3F9;
+  --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
+  --chat-wallpaper:#0B1D12;
+}
+
+/* ---------- AYARLAR EKRANI: Tema seçim kartları ---------- */
+.theme-card{border:2px solid var(--line); border-radius:18px; padding:14px; margin-bottom:10px; cursor:pointer; background:var(--paper); transition:border-color .15s ease, transform .1s ease;}
+.theme-card.theme-card-active{border-color:var(--asphalt); box-shadow:0 0 0 3px rgba(79,70,229,0.12);}
+.theme-card:active{transform:scale(0.98);}
+.theme-card-swatches{display:flex; gap:6px; margin-top:10px;}
+.theme-card-swatch{width:28px;height:28px;border-radius:50%; border:2px solid rgba(255,255,255,0.6); box-shadow:0 1px 4px rgba(0,0,0,0.15); flex-shrink:0;}

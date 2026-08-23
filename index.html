@@ -15,6 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="stil.css">
+<link rel="stylesheet" href="themes.css">
+<script src="themes.js"></script>
 
 </head>
 <body>
@@ -327,6 +329,18 @@
   </section>
 
   <!-- MESAJLAR -->
+  <!-- TEMA SEÇİMİ -->
+  <section class="screen" id="screen-theme-picker">
+    <div class="cal-nav">
+      <button class="admin-back-btn" id="btnThemePickerBack">‹</button>
+      <span class="cal-title">🎨 Temalar</span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="hint" style="margin-bottom:14px;">Bir temaya dokunarak önizleyebilirsin — beğenirsen aşağıdan kaydet.</div>
+    <div id="themePickerList"></div>
+    <button class="submit-btn" id="btnSaveAppTheme" style="margin-top:14px; display:none;">Bu Temayı Kaydet ✅</button>
+  </section>
+
   <section class="screen" id="screen-mesajlar">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
       <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px;">Mesajlar</div>
@@ -393,7 +407,7 @@
       <span style="font-weight:700; font-size:13px;">Mesaj seç</span>
       <button id="chatSelectCancelBtn" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer;">İptal</button>
     </div>
-    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper, #F7EDE0); position:relative;"></div>
+    <div id="chatMessages" style="flex:1; overflow-y:auto; padding:12px 10px; background:var(--chat-wallpaper); position:relative;"></div>
     <div id="chatSelectBar" style="display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--paper); border-top:1px solid var(--line); flex-shrink:0;">
       <span style="font-size:13px; color:var(--ink-soft);"><span id="chatSelectCount">0</span> mesaj seçildi</span>
       <button id="chatSelectDeleteBtn" class="submit-btn danger" style="width:auto; padding:9px 16px; font-size:13px;">🗑️ Sil</button>
@@ -614,13 +628,13 @@
       </div>
       <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>
-    <div class="card" id="oyunWordGameCard" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+    <div class="card" id="oyunWordGameCard" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:var(--tint-brass); border:1px solid var(--tint-brass);">
       <div style="width:52px;height:52px;border-radius:16px; background:linear-gradient(145deg,#FF9F43,#FF7A45); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; box-shadow:0 4px 10px rgba(255,122,69,0.35);">🔤</div>
       <div style="flex:1;">
-        <div style="font-weight:800; font-size:15px;">İsim Şehir Ülke</div>
-        <div class="hint" style="margin:2px 0 0;">2-6 kişi, sesli sohbetli, harf yarışı!</div>
+        <div style="font-weight:800; font-size:15px; color:var(--text-brass);">İsim Şehir Ülke</div>
+        <div class="hint" style="margin:2px 0 0; color:var(--text-brass); opacity:0.85;">2-6 kişi, sesli sohbetli, harf yarışı!</div>
       </div>
-      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+      <div style="color:var(--text-brass); font-size:18px;">›</div>
     </div>
   </section>
 
@@ -747,21 +761,21 @@
       <span class="cal-title">🔤 İsim Şehir Ülke</span>
       <span style="width:36px;"></span>
     </div>
-    <div class="card" id="btnWgCreatePrivate" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; margin-bottom:10px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+    <div class="card" id="btnWgCreatePrivate" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; margin-bottom:10px; background:var(--tint-brass); border:1px solid var(--tint-brass);">
       <div style="width:44px;height:44px;border-radius:14px; background:linear-gradient(145deg,#FF9F43,#FF7A45); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🤝</div>
       <div style="flex:1;">
-        <div style="font-weight:800; font-size:14.5px;">Arkadaşlarını Davet Et</div>
-        <div class="hint" style="margin:2px 0 0;">2-6 arkadaşını seç, davet gönder</div>
+        <div style="font-weight:800; font-size:14.5px; color:var(--text-brass);">Arkadaşlarını Davet Et</div>
+        <div class="hint" style="margin:2px 0 0; color:var(--text-brass); opacity:0.85;">2-6 arkadaşını seç, davet gönder</div>
       </div>
-      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+      <div style="color:var(--text-brass); font-size:18px;">›</div>
     </div>
-    <div class="card" id="btnWgJoinRandom" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:linear-gradient(120deg,#FDF4E3,#FCEBD5); border:1px solid #F3D9AE;">
+    <div class="card" id="btnWgJoinRandom" style="display:flex; align-items:center; gap:14px; cursor:pointer; padding:16px; background:var(--tint-brass); border:1px solid var(--tint-brass);">
       <div style="width:44px;height:44px;border-radius:14px; background:linear-gradient(145deg,#34D399,#10B981); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎲</div>
       <div style="flex:1;">
-        <div style="font-weight:800; font-size:14.5px;">Rastgele Odaya Katıl</div>
-        <div class="hint" style="margin:2px 0 0;">Açık bir odaya katıl ya da yeni bir tane aç</div>
+        <div style="font-weight:800; font-size:14.5px; color:var(--text-brass);">Rastgele Odaya Katıl</div>
+        <div class="hint" style="margin:2px 0 0; color:var(--text-brass); opacity:0.85;">Açık bir odaya katıl ya da yeni bir tane aç</div>
       </div>
-      <div style="color:var(--ink-soft); font-size:18px;">›</div>
+      <div style="color:var(--text-brass); font-size:18px;">›</div>
     </div>
   </section>
 
@@ -2504,6 +2518,10 @@
     <div class="toggle-row">
       <div><div class="tlbl">Koyu Mod</div><div class="tsub">Karanlıkta göz yormaz</div></div>
       <label class="switch"><input type="checkbox" id="toggleDark"><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row" id="btnOpenThemePicker" style="cursor:pointer;">
+      <div><div class="tlbl">🎨 Temalar</div><div class="tsub">Uygulamanın görünümünü değiştir</div></div>
+      <div style="color:var(--ink-soft); font-size:18px;">›</div>
     </div>
     <div class="toggle-row">
       <div><div class="tlbl">Günlük Hatırlatma</div><div class="tsub">Uygulamayı açtığında bugün kayıt yoksa hatırlatır</div></div>
@@ -9038,6 +9056,7 @@ document.getElementById('btnSignOut').addEventListener('click', async ()=>{
   }
 });
 document.getElementById('settingsClose').addEventListener('click', ()=> settingsOverlay.classList.remove('show'));
+document.getElementById('btnOpenThemePicker').addEventListener('click', ()=> settingsOverlay.classList.remove('show'));
 document.getElementById('toggleDark').addEventListener('change', async e=>{
   settings.darkMode = e.target.checked;
   applyTheme();
@@ -10321,6 +10340,11 @@ async function enterApp(){
     try{ localStorage.setItem('santiye-defteri-theme-init','1'); }catch(e){}
   }
   applyTheme();
+  // Bu cihazda henüz görülmemiş, başka bir cihazda kaydedilmiş bir tema varsa senkronize et
+  if(typeof settings.appTheme !== 'undefined' && settings.appTheme !== getSavedAppTheme()){
+    try{ localStorage.setItem('sd_app_theme', settings.appTheme || ''); }catch(e){}
+    applyAppTheme(settings.appTheme);
+  }
   const now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
   yearForOzet = now.getFullYear();
