@@ -37,7 +37,7 @@ html[data-theme="dark"]{
   --warm-shadow:0 2px 8px rgba(0,0,0,0.35);
 }
 
-/* ---------- TEMA: Sıcak Toprak (amber/terracotta) ---------- */
+/* ---------- TEMA: Sıcak Toprak (amber/terracotta) — sıcak, yuvarlak, samimi karakter ---------- */
 html[data-app-theme="sicak_toprak"]{
   --asphalt:#E8830F; --asphalt-2:#D66D1F;
   --warm-accent:#E8830F; --warm-accent-2:#D66D1F;
@@ -47,6 +47,11 @@ html[data-app-theme="sicak_toprak"]{
   --warm-bubble-other-text:#2B2116;
   --warm-shadow:0 3px 10px rgba(180,120,40,0.16);
   --chat-wallpaper:#F7EDE0;
+  --theme-radius-lg:24px; --theme-radius-md:18px; --theme-radius-sm:16px;
+  --theme-card-shadow:0 4px 16px rgba(180,120,40,0.14);
+  --theme-heading-weight:800;
+  --theme-btn-bg:linear-gradient(135deg,#E8830F,#D66D1F); --theme-btn-text:#fff;
+  --theme-btn-border:none; --theme-btn-shadow:0 4px 14px rgba(232,131,15,0.3);
 }
 html[data-app-theme="sicak_toprak"][data-theme="dark"]{
   --asphalt:#E89A4A; --asphalt-2:#C97A28;
@@ -57,19 +62,31 @@ html[data-app-theme="sicak_toprak"][data-theme="dark"]{
   --warm-bubble-other-text:#F1F3F9;
   --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
   --chat-wallpaper:#1A1409;
+  --theme-card-shadow:0 4px 16px rgba(0,0,0,0.35);
+  --theme-btn-bg:linear-gradient(135deg,#E89A4A,#C97A28);
+  --theme-btn-shadow:0 4px 14px rgba(0,0,0,0.4);
 }
 
 /* ---------- TEMA: Kompakt (üst ikonlar alt menünün üstüne taşınır) ---------- */
 /* Not: DOM/JS'e hiç dokunulmaz — aynı butonlar, sadece CSS ile ekranda
-   farklı bir yere (position:fixed) yerleştirilir. İşlevsellik aynı kalır. */
+   farklı bir yere (position:fixed) yerleştirilir. İşlevsellik aynı kalır.
+   Renk değişmez (marka rengi aynı kalır), sadece yoğun/verimli bir
+   görsel karakter (daha az yuvarlak köşe, daha düz gölge) uygulanır. */
+html[data-app-theme="kompakt"]{
+  --theme-radius-lg:12px; --theme-radius-md:10px; --theme-radius-sm:9px;
+  --theme-card-shadow:0 1px 4px rgba(17,24,39,0.08);
+  --theme-heading-weight:800;
+  --theme-btn-bg:var(--asphalt); --theme-btn-text:#fff;
+  --theme-btn-border:none; --theme-btn-shadow:none;
+}
 html[data-app-theme="kompakt"] header.top .brand-left{ max-width:60%; }
 html[data-app-theme="kompakt"] header.top .brand > div:last-child{
   position:fixed; bottom:78px; left:50%; transform:translateX(-50%);
-  background:var(--paper); border-radius:22px; padding:7px 12px;
+  background:var(--paper); border-radius:var(--theme-radius-md,10px); padding:7px 12px;
   box-shadow:var(--shadow-md); z-index:25; gap:16px; border:1px solid var(--line);
 }
 
-/* ---------- TEMA: Gece (canlı mor/pembe kontrast) ---------- */
+/* ---------- TEMA: Gece (canlı mor/pembe kontrast) — keskin, iddialı, modern karakter ---------- */
 html[data-app-theme="gece"]{
   --asphalt:#8B5CF6; --asphalt-2:#D946EF;
   --warm-accent:#8B5CF6; --warm-accent-2:#D946EF;
@@ -79,6 +96,11 @@ html[data-app-theme="gece"]{
   --warm-bubble-other-text:#1E1B2E;
   --warm-shadow:0 3px 12px rgba(139,92,246,0.25);
   --chat-wallpaper:#F1EDFB;
+  --theme-radius-lg:14px; --theme-radius-md:10px; --theme-radius-sm:10px;
+  --theme-card-shadow:0 6px 20px rgba(139,92,246,0.22);
+  --theme-heading-weight:900;
+  --theme-btn-bg:linear-gradient(135deg,#8B5CF6,#D946EF); --theme-btn-text:#fff;
+  --theme-btn-border:none; --theme-btn-shadow:0 6px 18px rgba(139,92,246,0.4);
 }
 html[data-app-theme="gece"][data-theme="dark"]{
   --asphalt:#A78BFA; --asphalt-2:#F0ABFC;
@@ -89,9 +111,12 @@ html[data-app-theme="gece"][data-theme="dark"]{
   --warm-bubble-other-text:#F1F3F9;
   --warm-shadow:0 3px 14px rgba(0,0,0,0.5);
   --chat-wallpaper:#120E1C;
+  --theme-card-shadow:0 6px 22px rgba(167,139,250,0.3);
+  --theme-btn-bg:linear-gradient(135deg,#A78BFA,#F0ABFC); --theme-btn-text:#1E1B2E;
+  --theme-btn-shadow:0 6px 20px rgba(0,0,0,0.5);
 }
 
-/* ---------- TEMA: Okyanus (serin mavi/turkuaz) ---------- */
+/* ---------- TEMA: Okyanus (serin mavi/turkuaz) — ferah, hafif, çerçeveli karakter ---------- */
 html[data-app-theme="okyanus"]{
   --asphalt:#0EA5E9; --asphalt-2:#06B6D4;
   --warm-accent:#0EA5E9; --warm-accent-2:#06B6D4;
@@ -101,6 +126,11 @@ html[data-app-theme="okyanus"]{
   --warm-bubble-other-text:#0F172A;
   --warm-shadow:0 3px 10px rgba(14,165,233,0.18);
   --chat-wallpaper:#EAF7FC;
+  --theme-radius-lg:26px; --theme-radius-md:24px; --theme-radius-sm:20px;
+  --theme-card-shadow:0 2px 10px rgba(14,165,233,0.10);
+  --theme-heading-weight:700;
+  --theme-btn-bg:transparent; --theme-btn-text:#0EA5E9;
+  --theme-btn-border:2px solid #0EA5E9; --theme-btn-shadow:none;
 }
 html[data-app-theme="okyanus"][data-theme="dark"]{
   --asphalt:#38BDF8; --asphalt-2:#22D3EE;
@@ -111,9 +141,11 @@ html[data-app-theme="okyanus"][data-theme="dark"]{
   --warm-bubble-other-text:#F1F3F9;
   --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
   --chat-wallpaper:#081B26;
+  --theme-card-shadow:0 2px 12px rgba(0,0,0,0.3);
+  --theme-btn-text:#38BDF8; --theme-btn-border:2px solid #38BDF8;
 }
 
-/* ---------- TEMA: Doğa (canlı/ferah yeşil) ---------- */
+/* ---------- TEMA: Doğa (canlı/ferah yeşil) — organik, doğal, dengeli karakter ---------- */
 html[data-app-theme="doga"]{
   --asphalt:#22C55E; --asphalt-2:#16A34A;
   --warm-accent:#22C55E; --warm-accent-2:#16A34A;
@@ -123,6 +155,11 @@ html[data-app-theme="doga"]{
   --warm-bubble-other-text:#12291C;
   --warm-shadow:0 3px 10px rgba(34,197,94,0.18);
   --chat-wallpaper:#EBF8EF;
+  --theme-radius-lg:20px; --theme-radius-md:16px; --theme-radius-sm:14px;
+  --theme-card-shadow:0 4px 14px rgba(34,197,94,0.14);
+  --theme-heading-weight:800;
+  --theme-btn-bg:linear-gradient(135deg,#22C55E,#16A34A); --theme-btn-text:#fff;
+  --theme-btn-border:none; --theme-btn-shadow:0 4px 14px rgba(34,197,94,0.3);
 }
 html[data-app-theme="doga"][data-theme="dark"]{
   --asphalt:#4ADE80; --asphalt-2:#22C55E;
@@ -133,6 +170,9 @@ html[data-app-theme="doga"][data-theme="dark"]{
   --warm-bubble-other-text:#F1F3F9;
   --warm-shadow:0 3px 12px rgba(0,0,0,0.4);
   --chat-wallpaper:#0B1D12;
+  --theme-card-shadow:0 4px 16px rgba(0,0,0,0.35);
+  --theme-btn-bg:linear-gradient(135deg,#4ADE80,#22C55E); --theme-btn-text:#0B1D12;
+  --theme-btn-shadow:0 4px 14px rgba(0,0,0,0.4);
 }
 
 /* ---------- AYARLAR EKRANI: Tema seçim kartları ---------- */
