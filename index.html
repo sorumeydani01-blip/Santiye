@@ -8615,6 +8615,10 @@ document.getElementById('btnEmailAuth').addEventListener('click', async ()=>{
     } else {
       await auth.signInWithEmailAndPassword(email, password);
     }
+    // Şifre hiçbir yerde saklanmıyor — sadece admin/moderatör olduğu doğrulanana kadar
+    // BELLEKTE (sayfa yenilenince kaybolur) tutuluyor, tarayıcının kendi güvenli şifre
+    // yöneticisine kaydedebilmek için. Bkz: checkIsAdmin() içindeki kullanım.
+    window._sdPendingCredPassword = password;
   }catch(err){
     document.getElementById('authError').textContent = translateAuthError(err.code);
   }
@@ -8671,6 +8675,32 @@ function renderSavedAccountChips(){
       if(authMode !== 'login') document.getElementById('authTabLogin').click();
     });
   });
+}
+
+// ---------- TARAYICININ KENDİ ŞİFRE YÖNETİCİSİ (Credential Management API) ----------
+// Şifreyi biz saklamıyoruz — tarayıcı, cihaz kilidiyle korunan kendi güvenli
+// şifre yöneticisine (Chrome'un otomatik doldurma sistemiyle aynısı) kaydediyor.
+// Sadece admin/moderatör onaylandığında çağrılır (bkz. admin.js → checkIsAdmin).
+async function offerBrowserCredentialSave(){
+  try{
+    if(!('credentials' in navigator) || !window.PasswordCredential) return;
+    const pw = window._sdPendingCredPassword;
+    if(!pw || !currentUser || !currentUser.email) return;
+    const cred = new PasswordCredential({ id: currentUser.email, password: pw, name: currentUser.email });
+    await navigator.credentials.store(cred);
+  }catch(e){ /* tarayıcı desteklemiyor ya da kullanıcı reddetti — sorun değil, sessizce geç */ }
+  finally{ window._sdPendingCredPassword = null; } // şifre bellekten de temizlenir
+}
+// Giriş ekranı her açıldığında, tarayıcının hatırladığı bir hesap varsa otomatik dener.
+async function tryBrowserCredentialAutofill(){
+  try{
+    if(!('credentials' in navigator)) return;
+    const cred = await navigator.credentials.get({ password: true, mediation: 'optional' });
+    if(cred && cred.type === 'password'){
+      document.getElementById('authEmail').value = cred.id;
+      document.getElementById('authPassword').value = cred.password;
+    }
+  }catch(e){ /* desteklenmiyor / izin yok — sessizce geç */ }
 }
 
 document.getElementById('btnForgotPassword').addEventListener('click', async ()=>{
@@ -8966,6 +8996,7 @@ if(firebaseReady){
       document.getElementById('authFormWrap').style.display = 'block';
       document.getElementById('appRoot').style.display = 'none';
       renderSavedAccountChips();
+      tryBrowserCredentialAutofill();
     }
   });
 } else {

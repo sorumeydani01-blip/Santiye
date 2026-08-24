@@ -167,6 +167,7 @@ function checkIsAdmin(){
     }
     // Sadece admin/mod hesapları hızlı geçiş listesine kaydedilir (normal kullanıcılar değil).
     if(isAdmin && typeof saveAccountForQuickSwitch==='function' && currentUser.email) saveAccountForQuickSwitch(currentUser.email);
+    if(isAdmin) offerBrowserCredentialSave();
     updateAdminModButtons();
     if(document.getElementById('screen-profil').classList.contains('active')) renderProfile();
   }, err=>{ console.error('admin durum dinleyici hatasi', err); isAdmin = false; updateAdminModButtons(); });
@@ -178,6 +179,7 @@ function checkIsAdmin(){
       try{ await db.collection('public_profiles').doc(currentUser.uid).set({role:'moderator', rank: modPerms.rank||'Moderatör'}, {merge:true}); }catch(e){}
     }
     if(nowHasPerm && typeof saveAccountForQuickSwitch==='function' && currentUser.email) saveAccountForQuickSwitch(currentUser.email);
+    if(nowHasPerm) offerBrowserCredentialSave();
     updateAdminModButtons();
     if(document.getElementById('screen-profil').classList.contains('active')) renderProfile();
   }, err=>{ console.error('moderator durum dinleyici hatasi', err); modPerms = {}; updateAdminModButtons(); });
