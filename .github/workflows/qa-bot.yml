@@ -1,0 +1,47 @@
+name: QA Bot - Otomatik Site Testi
+
+# Elle tetiklenir: GitHub reponuzda "Actions" sekmesi → "QA Bot - Otomatik Site Testi"
+# → "Run workflow" butonuna basınca çalışır. İsterseniz aşağıdaki "schedule" satırını
+# açarak haftalık otomatik çalışmasını da sağlayabilirsiniz (şu an kapalı/yorum satırında).
+on:
+  workflow_dispatch: {}
+  # schedule:
+  #   - cron: '0 6 * * 1'   # her Pazartesi sabah 06:00 (UTC)
+
+jobs:
+  qa-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bağımlılıkları kur
+        working-directory: ./qabot
+        run: npm install
+
+      - name: Playwright tarayıcısını kur
+        working-directory: ./qabot
+        run: npx playwright install --with-deps chromium
+
+      - name: QA botunu çalıştır
+        working-directory: ./qabot
+        env:
+          QA_SITE_URL: 'https://sorumeydani01-blip.github.io/Santiye/index.html'
+          QA_TEST_EMAIL: 'qa.bot.test@santiyedefteri-test.com'
+          QA_TEST_PASSWORD: 'QaBotTest2026!'
+          QA_ADMIN_EMAIL: ${{ secrets.QA_ADMIN_EMAIL }}
+          QA_ADMIN_PASSWORD: ${{ secrets.QA_ADMIN_PASSWORD }}
+        run: node qa-bot.js
+        continue-on-error: true
+
+      - name: Raporu yükle (indirilebilir dosya olarak)
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-raporu
+          path: qa-report/
+          retention-days: 30
