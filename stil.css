@@ -79,7 +79,14 @@
 
 
   .screen{display:none;}
-  .screen.active{display:block;}
+  .screen.active{display:block; animation:screenFadeIn .22s cubic-bezier(.25,.8,.4,1);}
+  @keyframes screenFadeIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .screen.active{animation:none;}
+  }
   #screen-chat.active{display:flex; position:fixed; top:0; left:0; right:0; bottom:0; z-index:8; background:var(--bg); padding:calc(10px + env(safe-area-inset-top)) 16px 0;}
   body.chat-open header.top{display:none !important;}
   body.chat-open main{padding-top:16px;}
@@ -126,6 +133,28 @@
   .carry-card .val{font-family:'Manrope',sans-serif; font-weight:800; font-size:21px; color:var(--text-slate); margin-top:2px;}
 
   .section-title{font-family:'Manrope',sans-serif; font-size:clamp(13.5px,3.8vw,15px); font-weight:800; color:var(--ink); letter-spacing:-0.01em; margin:24px 0 10px; display:flex; justify-content:space-between; align-items:center; gap:8px; padding-left:10px; border-left:4px solid var(--asphalt); border-radius:2px;}
+  .collapsible-title{user-select:none;}
+  .collapsible-title .collapse-arrow{transition:transform .2s ease; color:var(--ink-soft); font-size:13px; flex-shrink:0;}
+  .collapsible-title.collapsed .collapse-arrow{transform:rotate(-90deg);}
+  .collapsible-body{overflow:hidden; max-height:none;}
+  .collapsible-body.collapsed{display:none;}
+  /* ---------- YÜKLEME İSKELETİ (shimmer) ---------- */
+  @keyframes skeletonShimmer{
+    0%{ background-position:-200% 0; }
+    100%{ background-position:200% 0; }
+  }
+  .skel-row{display:flex; align-items:center; gap:12px; padding:10px 4px;}
+  .skel-avatar{width:38px;height:38px;border-radius:50%; flex-shrink:0;}
+  .skel-line{border-radius:6px;}
+  .skel-avatar, .skel-line{
+    background:linear-gradient(90deg, var(--concrete) 25%, var(--line) 50%, var(--concrete) 75%);
+    background-size:200% 100%;
+    animation:skeletonShimmer 1.4s ease-in-out infinite;
+  }
+  html[data-theme="dark"] .skel-avatar, html[data-theme="dark"] .skel-line{
+    background:linear-gradient(90deg, var(--paper) 25%, var(--line) 50%, var(--paper) 75%);
+    background-size:200% 100%;
+  }
   .mini-btn{background:var(--asphalt); color:#fff; border:none; border-radius:20px; padding:7px 15px; font-size:12px; font-weight:700; cursor:pointer;}
   .see-all-btn{background:none; border:none; color:var(--asphalt); font-size:12px; font-weight:700; cursor:pointer; padding:4px;}
 
@@ -315,7 +344,8 @@
   .chess-panel{background:linear-gradient(160deg,rgba(30,22,16,0.86),rgba(14,10,7,0.86)); border:1px solid rgba(201,162,74,0.3); box-shadow:0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); backdrop-filter:blur(8px);}
 
   /* ---------- PROFİL KARTI (vp-*) — eksik olan tanımlar, esnek birimlerle ---------- */
-  .vp-avatar-ring{position:relative; width:5.2rem; height:5.2rem; min-width:5.2rem; min-height:5.2rem; border-radius:50%; overflow:hidden; flex-shrink:0; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center;}
+  .vp-card{background:linear-gradient(160deg, color-mix(in srgb, var(--asphalt) 10%, var(--paper)), var(--paper) 55%); border:1px solid color-mix(in srgb, var(--asphalt) 14%, var(--line)); position:relative; overflow:hidden;}
+  .vp-avatar-ring{position:relative; width:5.2rem; height:5.2rem; min-width:5.2rem; min-height:5.2rem; border-radius:50%; overflow:hidden; flex-shrink:0; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 3px var(--paper), 0 0 0 5px color-mix(in srgb, var(--asphalt) 35%, transparent), var(--shadow-md);}
   .vp-avatar-ring img{width:100%; height:100%; object-fit:cover; display:block; border-radius:50%;}
   .vp-avatar-ring #profileAvatarInitials, .vp-avatar-ring #vpAvatar{font-family:'Manrope',sans-serif; font-weight:800; font-size:1.7rem; color:#fff;}
   .vp-avatar-ring #vpAvatar{width:100%; height:100%; display:flex; align-items:center; justify-content:center;}

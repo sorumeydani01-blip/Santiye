@@ -280,7 +280,8 @@
     <div class="section-title">Son Kayıtlar <button class="see-all-btn" id="btnSeeAllAvans">Tümünü Gör</button></div>
     <div id="recentList"></div>
 
-    <div class="section-title">🏆 Sıralama</div>
+    <div class="section-title collapsible-title" data-collapse-key="leaderboard" style="cursor:pointer;">🏆 Sıralama <span class="collapse-arrow">▾</span></div>
+    <div class="collapsible-body" id="collapseBody-leaderboard">
     <div id="leaderboardTabsWrap" style="display:flex; gap:6px; margin-bottom:12px; background:var(--concrete); padding:4px; border-radius:16px;">
       <button class="leaderboard-tab active" data-period="daily" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Günlük</button>
       <button class="leaderboard-tab" data-period="weekly" style="flex:1; border:none; padding:9px 2px; border-radius:12px; font-weight:800; font-size:11.5px; cursor:pointer;">Haftalık</button>
@@ -292,9 +293,12 @@
       <button class="see-all-btn" id="btnExpandLeaderboard" style="width:100%; margin-top:10px; text-align:center; display:none;">Genişlet (14 kişi göster)</button>
     </div>
     <button class="submit-btn" id="btnGoToQuiz" style="margin:12px 0 0;">🧠 Soru Çöz, Puan Kazan</button>
+    </div>
 
-    <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
+    <div class="section-title collapsible-title" data-collapse-key="activemembers" style="cursor:pointer;">Aktif Üyeler <span class="collapse-arrow" style="margin-left:auto; margin-right:6px;">▾</span><button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
+    <div class="collapsible-body" id="collapseBody-activemembers">
     <div id="activeMembersList"></div>
+    </div>
 
     <div class="section-title">Uygulama</div>
     <div class="card">
@@ -1123,13 +1127,13 @@
           <div id="ownRankBadge" style="display:none; margin-top:6px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); box-shadow:var(--shadow-sm); display:inline-block;"></div>
           <span id="ownTenureBadge" style="margin-top:6px; display:inline-block;"></span>
         </div>
-        <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
+        <div style="text-align:center; flex-shrink:0; padding:6px 10px; border-radius:12px; background:var(--tint-rust);">
           <div style="font-family:'Manrope'; font-weight:800; font-size:19px; color:var(--danger);" id="ownQuizScore">0</div>
-          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">pn</div>
+          <div style="font-size:10px; color:var(--text-rust); white-space:nowrap; font-weight:700;">pn</div>
         </div>
-        <div style="text-align:center; flex-shrink:0; padding-left:8px; border-left:1px solid var(--line);">
-          <div style="font-family:'Manrope'; font-weight:800; font-size:19px;" id="ownFollowerCount">0</div>
-          <div style="font-size:10px; color:var(--ink-soft); white-space:nowrap;">Arkadaş</div>
+        <div style="text-align:center; flex-shrink:0; padding:6px 10px; border-radius:12px; background:var(--tint-slate);">
+          <div style="font-family:'Manrope'; font-weight:800; font-size:19px; color:var(--asphalt);" id="ownFollowerCount">0</div>
+          <div style="font-size:10px; color:var(--text-slate); white-space:nowrap; font-weight:700;">Arkadaş</div>
         </div>
       </div>
     </div>
@@ -2958,6 +2962,7 @@ async function syncPublicBadges(t){
   try{ await db.collection('public_profiles').doc(currentUser.uid).set({badges}, {merge:true}); }catch(e){}
 }
 let allPublicProfiles = [];
+let allPublicProfilesLoaded = false;
 function profileByUid(uid){
   return allPublicProfiles.find(p=>p.uid===uid) || null;
 }
@@ -5662,6 +5667,7 @@ async function loadPublicProfiles(){
     const snap = await db.collection('public_profiles').get();
     allPublicProfiles = snap.docs.map(d=>({uid:d.id, ...d.data()}));
   }catch(e){ console.error('public_profiles okunamadi', e); allPublicProfiles = []; }
+  allPublicProfilesLoaded = true;
   if(document.getElementById('screen-ana').classList.contains('active')) renderActiveMembers();
 }
 
@@ -5721,6 +5727,15 @@ function monthLabel(mk){ const [y,m]=mk.split('-'); return MONTH_NAMES[parseInt(
 function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10); }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 function escapeHtml(str){ const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+function skeletonRowsHtml(count){
+  // Veriler gelene kadar gösterilen "hayalet" satırlar (avatar + iki çizgi) — kullanıcıya
+  // düz "Yükleniyor…" yazısından daha hızlı/canlı bir his verir.
+  let html = '';
+  for(let i=0;i<count;i++){
+    html += `<div class="skel-row"><div class="skel-avatar"></div><div style="flex:1;"><div class="skel-line" style="height:12px; width:${55+Math.random()*30}%; margin-bottom:7px;"></div><div class="skel-line" style="height:9px; width:${30+Math.random()*20}%;"></div></div></div>`;
+  }
+  return html;
+}
 function safeImageSrc(dataUrl){
   // photoData/imageData her zaman uygulamanın kendi sıkıştırma işleminden gelen data: URL'leri olmalı.
   // Beklenmeyen bir değer (ör. javascript: veya başka bir şema) varsa resmi hiç göstermeyip sessizce atla.
@@ -5963,12 +5978,12 @@ function computeTotals(list){
 function statGridHtml(t, labels){
   labels = labels || {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'};
   return `
-    <div class="stat-box"><div class="icon" style="background:#E6F7E9;">📅</div><div class="val">${t.fullDays}</div><div class="lbl">${labels.gun}</div></div>
-    <div class="stat-box"><div class="icon" style="background:#E0F2FE;">🌗</div><div class="val">${t.halfDays}</div><div class="lbl">Yarım Gün</div></div>
-    <div class="stat-box"><div class="icon" style="background:#FFF7DB;">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">${labels.kazanc}</div></div>
-    <div class="stat-box"><div class="icon" style="background:#FFEDE1;">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">${labels.avans}</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">📅</div><div class="val">${t.fullDays}</div><div class="lbl">${labels.gun}</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">🌗</div><div class="val">${t.halfDays}</div><div class="lbl">Yarım Gün</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-brass);">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">${labels.kazanc}</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-rust);">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">${labels.avans}</div></div>
     <div class="stat-box balance">
-      <div class="icon" style="background:${t.net<0?'#FBE1E1':'#E6F7E9'};">${t.net<0?'⚠️':'✅'}</div>
+      <div class="icon" style="background:${t.net<0?'var(--tint-danger)':'var(--tint-forest)'};">${t.net<0?'⚠️':'✅'}</div>
       <div class="valwrap"><div class="lbl">Kalan Bakiye</div><div class="val ${t.net<0?'neg':'pos'}">${fmt(t.net)}</div></div>
     </div>`;
 }
@@ -6006,6 +6021,26 @@ function renderCarryMonthsBreakdown(prevEntries, curMonth){
     });
   }
 }
+// ---------- DARALTILABİLİR BÖLÜMLER (Sıralama, Aktif Üyeler) ----------
+// Tercih localStorage'da saklanır, sayfa her açıldığında hatırlanır.
+function initCollapsibleSections(){
+  document.querySelectorAll('.collapsible-title[data-collapse-key]').forEach(title=>{
+    const key = title.dataset.collapseKey;
+    const body = document.getElementById('collapseBody-'+key);
+    if(!body || title.dataset.wired) return;
+    title.dataset.wired = '1';
+    const collapsed = localStorage.getItem('sd_collapse_'+key) === '1';
+    title.classList.toggle('collapsed', collapsed);
+    body.classList.toggle('collapsed', collapsed);
+    title.addEventListener('click', (e)=>{
+      if(e.target.closest('.see-all-btn')) return; // "Tümünü Gör" butonuna tıklamak daraltmayı tetiklemesin
+      const nowCollapsed = !body.classList.contains('collapsed');
+      title.classList.toggle('collapsed', nowCollapsed);
+      body.classList.toggle('collapsed', nowCollapsed);
+      try{ localStorage.setItem('sd_collapse_'+key, nowCollapsed ? '1' : '0'); }catch(err){}
+    });
+  });
+}
 function renderHome(){
   const all = computeTotals(entries);
   document.getElementById('homeStats').innerHTML = statGridHtml(all, {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'});
@@ -6013,6 +6048,7 @@ function renderHome(){
   renderAvansCard();
   renderActiveMembers();
   if(typeof loadLeaderboard === 'function') loadLeaderboard();
+  initCollapsibleSections();
 
   const curMonth = monthKey(todayStr());
   const prevEntries = entries.filter(e=>monthKey(e.date) < curMonth);
@@ -6390,9 +6426,9 @@ function renderCalendar(){
 
   document.getElementById('calMonthTitle').innerHTML = `${MONTH_NAMES[calMonth]} Ayı Özeti`;
   document.getElementById('calMonthStats').innerHTML = `
-    <div class="stat-box"><div class="icon" style="background:#E6F7E9;">📅</div><div class="val">${mt.workDays}</div><div class="lbl">Çalışılan Gün</div></div>
-    <div class="stat-box"><div class="icon" style="background:#FFF7DB;">💰</div><div class="val">${fmt(mt.yevmiye)}</div><div class="lbl">Yevmiye${trendHtml?('<br>'+trendHtml):''}</div></div>
-    <div class="stat-box"><div class="icon" style="background:#E9F0FF;">Σ</div><div class="val">${fmt(mt.net)}</div><div class="lbl">Ay Net</div></div>`;
+    <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">📅</div><div class="val">${mt.workDays}</div><div class="lbl">Çalışılan Gün</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-brass);">💰</div><div class="val">${fmt(mt.yevmiye)}</div><div class="lbl">Yevmiye${trendHtml?('<br>'+trendHtml):''}</div></div>
+    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">Σ</div><div class="val">${fmt(mt.net)}</div><div class="lbl">Ay Net</div></div>`;
 }
 
 async function toggleWorkDay(iso){

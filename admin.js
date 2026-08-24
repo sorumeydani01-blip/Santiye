@@ -1711,6 +1711,10 @@ function wireActiveMemberRows(box){
 function renderActiveMembers(){
   const box = document.getElementById('activeMembersList');
   if(!box) return;
+  if(!allPublicProfilesLoaded){
+    box.innerHTML = skeletonRowsHtml(3);
+    return;
+  }
   const active = allPublicProfiles
     .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused && u.lastActive)
     .sort((a,b)=> new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime());

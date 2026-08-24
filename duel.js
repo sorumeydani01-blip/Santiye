@@ -725,7 +725,7 @@ async function loadLeaderboard(){
   const mainScrollEl = document.querySelector('main');
   const preservedScrollTop = mainScrollEl ? mainScrollEl.scrollTop : 0;
   listEl.style.minHeight = listEl.offsetHeight + 'px'; // içerik yenilenirken yükseklik aniden çökmesin
-  listEl.innerHTML = '<div class="hint">Yükleniyor…</div>';
+  listEl.innerHTML = skeletonRowsHtml(4);
   let ranked = [];
   try{
     if(leaderboardPeriod === 'alltime'){
