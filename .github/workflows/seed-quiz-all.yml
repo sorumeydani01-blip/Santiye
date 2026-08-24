@@ -18,6 +18,26 @@ jobs:
       - name: Bagimliligi kur (firebase-admin)
         run: npm install firebase-admin@12
 
+      - name: 'Paket: seed-islami-batch-yeni.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-islami-batch-yeni.js
+
+      - name: 'Paket: seed-islami-cami-ibadet.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-islami-cami-ibadet.js
+
+      - name: 'Paket: seed-quiz-batc1h-yeni.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-batc1h-yeni.js
+
+      - name: 'Paket: seed-quiz-buyuk-parti.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-buyuk-parti.js
+
       - name: 'Paket: seed-quiz-genel-batch2.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -27,6 +47,11 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/seed-quiz-genel-batch3.js
+
+      - name: 'Paket: seed-quiz-iman-esaslari.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-iman-esaslari.js
 
       - name: 'Paket: seed-quiz-islami-100.js'
         env:
