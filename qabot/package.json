@@ -1,0 +1,12 @@
+{
+  "name": "santiye-defteri-qa-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Şantiye Defteri sitesini otomatik gezip test eden QA botu",
+  "scripts": {
+    "test": "node qa-bot.js"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
