@@ -201,10 +201,20 @@ document.getElementById('btnQuizHintToggle').addEventListener('click', ()=>{
   }
 });
 
+function isStaffAccount(){
+  return (typeof isAdmin !== 'undefined' && isAdmin) || (typeof modPerms !== 'undefined' && !!modPerms.unlimitedQuizTime);
+}
 function startQuizTimer(){
   clearQuizTimer();
-  quizTimeLeft = QUIZ_QUESTION_SECONDS;
   const bar = document.getElementById('quizTimerBar');
+  if(isStaffAccount()){
+    // Admin/moderatörler için süre baskısı yok — çubuk sabit dolu kalır, geri sayım çalışmaz.
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+    bar.style.background = 'var(--asphalt)';
+    return;
+  }
+  quizTimeLeft = QUIZ_QUESTION_SECONDS;
   bar.style.transition = 'none';
   bar.style.width = '100%';
   bar.style.background = 'var(--asphalt)';
@@ -591,8 +601,12 @@ function renderDuelQuestion(d){
   document.getElementById('duelTimerBar').style.transition = 'none';
   document.getElementById('duelTimerBar').style.width = '100%';
   void document.getElementById('duelTimerBar').offsetWidth;
-  document.getElementById('duelTimerBar').style.transition = 'width 1s linear';
   clearInterval(duelTimerInterval);
+  if(isStaffAccount()){
+    // Admin/moderatörler için süre baskısı yok — çubuk sabit dolu kalır, geri sayım çalışmaz.
+    return;
+  }
+  document.getElementById('duelTimerBar').style.transition = 'width 1s linear';
   duelTimerInterval = setInterval(()=>{
     duelTimeLeft--;
     const pct = Math.max(0, (duelTimeLeft/d.timePerQuestion)*100);
@@ -700,8 +714,17 @@ async function loadQuizStats(){
 }
 
 async function loadVpQuizStats(uid){
+  const card = document.getElementById('vpQuizStatsCard');
   const totalEl = document.getElementById('vpQuizStatTotal');
-  if(!totalEl) return;
+  if(!totalEl || !card) return;
+  const p = profileByUid(uid);
+  const bypassPrivacy = (typeof canViewPrivateInfo === 'function' && canViewPrivateInfo()) || uid===currentUser.uid;
+  const visibility = bypassPrivacy ? 'everyone' : ((p && p.quizStatsVisibility) || 'everyone');
+  if(visibility === 'onlyme'){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
   totalEl.textContent = '…';
   try{
     const snap = await db.collection('quiz_score_events').where('uid','==',uid).get();

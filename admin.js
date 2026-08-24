@@ -640,6 +640,7 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     editProfessions: document.getElementById('vpModEditProfessions').checked,
     manageQuizQuestions: document.getElementById('vpModManageQuizQuestions').checked,
     manageQuizReports: document.getElementById('vpModManageQuizReports').checked,
+    unlimitedQuizTime: document.getElementById('vpModUnlimitedQuizTime').checked,
     banIp: document.getElementById('vpModBanIp').checked,
     manageWarnings: document.getElementById('vpModManageWarnings').checked,
     viewPrivateInfo: document.getElementById('vpModViewPrivateInfo').checked,
@@ -1003,7 +1004,7 @@ const PERM_LABELS = {
   viewPrivateInfo:'👁️ Gizli Bilgi Görme', viewAppeals:'✉️ İtirazları Görme', viewModLog:'📜 İşlem Geçmişini Görme',
   viewReports:'🚩 Şikayetleri Görme', viewSuggestions:'💡 Önerileri Görme', viewSuggestionHistory:'📜 Öneriler Geçmişini Görme',
   viewIp:'🌐 IP Adresi Görme', changeUsername:'✏️ Kullanıcı Adı Değiştirme', viewFullMedia:'🖼️ Tam Medya Görme', deleteArchivedMedia:'🗑️ Arşiv Medya Silme', temelYetki:'✅ Temel Moderatör Yetkisi', manageWarnings:'⚠️ Uyarı Verme',
-  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi', manageQuizReports:'🚩 Soru Şikayetlerini Yönetme'
+  viewUserNotifications:'🔔 Kullanıcı Bildirimlerini Görme', viewLoginHistory:'🔑 Giriş Geçmişini Görme', manageQuizQuestions:'🧠 Soru Bankası Yönetimi', manageQuizReports:'🚩 Soru Şikayetlerini Yönetme', unlimitedQuizTime:'⏱️ Süre Sınırı Olmadan Oynama'
 };
 const PERM_DESCRIPTIONS = {
   editProfile:'Herhangi bir kullanıcının profil bilgilerini (ad, meslek, şehir vb.) düzenleyebilirsin.',
@@ -1028,6 +1029,7 @@ const PERM_DESCRIPTIONS = {
   changeUsername:'Kullanıcıların 1 kerelik sınırına takılmadan kullanıcı adını değiştirebilirsin.',
   viewFullMedia:'Tek seferlik veya süresi dolmuş fotoğraf/ses kayıtlarını sınırsız görebilirsin.',
   deleteArchivedMedia:'Süresi dolmuş, arşivlenmiş medyayı kalıcı olarak silebilirsin.',
+  unlimitedQuizTime:'Soru Çöz ve Düello\'da süre baskısı olmadan, istediğin kadar düşünerek oynayabilirsin.',
   temelYetki:'Moderatörlüğün temel paketidir — birçok görüntüleme yetkisini tek seferde açar.',
   manageWarnings:'Kullanıcılara süreli uyarı verip, uyarı geçmişlerini görebilirsin.',
   viewUserNotifications:'Bir kullanıcının aldığı bildirimleri görebilirsin.',
@@ -1715,11 +1717,13 @@ function renderActiveMembers(){
     box.innerHTML = skeletonRowsHtml(3);
     return;
   }
+  const RECENCY_WINDOW_MS = 30*60*1000; // son 30 dakika içinde aktif olmayan "aktif üye" sayılmaz
   const active = allPublicProfiles
-    .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused && u.lastActive)
+    .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused && u.lastActive &&
+      (Date.now() - new Date(u.lastActive).getTime()) < RECENCY_WINDOW_MS)
     .sort((a,b)=> new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime());
   if(active.length===0){
-    box.innerHTML = `<div class="empty"><div class="icon">👷</div><div class="msg">Henüz aktif üye yok.</div></div>`;
+    box.innerHTML = `<div class="empty"><div class="icon">🌙</div><div class="msg">Şu an aktif üye yok.<br>Az sonra tekrar bakabilirsin.</div></div>`;
     return;
   }
   box.innerHTML = active.slice(0,6).map(activeMemberRowHtml).join('');
