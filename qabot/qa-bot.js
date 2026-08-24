@@ -80,6 +80,7 @@ async function goScreen(page, navName, screenId) {
     locale: 'tr-TR',
   });
   const page = await context.newPage();
+  page.setDefaultTimeout(8000); // varsayılan 30sn yerine 8sn — beklenmeyen bir engelleme olursa hızlı anlaşılsın, CI süresi boşa gitmesin
 
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
@@ -140,6 +141,22 @@ async function goScreen(page, navName, screenId) {
     logStep('Test hesabıyla giriş yapıldı', 'ok', TEST_EMAIL);
     results[results.length - 1].screenshot = await shot(page, 'giris_sonrasi_ana_sayfa');
 
+    // ---------- 3.5) "BUGÜN ÇALIŞTIN MI?" POPUP'INI KAPAT (varsa) ----------
+    // Yeni/kaydı olmayan hesaplarda otomatik açılan bu popup, altındaki her şeye
+    // tıklamayı engelliyor — önce bunu kapatmadan devam edersek her şey takılır.
+    await page.waitForTimeout(1200); // popup 500ms gecikmeyle açılıyor, ona zaman tanı
+    const dailyCheckVisible = await page.isVisible('#dailyCheckOverlay.show').catch(() => false);
+    if (dailyCheckVisible) {
+      await safeClick(page, '#dcNo'); // "Hayır" - botun kendi sahte kayıt oluşturmasını istemiyoruz
+      await page.waitForTimeout(500);
+      logStep('"Bugün çalıştın mı?" popup\'ı kapatıldı', 'ok');
+    }
+    // Aynı sebeple açılabilecek başka olası overlay'leri de genel olarak temizle
+    await page.evaluate(() => {
+      document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
+    });
+    await page.waitForTimeout(300);
+
     // ---------- 4) ANA SAYFA: Veriler/Takvim geçişi ----------
     const takvimBtn = await page.$('.home-view-tab[data-homeview="calendar"]');
     if (takvimBtn) {
@@ -156,6 +173,9 @@ async function goScreen(page, navName, screenId) {
 
     // ---------- 5) YEVMİYE KAYDI EKLE (takvimden bir güne dokun) ----------
     await goScreen(page, null, 'ana');
+    await page.evaluate(() => {
+      document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
+    });
     const calDay = await page.$('.cal-day:not(.other-month)');
     if (calDay) {
       const takvimBtn2 = await page.$('.home-view-tab[data-homeview="calendar"]');
@@ -375,4 +395,3 @@ async function goScreen(page, navName, screenId) {
 
   if (failCount > 0) process.exitCode = 1; // Actions'ta kırmızı X görünsün diye
 })();
-
