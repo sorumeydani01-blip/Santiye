@@ -236,15 +236,38 @@
       <button class="home-view-tab" data-homeview="calendar" style="flex:1; border:none; padding:10px 4px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer;">🗓️ Takvim</button>
     </div>
 
-    <div id="homeDataSection">
-    <div class="stat-grid3" id="homeStats"></div>
+    <div id="homeStatsSection">
+    <div class="stat-grid4" id="homeStats"></div>
 
     <div class="carry-card" id="carryCard" style="display:none;">
       <div class="icon">⇄</div>
       <div><div class="lbl">Genel — Önceki Aylardan Kalan</div><div class="val" id="carryVal">₺0</div></div>
     </div>
     <div id="carryMonthsCard" style="display:none;"></div>
+    </div>
 
+    <div id="homeCalendarSection" style="display:none;">
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Takvim</span>
+      <button id="btnCalViewToggle" style="border:1.5px solid var(--line); background:var(--paper); border-radius:12px; padding:5px 12px; font-size:11px; font-weight:800; color:var(--ink-soft); cursor:pointer;">📋 Liste Görünümü</button>
+    </div>
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <span class="cal-title" id="calTitle"></span>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-legend">
+      <span><i style="background:var(--green); border-radius:4px;"></i>Tam Gün</span>
+      <span><i style="background:var(--orange); border-radius:4px;"></i>Yarım Gün</span>
+      <span><i style="background:var(--blue)"></i>Alacak</span>
+      <span><i style="background:var(--green)"></i>Ödeme</span>
+    </div>
+    <div class="hint" style="margin:-8px 0 12px;" id="calGridHint">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div id="calListView" style="display:none;"></div>
+    </div>
+
+    <!-- Veriler/Takvim seçimine bakılmaksızın HER ZAMAN görünür kalan bölüm -->
     <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
     <div class="stat-grid3" id="calMonthStats"></div>
 
@@ -272,28 +295,6 @@
 
     <div class="section-title">Aktif Üyeler <button class="see-all-btn" id="btnSeeAllActiveMembers">Tümünü Gör</button></div>
     <div id="activeMembersList"></div>
-    </div>
-
-    <div id="homeCalendarSection" style="display:none;">
-    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-      <span>Takvim</span>
-      <button id="btnCalViewToggle" style="border:1.5px solid var(--line); background:var(--paper); border-radius:12px; padding:5px 12px; font-size:11px; font-weight:800; color:var(--ink-soft); cursor:pointer;">📋 Liste Görünümü</button>
-    </div>
-    <div class="cal-nav">
-      <button id="calPrev">‹</button>
-      <span class="cal-title" id="calTitle"></span>
-      <button id="calNext">›</button>
-    </div>
-    <div class="cal-legend">
-      <span><i style="background:var(--green); border-radius:4px;"></i>Tam Gün</span>
-      <span><i style="background:var(--orange); border-radius:4px;"></i>Yarım Gün</span>
-      <span><i style="background:var(--blue)"></i>Alacak</span>
-      <span><i style="background:var(--green)"></i>Ödeme</span>
-    </div>
-    <div class="hint" style="margin:-8px 0 12px;" id="calGridHint">1. dokunuş: tam gün (yeşil) · 2. dokunuş: yarım gün (turuncu) · 3. dokunuş: kaydı kaldır</div>
-    <div class="cal-grid" id="calGrid"></div>
-    <div id="calListView" style="display:none;"></div>
-    </div>
 
     <div class="section-title">Uygulama</div>
     <div class="card">
@@ -446,7 +447,7 @@
 
   <!-- GEÇMİŞ -->
   <section class="screen" id="screen-kayitlar">
-    <div class="stat-grid3" id="historyStats"></div>
+    <div class="stat-grid4" id="historyStats"></div>
 
     <div class="subtabs">
       <button class="active" data-sub="calisma">Çalışma Günleri</button>
@@ -3999,7 +4000,6 @@ async function refreshCurrentScreenData(){
     else if(name==='mesajlar') await renderConversationList();
     else if(name==='view-profile' && currentViewedUid) openViewProfile(currentViewedUid);
     else if(name.startsWith('admin') && name!=='admin') loadAllAdminData();
-    showToast('Güncellendi');
   }catch(e){ showToast('Yenilenemedi'); }
   indicator.style.height = '0px';
 }
@@ -5951,13 +5951,17 @@ function computeTotals(list){
   const t={yevmiye:0,alacak:0,avans:0,odeme:0};
   list.forEach(e=>{ if(t.hasOwnProperty(e.type)) t[e.type] += (Number(e.amount)||0); });
   t.net = t.yevmiye + t.alacak - t.avans - t.odeme;
-  t.workDays = list.filter(e=>e.type==='yevmiye').length;
+  const yevEntries = list.filter(e=>e.type==='yevmiye');
+  t.halfDays = yevEntries.filter(e=>e.dayState==='half').length;
+  t.fullDays = yevEntries.length - t.halfDays;
+  t.workDays = yevEntries.length; // geriye dönük uyumluluk için korunuyor (tam+yarım toplamı)
   return t;
 }
 function statGridHtml(t, labels){
   labels = labels || {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'};
   return `
-    <div class="stat-box"><div class="icon" style="background:#E6F7E9;">📅</div><div class="val">${t.workDays}</div><div class="lbl">${labels.gun}</div></div>
+    <div class="stat-box"><div class="icon" style="background:#E6F7E9;">📅</div><div class="val">${t.fullDays}</div><div class="lbl">${labels.gun}</div></div>
+    <div class="stat-box"><div class="icon" style="background:#E0F2FE;">🌗</div><div class="val">${t.halfDays}</div><div class="lbl">Yarım Gün</div></div>
     <div class="stat-box"><div class="icon" style="background:#FFF7DB;">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">${labels.kazanc}</div></div>
     <div class="stat-box"><div class="icon" style="background:#FFEDE1;">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">${labels.avans}</div></div>
     <div class="stat-box balance">
@@ -6314,7 +6318,7 @@ document.querySelectorAll('.home-view-tab').forEach(tab=>{
     document.querySelectorAll('.home-view-tab').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
     const showCalendar = tab.dataset.homeview === 'calendar';
-    document.getElementById('homeDataSection').style.display = showCalendar ? 'none' : 'block';
+    document.getElementById('homeStatsSection').style.display = showCalendar ? 'none' : 'block';
     document.getElementById('homeCalendarSection').style.display = showCalendar ? 'block' : 'none';
     if(showCalendar) renderCalendar();
   });
