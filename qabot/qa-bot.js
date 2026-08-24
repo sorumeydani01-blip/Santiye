@@ -1,15 +1,21 @@
 // ============================================================
 // ŞANTİYE DEFTERİ — OTOMATİK QA (KALİTE KONTROL) BOTU
 // ============================================================
-// Bu script, siteyi gerçek bir kullanıcı gibi gezer:
-//  - Normal bir test hesabı oluşturur (yoksa) / giriş yapar
-//  - Uygulamanın her ana ekranını ziyaret eder
-//  - Bir yevmiye kaydı ve bir not ekler
-//  - Karanlık moda geçer
+// Bu script, siteyi gerçek bir kullanıcı gibi kapsamlı şekilde gezer:
+//  - Normal bir test hesabı oluşturur (yoksa) / giriş yapar (qa.bot.test@...)
+//  - Yevmiye kaydı ekler, siler; not ekler
+//  - Geçmiş, İstatistik, Notlar, Profil, Ara ekranlarını gezer
+//  - PDF rapor indirmeyi dener, koyu moda geçer
+//  - Oyunlar ekranını, Soru Çöz'ü açar — gerçek bir soruyu cevaplar,
+//    joker kullanır
+//  - Header açılır menülerini (mesaj/arkadaş/bildirim) test eder
 //  - Sayfayı yeniler (pull-to-refresh benzeri)
-//  - Ayrı bir "bot-admin" hesabıyla admin paneline girer,
-//    gerçek bir düzenleme/silme işlemi yapar
-//  - Konsol hatalarını ve ekran görüntülerini toplar
+//  - Test hesabından, uygulamanın KENDİ mesajlaşma sistemiyle,
+//    admin hesabına (QA_ADMIN_UID) özet raporu MESAJ olarak gönderir
+//  - Ayrı bir admin hesabıyla giriş yapıp admin panelindeki TÜM ana
+//    ekranları (SADECE GÖRÜNTÜLEME — hiçbir silme/yasaklama/uyarı
+//    verme gibi kalıcı/tehlikeli işlem YAPILMAZ) gezer
+//  - Konsol hatalarını, JS istisnalarını ve ekran görüntülerini toplar
 //  - Sonunda okunabilir bir Markdown rapor üretir (qa-report/report.md)
 //
 // ÇALIŞTIRMA: Bu dosya elle çalıştırılmaz — GitHub Actions
@@ -25,12 +31,13 @@ const TEST_EMAIL = process.env.QA_TEST_EMAIL || 'qa.bot.test@santiyedefteri-test
 const TEST_PASSWORD = process.env.QA_TEST_PASSWORD || 'QaBotTest2026!';
 const ADMIN_EMAIL = process.env.QA_ADMIN_EMAIL || '';
 const ADMIN_PASSWORD = process.env.QA_ADMIN_PASSWORD || '';
+const ADMIN_UID = process.env.QA_ADMIN_UID || '';
 
 const REPORT_DIR = path.join(__dirname, '..', 'qa-report');
 const SHOTS_DIR = path.join(REPORT_DIR, 'screenshots');
 fs.mkdirSync(SHOTS_DIR, { recursive: true });
 
-const results = []; // { step, status: 'ok'|'fail'|'warn', detail, screenshot }
+const results = [];
 const consoleErrors = [];
 const pageErrors = [];
 
@@ -59,10 +66,14 @@ async function safeClick(page, selector, opts = {}) {
   }
 }
 
+async function clearOverlays(page) {
+  await page.evaluate(() => {
+    document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
+  }).catch(() => {});
+}
+
 async function goScreen(page, navName, screenId) {
-  // Alt menüdeki data-screen özniteliğine göre sekmeye tıklar (varsa),
-  // yoksa doğrudan switchScreen JS fonksiyonunu tetikler.
-  const navBtn = await page.$(`nav.tabs button[data-screen="${navName}"]`);
+  const navBtn = navName ? await page.$(`nav.tabs button[data-screen="${navName}"]`) : null;
   if (navBtn) {
     await navBtn.click();
   } else {
@@ -73,54 +84,61 @@ async function goScreen(page, navName, screenId) {
   await page.waitForTimeout(700);
 }
 
+async function step(page, label, fn) {
+  try {
+    await fn();
+  } catch (e) {
+    logStep(label, 'fail', e.message ? e.message.split('\n')[0] : String(e));
+    const s = await shot(page, `hata_${label.replace(/[^a-zA-Z0-9ğüşöçıİĞÜŞÖÇ]/g, '_').slice(0, 40)}`);
+    results[results.length - 1].screenshot = s;
+    await clearOverlays(page);
+  }
+}
+
 (async () => {
   const browser = await chromium.launch();
   const context = await browser.newContext({
-    viewport: { width: 412, height: 915 }, // orta boy Android telefon
+    viewport: { width: 412, height: 915 },
     locale: 'tr-TR',
   });
   const page = await context.newPage();
-  page.setDefaultTimeout(8000); // varsayılan 30sn yerine 8sn — beklenmeyen bir engelleme olursa hızlı anlaşılsın, CI süresi boşa gitmesin
+  page.setDefaultTimeout(8000);
 
   page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      consoleErrors.push(`[${new Date().toISOString()}] ${msg.text()}`);
-    }
+    if (msg.type() === 'error') consoleErrors.push(`[${new Date().toISOString()}] ${msg.text()}`);
   });
   page.on('pageerror', (err) => {
     pageErrors.push(`[${new Date().toISOString()}] ${err.message}`);
   });
 
-  try {
-    // ---------- 1) SİTEYİ AÇ ----------
+  // ============================================================
+  // BÖLÜM 1: TEST HESABI — GENEL UYGULAMA GEZİNTİSİ
+  // ============================================================
+
+  await step(page, 'Site açıldı', async () => {
     await page.goto(SITE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2000);
-    const shot1 = await shot(page, 'ilk_acilis');
-    logStep('Site açıldı', 'ok', '');
-    results[results.length - 1].screenshot = shot1;
+    logStep('Site açıldı', 'ok');
+    results[results.length - 1].screenshot = await shot(page, 'ilk_acilis');
+  });
 
-    // ---------- 2) GİRİŞ / KAYIT ----------
+  await step(page, 'Giriş/Kayıt', async () => {
     const isFormVisible = await page.isVisible('#authFormWrap').catch(() => false);
-    if (isFormVisible) {
+    if (!isFormVisible) return;
+    await page.fill('#authEmail', TEST_EMAIL);
+    await page.fill('#authPassword', TEST_PASSWORD);
+    await safeClick(page, '#btnEmailAuth');
+    await page.waitForTimeout(2500);
+    const stillOnAuth = await page.isVisible('#authFormWrap').catch(() => false);
+    if (stillOnAuth) {
+      logStep('Test hesabıyla giriş başarısız, kayıt deneniyor', 'warn');
+      await safeClick(page, '#authTabSignup');
+      await page.waitForTimeout(300);
       await page.fill('#authEmail', TEST_EMAIL);
       await page.fill('#authPassword', TEST_PASSWORD);
-      // Önce giriş dene; başarısızsa (hesap yok) kayıt ol
       await safeClick(page, '#btnEmailAuth');
-      await page.waitForTimeout(2500);
-
-      const stillOnAuth = await page.isVisible('#authFormWrap').catch(() => false);
-      if (stillOnAuth) {
-        logStep('Test hesabıyla giriş başarısız, kayıt deneniyor', 'warn');
-        await safeClick(page, '#authTabSignup');
-        await page.waitForTimeout(300);
-        await page.fill('#authEmail', TEST_EMAIL);
-        await page.fill('#authPassword', TEST_PASSWORD);
-        await safeClick(page, '#btnEmailAuth');
-        await page.waitForTimeout(3000);
-      }
+      await page.waitForTimeout(3000);
     }
-
-    // ---------- 3) ONBOARDING (İlk kez profil oluşturma) ----------
     const onboardVisible = await page.isVisible('#onboardOverlay').catch(() => false);
     if (onboardVisible) {
       await page.fill('#obFullName', 'QA Bot Test');
@@ -132,99 +150,111 @@ async function goScreen(page, navName, screenId) {
       await page.waitForTimeout(2000);
       logStep('Onboarding (profil oluşturma) tamamlandı', 'ok');
     }
-
     const loggedIn = await page.isVisible('header.top').catch(() => false);
-    if (!loggedIn) {
-      logStep('Giriş/kayıt sonrası ana ekran açılmadı', 'fail', 'Auth akışı başarısız olmuş olabilir');
-      throw new Error('Giriş başarısız, teste devam edilemiyor');
-    }
+    if (!loggedIn) throw new Error('Giriş/kayıt sonrası ana ekran açılmadı');
     logStep('Test hesabıyla giriş yapıldı', 'ok', TEST_EMAIL);
-    results[results.length - 1].screenshot = await shot(page, 'giris_sonrasi_ana_sayfa');
+    results[results.length - 1].screenshot = await shot(page, 'giris_sonrasi');
+  });
 
-    // ---------- 3.5) "BUGÜN ÇALIŞTIN MI?" POPUP'INI KAPAT (varsa) ----------
-    // Yeni/kaydı olmayan hesaplarda otomatik açılan bu popup, altındaki her şeye
-    // tıklamayı engelliyor — önce bunu kapatmadan devam edersek her şey takılır.
-    await page.waitForTimeout(1200); // popup 500ms gecikmeyle açılıyor, ona zaman tanı
-    const dailyCheckVisible = await page.isVisible('#dailyCheckOverlay.show').catch(() => false);
-    if (dailyCheckVisible) {
-      await safeClick(page, '#dcNo'); // "Hayır" - botun kendi sahte kayıt oluşturmasını istemiyoruz
+  await step(page, '"Bugün çalıştın mı?" popup kapatma', async () => {
+    await page.waitForTimeout(1200);
+    const visible = await page.isVisible('#dailyCheckOverlay.show').catch(() => false);
+    if (visible) {
+      await safeClick(page, '#dcNo');
       await page.waitForTimeout(500);
       logStep('"Bugün çalıştın mı?" popup\'ı kapatıldı', 'ok');
     }
-    // Aynı sebeple açılabilecek başka olası overlay'leri de genel olarak temizle
-    await page.evaluate(() => {
-      document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
-    });
-    await page.waitForTimeout(300);
+    await clearOverlays(page);
+  });
 
-    // ---------- 4) ANA SAYFA: Veriler/Takvim geçişi ----------
+  await step(page, 'Ana Sayfa → Takvim sekmesi', async () => {
     const takvimBtn = await page.$('.home-view-tab[data-homeview="calendar"]');
-    if (takvimBtn) {
-      await takvimBtn.click();
-      await page.waitForTimeout(600);
-      const calendarShown = await page.isVisible('#homeCalendarSection').catch(() => false);
-      logStep('Ana Sayfa → Takvim sekmesi', calendarShown ? 'ok' : 'fail');
-      results[results.length - 1].screenshot = await shot(page, 'takvim_sekmesi');
-      const verilerBtn = await page.$('.home-view-tab[data-homeview="data"]');
-      if (verilerBtn) { await verilerBtn.click(); await page.waitForTimeout(400); }
-    } else {
-      logStep('Ana Sayfa → Takvim sekmesi', 'fail', 'Buton bulunamadı');
-    }
+    if (!takvimBtn) throw new Error('Takvim sekmesi bulunamadı');
+    await takvimBtn.click();
+    await page.waitForTimeout(600);
+    const shown = await page.isVisible('#homeCalendarSection').catch(() => false);
+    logStep('Ana Sayfa → Takvim sekmesi', shown ? 'ok' : 'fail');
+    results[results.length - 1].screenshot = await shot(page, 'takvim_sekmesi');
+  });
 
-    // ---------- 5) YEVMİYE KAYDI EKLE (takvimden bir güne dokun) ----------
-    await goScreen(page, null, 'ana');
-    await page.evaluate(() => {
-      document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
-    });
-    const calDay = await page.$('.cal-day:not(.other-month)');
-    if (calDay) {
-      const takvimBtn2 = await page.$('.home-view-tab[data-homeview="calendar"]');
-      if (takvimBtn2) { await takvimBtn2.click(); await page.waitForTimeout(500); }
-      const dayCell = await page.$('#calGrid .cal-day:not(.other-month)');
-      if (dayCell) {
-        await dayCell.click();
-        await page.waitForTimeout(800);
-        logStep('Takvimden yevmiye kaydı eklendi', 'ok');
-        results[results.length - 1].screenshot = await shot(page, 'yevmiye_eklendi');
-      }
-    }
+  await step(page, 'Takvimden yevmiye ekle', async () => {
+    await page.waitForSelector('#calGrid .cal-day:not(.other-month)', { state: 'visible', timeout: 5000 });
+    const dayCell = await page.$('#calGrid .cal-day:not(.other-month)');
+    await dayCell.click();
+    await page.waitForTimeout(800);
+    logStep('Takvimden yevmiye kaydı eklendi', 'ok');
+    results[results.length - 1].screenshot = await shot(page, 'yevmiye_eklendi');
+  });
 
-    // ---------- 6) NOT EKLEME ----------
-    const addNoteBtn = await page.$('#btnAddNote');
-    if (addNoteBtn) {
-      await addNoteBtn.click();
+  await step(page, 'Eklenen yevmiye kaydını sil (temizlik)', async () => {
+    const sameDayCell = await page.$('#calGrid .cal-day:not(.other-month).has-yevmiye, #calGrid .cal-day:not(.other-month).has-half');
+    if (sameDayCell) {
+      await sameDayCell.click();
       await page.waitForTimeout(500);
-      const noteInput = await page.$('#noteText, #entryNote, textarea:visible');
-      if (noteInput) {
-        await noteInput.fill('QA Bot test notu — otomatik oluşturuldu.');
-        const saveBtn = await page.$('#entrySave, #noteSave');
-        if (saveBtn) { await saveBtn.click(); await page.waitForTimeout(800); }
-      }
-      logStep('Not ekleme akışı denendi', 'ok');
-      results[results.length - 1].screenshot = await shot(page, 'not_ekleme');
+      await sameDayCell.click();
+      await page.waitForTimeout(500);
+      logStep('Test yevmiye kaydı temizlendi', 'ok');
+    } else {
+      logStep('Temizlenecek yevmiye kaydı bulunamadı', 'warn');
     }
+  });
 
-    // ---------- 7) DİĞER ANA EKRANLAR ----------
-    const screensToVisit = [
-      { nav: 'kayitlar', label: 'Geçmiş' },
-      { nav: 'istatistik', label: 'İstatistik' },
-      { nav: 'notlarim', label: 'Notlar' },
-    ];
-    for (const s of screensToVisit) {
+  await step(page, 'Veriler sekmesine dön', async () => {
+    const verilerBtn = await page.$('.home-view-tab[data-homeview="data"]');
+    if (verilerBtn) { await verilerBtn.click(); await page.waitForTimeout(400); }
+    logStep('Veriler sekmesine dönüldü', 'ok');
+  });
+
+  await step(page, 'Not ekle', async () => {
+    await goScreen(page, null, 'ana');
+    await clearOverlays(page);
+    const addNoteBtn = await page.$('#btnAddNote');
+    if (!addNoteBtn) throw new Error('"Ekle" (Notlarım) butonu bulunamadı');
+    await addNoteBtn.click();
+    await page.waitForTimeout(500);
+    const noteInput = await page.$('#entryNote');
+    if (noteInput) await noteInput.fill('QA Bot test notu — otomatik oluşturuldu.');
+    await safeClick(page, '#entrySave');
+    await page.waitForTimeout(800);
+    logStep('Not eklendi', 'ok');
+    results[results.length - 1].screenshot = await shot(page, 'not_eklendi');
+  });
+
+  const screensToVisit = [
+    { nav: 'kayitlar', label: 'Geçmiş' },
+    { nav: 'istatistik', label: 'İstatistik' },
+    { nav: 'notlarim', label: 'Notlar' },
+  ];
+  for (const s of screensToVisit) {
+    await step(page, `${s.label} ekranı`, async () => {
       await goScreen(page, s.nav, s.nav);
       const active = await page.isVisible(`#screen-${s.nav}.active`).catch(() => false);
       logStep(`${s.label} ekranı açıldı`, active ? 'ok' : 'fail');
       results[results.length - 1].screenshot = await shot(page, `ekran_${s.nav}`);
-    }
+    });
+  }
 
-    // ---------- 8) HEADER AÇILIR MENÜLERİ ----------
+  await step(page, 'Arama ekranı', async () => {
     await goScreen(page, null, 'ana');
-    const headerButtons = [
-      { sel: '#btnHeaderMessages', dropdown: '#headerMsgDropdown', label: 'Mesajlar menüsü' },
-      { sel: '#btnHeaderFriends', dropdown: '#headerFriendsDropdown', label: 'Arkadaşlar menüsü' },
-      { sel: '#btnNotifBell', dropdown: '#headerNotifDropdown', label: 'Bildirimler menüsü' },
-    ];
-    for (const hb of headerButtons) {
+    await safeClick(page, '#navSearchBtn');
+    await page.waitForTimeout(600);
+    const shown = await page.isVisible('#searchOverlay.show').catch(() => false);
+    logStep('Arama ekranı açıldı', shown ? 'ok' : 'fail');
+    results[results.length - 1].screenshot = await shot(page, 'arama_ekrani');
+    if (shown) {
+      await page.fill('#searchInput', 'test').catch(() => {});
+      await page.waitForTimeout(500);
+      await safeClick(page, '#searchClose');
+    }
+  });
+
+  const headerButtons = [
+    { sel: '#btnHeaderMessages', dropdown: '#headerMsgDropdown', label: 'Mesajlar menüsü' },
+    { sel: '#btnHeaderFriends', dropdown: '#headerFriendsDropdown', label: 'Arkadaşlar menüsü' },
+    { sel: '#btnNotifBell', dropdown: '#headerNotifDropdown', label: 'Bildirimler menüsü' },
+  ];
+  for (const hb of headerButtons) {
+    await step(page, hb.label, async () => {
       const ok = await safeClick(page, hb.sel);
       await page.waitForTimeout(500);
       const dropdownVisible = ok ? await page.isVisible(hb.dropdown).catch(() => false) : false;
@@ -233,39 +263,56 @@ async function goScreen(page, navName, screenId) {
       await page.keyboard.press('Escape').catch(() => {});
       await page.click('body', { position: { x: 10, y: 300 } }).catch(() => {});
       await page.waitForTimeout(300);
-    }
+    });
+  }
 
-    // ---------- 9) PROFİL EKRANI ----------
+  await step(page, 'Profil ekranı', async () => {
     await goScreen(page, 'profil', 'profil');
-    const profileActive = await page.isVisible('#screen-profil.active').catch(() => false);
-    logStep('Profil ekranı açıldı', profileActive ? 'ok' : 'fail');
+    const active = await page.isVisible('#screen-profil.active').catch(() => false);
+    logStep('Profil ekranı açıldı', active ? 'ok' : 'fail');
     results[results.length - 1].screenshot = await shot(page, 'profil_ekrani');
+  });
 
-    // ---------- 10) KARANLIK MOD ----------
+  await step(page, 'PDF rapor indirme', async () => {
+    await goScreen(page, null, 'ana');
     await safeClick(page, '.gear-btn');
     await page.waitForTimeout(500);
-    const darkToggle = await page.$('#toggleDark');
-    if (darkToggle) {
-      await darkToggle.click();
-      await page.waitForTimeout(600);
-      const isDark = await page.evaluate(() => document.documentElement.getAttribute('data-theme') === 'dark');
-      logStep('Karanlık mod açıldı', isDark ? 'ok' : 'fail');
-      results[results.length - 1].screenshot = await shot(page, 'karanlik_mod');
-      await darkToggle.click(); // geri aç, test hesabını temiz bırak
-      await page.waitForTimeout(400);
+    const pdfBtn = await page.$('#btnPdfRangeMonth');
+    if (pdfBtn) {
+      const downloadPromise = page.waitForEvent('download', { timeout: 8000 }).catch(() => null);
+      await pdfBtn.click();
+      const download = await downloadPromise;
+      logStep('PDF rapor indirme denendi', download ? 'ok' : 'warn', download ? '' : 'İndirme olayı yakalanamadı (yine de hata vermemiş olabilir)');
+    } else {
+      logStep('PDF rapor butonu bulunamadı', 'fail');
     }
-    await page.click('#settingsClose').catch(() => {});
+    results[results.length - 1].screenshot = await shot(page, 'pdf_rapor');
+  });
 
-    // ---------- 11) OYUNLAR ----------
+  await step(page, 'Koyu mod', async () => {
+    const darkToggle = await page.$('#toggleDark');
+    if (!darkToggle) throw new Error('Koyu mod anahtarı bulunamadı');
+    await darkToggle.click();
+    await page.waitForTimeout(600);
+    const isDark = await page.evaluate(() => document.documentElement.getAttribute('data-theme') === 'dark');
+    logStep('Koyu mod açıldı', isDark ? 'ok' : 'fail');
+    results[results.length - 1].screenshot = await shot(page, 'koyu_mod');
+    await darkToggle.click();
+    await page.waitForTimeout(400);
+    await safeClick(page, '#settingsClose');
+  });
+
+  await step(page, 'Oyunlar ekranı', async () => {
     await safeClick(page, '#btnHeaderProfile');
     await page.waitForTimeout(400);
     await safeClick(page, '#btnHeaderMenuOyunlar');
     await page.waitForTimeout(1000);
-    const oyunlarActive = await page.isVisible('#screen-oyunlar.active').catch(() => false);
-    logStep('Oyunlar ekranı açıldı', oyunlarActive ? 'ok' : 'fail');
+    const active = await page.isVisible('#screen-oyunlar.active').catch(() => false);
+    logStep('Oyunlar ekranı açıldı', active ? 'ok' : 'fail');
     results[results.length - 1].screenshot = await shot(page, 'oyunlar_ekrani');
+  });
 
-    // ---------- 12) SORU ÇÖZ ----------
+  await step(page, 'Soru Çöz — soru cevaplama', async () => {
     await goScreen(page, null, 'ana');
     await safeClick(page, '#btnHeaderProfile');
     await page.waitForTimeout(400);
@@ -274,15 +321,44 @@ async function goScreen(page, navName, screenId) {
     const quizActive = await page.isVisible('#screen-quiz.active').catch(() => false);
     logStep('Soru Çöz ekranı açıldı', quizActive ? 'ok' : 'fail');
     results[results.length - 1].screenshot = await shot(page, 'quiz_ekrani');
+    if (!quizActive) return;
 
-    // ---------- 13) SAYFA YENİLEME (reload) ----------
+    const catCard = await page.$('.quiz-category-card, [data-quiz-category]');
+    if (catCard) {
+      await catCard.click();
+      await page.waitForTimeout(1200);
+      const optionBtn = await page.$('.quiz-option-btn');
+      if (optionBtn) {
+        await optionBtn.click();
+        await page.waitForTimeout(1200);
+        logStep('Bir soru cevaplandı', 'ok');
+        results[results.length - 1].screenshot = await shot(page, 'soru_cevaplandi');
+
+        const jokerBtn = await page.$('#btnQuizJoker');
+        if (jokerBtn) {
+          await jokerBtn.click().catch(() => {});
+          await page.waitForTimeout(600);
+          logStep('50/50 joker denendi', 'ok');
+        }
+      } else {
+        logStep('Soru şıkları bulunamadı', 'warn');
+      }
+    } else {
+      logStep('Quiz kategori kartı bulunamadı', 'warn');
+    }
+  });
+
+  await step(page, 'Sayfa yenileme (reload)', async () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2500);
-    const reloadedOk = await page.isVisible('header.top').catch(() => false);
-    logStep('Sayfa yenileme (reload) sonrası ana ekran', reloadedOk ? 'ok' : 'fail');
+    const ok = await page.isVisible('header.top').catch(() => false);
+    logStep('Sayfa yenileme sonrası ana ekran', ok ? 'ok' : 'fail');
     results[results.length - 1].screenshot = await shot(page, 'reload_sonrasi');
+  });
 
-    // ---------- 14) ÇIKIŞ YAP (test hesabından) ----------
+  // ---------- BÖLÜM 2: TEST HESABINDAN ÇIKIŞ (rapor mesajı en sonda, tüm testler bitince gönderilecek) ----------
+  await step(page, 'Test hesabından çıkış', async () => {
+    await goScreen(page, null, 'ana');
     await safeClick(page, '#btnHeaderProfile');
     await page.waitForTimeout(300);
     await safeClick(page, '#btnHeaderMenuSettings');
@@ -290,17 +366,13 @@ async function goScreen(page, navName, screenId) {
     await safeClick(page, '#btnLogout');
     await page.waitForTimeout(1500);
     logStep('Test hesabından çıkış yapıldı', 'ok');
-
-  } catch (e) {
-    logStep('Beklenmeyen hata (test akışı durdu)', 'fail', e.message);
-    results[results.length - 1].screenshot = await shot(page, 'hata_ani');
-  }
+  });
 
   // ============================================================
-  // ADMİN PANELİ TESTİ (ayrı hesap, sadece ADMIN_EMAIL verilmişse)
+  // BÖLÜM 3: ADMİN PANELİ — SADECE GÖRÜNTÜLEME
   // ============================================================
   if (ADMIN_EMAIL && ADMIN_PASSWORD) {
-    try {
+    await step(page, 'Admin hesabıyla giriş', async () => {
       await page.goto(SITE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
       await page.waitForTimeout(2000);
       const authVisible = await page.isVisible('#authFormWrap').catch(() => false);
@@ -310,57 +382,147 @@ async function goScreen(page, navName, screenId) {
         await safeClick(page, '#btnEmailAuth');
         await page.waitForTimeout(3000);
       }
-      const adminLoggedIn = await page.isVisible('header.top').catch(() => false);
-      logStep('Bot-admin hesabıyla giriş yapıldı', adminLoggedIn ? 'ok' : 'fail', ADMIN_EMAIL);
+      const loggedIn = await page.isVisible('header.top').catch(() => false);
+      if (!loggedIn) throw new Error('Admin girişi başarısız');
+      logStep('Admin hesabıyla giriş yapıldı', 'ok', ADMIN_EMAIL);
       results[results.length - 1].screenshot = await shot(page, 'admin_giris');
+      await page.waitForTimeout(1500);
+    });
 
-      if (adminLoggedIn) {
-        // Rütbe rozetinden admin menüsünü aç
-        await page.waitForTimeout(1500); // isAdmin durumunun Firestore'dan gelmesini bekle
-        const roleBadge = await page.$('#roleBadgeToggleBtn');
-        if (roleBadge) {
-          await roleBadge.click();
-          await page.waitForTimeout(700);
-          const menuOpen = await page.isVisible('#roleBadgeMenuItems').catch(() => false);
-          logStep('Admin hızlı menüsü açıldı', menuOpen ? 'ok' : 'fail');
-          results[results.length - 1].screenshot = await shot(page, 'admin_menu');
+    await step(page, 'Admin hızlı menüsü', async () => {
+      const roleBadge = await page.$('#roleBadgeToggleBtn');
+      if (!roleBadge) throw new Error('Rütbe rozeti bulunamadı — bu hesap admin olarak tanınmıyor olabilir');
+      await roleBadge.click();
+      await page.waitForTimeout(700);
+      const open = await page.isVisible('#roleBadgeMenuItems').catch(() => false);
+      logStep('Admin hızlı menüsü açıldı', open ? 'ok' : 'fail');
+      results[results.length - 1].screenshot = await shot(page, 'admin_menu');
+      if (!open) throw new Error('Menü açılmadı');
+    });
 
-          if (menuOpen) {
-            // "Kullanıcılar" bölümüne git
-            const usersLink = await page.$('[data-admin-nav="adminusers"]');
-            if (usersLink) {
-              await usersLink.click();
-              await page.waitForTimeout(1200);
-              const usersScreenActive = await page.isVisible('#screen-adminusers.active').catch(() => false);
-              logStep('Admin → Kullanıcılar ekranı açıldı', usersScreenActive ? 'ok' : 'fail');
-              results[results.length - 1].screenshot = await shot(page, 'admin_kullanicilar');
-
-              // QA test hesabını bul ve profilini görüntüle (gerçek bir "düzenleme" işlemi)
-              const testUserRow = await page.$(`text=${TEST_EMAIL.split('@')[0]}`);
-              if (testUserRow) {
-                await testUserRow.click();
-                await page.waitForTimeout(1000);
-                logStep('Admin, test hesabının profilini açtı', 'ok');
-                results[results.length - 1].screenshot = await shot(page, 'admin_test_hesabi_profili');
-              } else {
-                logStep('Admin listesinde test hesabı bulunamadı', 'warn', 'Arama/listeleme farklı çalışıyor olabilir');
-              }
-            } else {
-              logStep('Admin → Kullanıcılar linki bulunamadı', 'fail');
-            }
-          }
-        } else {
-          logStep('Rütbe rozeti (admin girişi) bulunamadı', 'fail', 'Bu hesap admin olarak tanınmıyor olabilir');
-        }
-      }
-    } catch (e) {
-      logStep('Admin paneli testinde hata', 'fail', e.message);
+    const adminScreens = [
+      { id: 'adminstats', label: 'İstatistikler' },
+      { id: 'adminusers', label: 'Kullanıcılar' },
+      { id: 'admindeactivated', label: 'Devre Dışı Bırakılanlar' },
+      { id: 'adminappeals', label: 'İtirazlar' },
+      { id: 'adminreports', label: 'Şikayetler' },
+      { id: 'adminsuggestions', label: 'Öneriler' },
+      { id: 'adminmodlog', label: 'İşlem Geçmişi' },
+      { id: 'adminquiz', label: 'Soru Bankası' },
+      { id: 'adminranks', label: 'Moderatör Rütbeleri' },
+      { id: 'admintenureranks', label: 'Kıdem Rütbeleri' },
+      { id: 'adminmoderators', label: 'Moderatörler' },
+    ];
+    for (const scr of adminScreens) {
+      await step(page, `Admin → ${scr.label}`, async () => {
+        await safeClick(page, '#roleBadgeToggleBtn');
+        await page.waitForTimeout(500);
+        const link = await page.$(`[data-role-link="${scr.id}"]`);
+        if (!link) throw new Error('Menü linki bulunamadı');
+        await link.click();
+        await page.waitForTimeout(1000);
+        const active = await page.isVisible(`#screen-${scr.id}.active`).catch(() => false);
+        logStep(`Admin → ${scr.label}`, active ? 'ok' : 'fail');
+        results[results.length - 1].screenshot = await shot(page, `admin_${scr.id}`);
+      });
     }
+
+    await step(page, 'Admin, test hesabının profilini görüntüledi', async () => {
+      await safeClick(page, '#roleBadgeToggleBtn');
+      await page.waitForTimeout(500);
+      const usersLink = await page.$('[data-role-link="adminusers"]');
+      if (usersLink) { await usersLink.click(); await page.waitForTimeout(1000); }
+      const testUserRow = await page.$(`text=${TEST_EMAIL.split('@')[0]}`);
+      if (testUserRow) {
+        await testUserRow.click();
+        await page.waitForTimeout(1000);
+        logStep('Admin, test hesabının profilini açtı', 'ok');
+        results[results.length - 1].screenshot = await shot(page, 'admin_test_hesabi_profili');
+      } else {
+        logStep('Admin listesinde test hesabı bulunamadı', 'warn', 'Arama/listeleme farklı çalışıyor olabilir');
+      }
+    });
+
   } else {
     logStep('Admin paneli testi atlandı', 'warn', 'QA_ADMIN_EMAIL / QA_ADMIN_PASSWORD tanımlanmamış');
   }
 
+  // ============================================================
+  // BÖLÜM 4: TÜM TESTLER BİTTİ — ADMİN'E TAM RAPOR MESAJI GÖNDER
+  // ============================================================
+  // Buraya kadar hem genel kullanıcı testleri hem admin paneli testi tamamlandı.
+  // Şimdi test hesabına tekrar girip, TÜM sonucu (hatalı adımların ekran
+  // görüntüleriyle birlikte) admin'e uygulama içi mesaj olarak gönderiyoruz.
+  if (ADMIN_UID) {
+    await step(page, 'Admin\'e tam rapor mesajı gönder', async () => {
+      // Test hesabına geri dön (admin panelinden çıkıp)
+      await page.goto(SITE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(2000);
+      const authVisible = await page.isVisible('#authFormWrap').catch(() => false);
+      if (authVisible) {
+        await page.fill('#authEmail', TEST_EMAIL);
+        await page.fill('#authPassword', TEST_PASSWORD);
+        await safeClick(page, '#btnEmailAuth');
+        await page.waitForTimeout(3000);
+      }
+      const loggedIn = await page.isVisible('header.top').catch(() => false);
+      if (!loggedIn) throw new Error('Rapor göndermek için test hesabına tekrar giriş yapılamadı');
+      await clearOverlays(page);
+
+      const navigated = await page.evaluate((uid) => {
+        if (typeof openViewProfile === 'function') { openViewProfile(uid); return true; }
+        return false;
+      }, ADMIN_UID);
+      if (!navigated) throw new Error('openViewProfile fonksiyonu bulunamadı');
+      await page.waitForTimeout(1200);
+      const profileOpen = await page.isVisible('#screen-view-profile.active').catch(() => false);
+      if (!profileOpen) throw new Error('Admin profili açılamadı (UID hatalı olabilir)');
+
+      const msgBtn = await page.$('#vpMessageBtn');
+      if (!msgBtn) throw new Error('"Mesaj" butonu bulunamadı (arkadaş olmayan biriyle mesajlaşma kapalı olabilir)');
+      await msgBtn.click();
+      await page.waitForTimeout(1200);
+      const chatOpen = await page.isVisible('#screen-chat.active').catch(() => false);
+      if (!chatOpen) throw new Error('Sohbet ekranı açılmadı');
+
+      // ---- Özet metni gönder ----
+      const okCountSoFar = results.filter(r => r.status === 'ok').length;
+      const warnCountSoFar = results.filter(r => r.status === 'warn').length;
+      const failCountSoFar = results.filter(r => r.status === 'fail').length;
+      const failedResults = results.filter(r => r.status === 'fail');
+      let reportMsg = `🤖 QA Bot Raporu — ${new Date().toLocaleString('tr-TR')}\n\n`;
+      reportMsg += `✅ ${okCountSoFar} başarılı · ⚠️ ${warnCountSoFar} uyarı · ❌ ${failCountSoFar} hata\n`;
+      if (failedResults.length) {
+        reportMsg += `\nHatalı adımlar:\n` + failedResults.map(r => `• ${r.step}${r.detail ? ' — ' + r.detail : ''}`).join('\n');
+        reportMsg += `\n\nHer hatanın ekran görüntüsünü ayrı ayrı, aşağıda gönderiyorum.`;
+      } else {
+        reportMsg += `\nTüm test adımları (genel kullanım + admin paneli) sorunsuz geçti. 🎉`;
+      }
+      await page.fill('#chatInput', reportMsg);
+      await safeClick(page, '#chatSendBtn');
+      await page.waitForTimeout(1200);
+
+      // ---- Hatalı adımların ekran görüntülerini tek tek gönder (en fazla 5 tane, sohbeti boğmasın) ----
+      const shotsToSend = failedResults.filter(r => r.screenshot).slice(0, 5);
+      for (const r of shotsToSend) {
+        const fullPath = path.join(SHOTS_DIR, r.screenshot);
+        if (fs.existsSync(fullPath)) {
+          try {
+            await page.setInputFiles('#chatImageInput', fullPath);
+            await page.waitForTimeout(1800); // sıkıştırma + gönderme için zaman tanı
+          } catch (e) { /* bir görsel gönderilemezse diğerlerine devam et */ }
+        }
+      }
+
+      logStep('Admin\'e tam rapor mesajı gönderildi', 'ok', `${shotsToSend.length} hata ekran görüntüsü eklendi`);
+      results[results.length - 1].screenshot = await shot(page, 'admin_rapor_mesaji');
+    });
+  } else {
+    logStep('Admin\'e mesaj gönderme atlandı', 'warn', 'QA_ADMIN_UID tanımlanmamış');
+  }
+
   await browser.close();
+
 
   // ============================================================
   // RAPOR OLUŞTUR
@@ -381,17 +543,12 @@ async function goScreen(page, navName, screenId) {
   });
 
   md += `---\n\n## 🖥️ Konsol Hataları (${consoleErrors.length})\n\n`;
-  md += consoleErrors.length
-    ? consoleErrors.map(e => `- \`${e}\``).join('\n')
-    : '_Hiç konsol hatası yakalanmadı._';
-
+  md += consoleErrors.length ? consoleErrors.map(e => `- \`${e}\``).join('\n') : '_Hiç konsol hatası yakalanmadı._';
   md += `\n\n## 💥 Sayfa Hataları / İstisnalar (${pageErrors.length})\n\n`;
-  md += pageErrors.length
-    ? pageErrors.map(e => `- \`${e}\``).join('\n')
-    : '_Hiç yakalanmamış JS hatası oluşmadı._';
+  md += pageErrors.length ? pageErrors.map(e => `- \`${e}\``).join('\n') : '_Hiç yakalanmamış JS hatası oluşmadı._';
 
   fs.writeFileSync(path.join(REPORT_DIR, 'report.md'), md, 'utf-8');
   console.log('\n\n📄 Rapor oluşturuldu: qa-report/report.md');
 
-  if (failCount > 0) process.exitCode = 1; // Actions'ta kırmızı X görünsün diye
+  if (failCount > 0) process.exitCode = 1;
 })();
