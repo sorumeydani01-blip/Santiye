@@ -95,6 +95,15 @@ async function step(page, label, fn) {
   }
 }
 
+function friendlyErrorReason(detail) {
+  if (!detail) return 'Beklenmeyen bir sorun oluştu.';
+  if (/waitForSelector.*Timeout/i.test(detail)) return 'İlgili ekran/pencere zamanında açılmadı (site yavaş kalmış olabilir).';
+  if (/elementHandle\.click.*Timeout/i.test(detail)) return 'İlgili butona basılamadı (buton görünmedi ya da bir pencere önünü kapatmış olabilir).';
+  if (/elementHandle\.fill.*Timeout/i.test(detail)) return 'İlgili kutuya yazı yazılamadı (alan görünür değildi).';
+  if (/bulunamadı/i.test(detail)) return detail; // zaten Türkçe ve anlaşılır
+  return detail;
+}
+
 (async () => {
   const browser = await chromium.launch();
   const context = await browser.newContext({
@@ -511,18 +520,56 @@ async function step(page, label, fn) {
       const chatOpen = await page.isVisible('#screen-chat.active').catch(() => false);
       if (!chatOpen) throw new Error('Sohbet ekranı açılmadı');
 
+      // ---- Önceki QA Bot rapor mesajlarını (varsa) sil — sohbet şişmesin ----
+      // "Herkesten Sil" ile aynı işlemi, uzun basma taklidi yapmadan doğrudan
+      // Firestore üzerinden yapıyoruz (uygulamanın kendi silme mantığıyla birebir aynı).
+      try {
+        const deletedCount = await page.evaluate(async () => {
+          if (typeof currentConvId === 'undefined' || !currentConvId || typeof db === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return 0;
+          const snap = await db.collection('messages')
+            .where('convId', '==', currentConvId)
+            .where('senderUid', '==', currentUser.uid)
+            .get();
+          let count = 0;
+          for (const doc of snap.docs) {
+            const data = doc.data();
+            if (data.deletedForEveryone) continue;
+            if (typeof data.text === 'string' && data.text.includes('QA Bot Raporu')) {
+              await doc.ref.update({
+                deletedForEveryone: true,
+                text: '',
+                imageData: firebase.firestore.FieldValue.delete(),
+                audioData: firebase.firestore.FieldValue.delete(),
+              });
+              count++;
+            }
+          }
+          return count;
+        });
+        if (deletedCount > 0) logStep('Önceki rapor mesajları temizlendi', 'ok', `${deletedCount} eski mesaj silindi`);
+      } catch (e) {
+        logStep('Önceki rapor mesajlarını silme denendi', 'warn', e.message);
+      }
+
       // ---- Özet metni gönder ----
-      const okCountSoFar = results.filter(r => r.status === 'ok').length;
-      const warnCountSoFar = results.filter(r => r.status === 'warn').length;
-      const failCountSoFar = results.filter(r => r.status === 'fail').length;
+      const okResults = results.filter(r => r.status === 'ok');
+      const warnResults = results.filter(r => r.status === 'warn');
       const failedResults = results.filter(r => r.status === 'fail');
       let reportMsg = `🤖 QA Bot Raporu — ${new Date().toLocaleString('tr-TR')}\n\n`;
-      reportMsg += `✅ ${okCountSoFar} başarılı · ⚠️ ${warnCountSoFar} uyarı · ❌ ${failCountSoFar} hata\n`;
+      reportMsg += `✅ ${okResults.length} başarılı · ⚠️ ${warnResults.length} uyarı · ❌ ${failedResults.length} hata\n`;
+
+      if (okResults.length) {
+        reportMsg += `\n✅ BAŞARILI OLAN ADIMLAR:\n` + okResults.map(r => `• ${r.step}`).join('\n');
+      }
+      if (warnResults.length) {
+        reportMsg += `\n\n⚠️ UYARILAR (hata değil, sadece dikkat edilecek):\n` + warnResults.map(r => `• ${r.step}${r.detail ? ' — ' + r.detail : ''}`).join('\n');
+      }
       if (failedResults.length) {
-        reportMsg += `\nHatalı adımlar:\n` + failedResults.map(r => `• ${r.step}${r.detail ? ' — ' + r.detail : ''}`).join('\n');
+        reportMsg += `\n\n❌ HATALI ADIMLAR (ne olduğunun sade açıklaması):\n`
+          + failedResults.map(r => `• ${r.step}\n   ↳ ${friendlyErrorReason(r.detail)}`).join('\n');
         reportMsg += `\n\nHer hatanın ekran görüntüsünü ayrı ayrı, aşağıda gönderiyorum.`;
       } else {
-        reportMsg += `\nTüm test adımları (genel kullanım + admin paneli) sorunsuz geçti. 🎉`;
+        reportMsg += `\n\nTüm test adımları (genel kullanım + admin paneli) sorunsuz geçti. 🎉`;
       }
       await page.fill('#chatInput', reportMsg);
       await safeClick(page, '#chatSendBtn');
