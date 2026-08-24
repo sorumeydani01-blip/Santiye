@@ -61,6 +61,11 @@
     <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px; margin-bottom:8px;">Şantiye Defteri</div>
     <div id="authSubtitle" style="font-size:14px; opacity:0.85; margin-bottom:24px; line-height:1.5;">Kayıtların hesabınla senkronize kalsın — hangi telefondan girersen gir verilerin seninle gelir.</div>
 
+    <div id="savedAccountsWrap" style="display:none; margin-bottom:14px;">
+      <div style="font-size:11.5px; font-weight:700; opacity:0.8; margin-bottom:8px; text-align:left;">Hızlı Giriş</div>
+      <div id="savedAccountsList" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+
     <div style="display:flex; background:rgba(255,255,255,0.15); border-radius:12px; padding:4px; margin-bottom:18px;">
       <button id="authTabLogin" style="flex:1; padding:10px; border:none; border-radius:9px; background:#fff; color:var(--asphalt-2); font-weight:700; font-size:13px; cursor:pointer;">Giriş Yap</button>
       <button id="authTabSignup" style="flex:1; padding:10px; border:none; border-radius:9px; background:transparent; color:#fff; font-weight:700; font-size:13px; cursor:pointer;">Kayıt Ol</button>
@@ -8616,6 +8621,58 @@ document.getElementById('btnEmailAuth').addEventListener('click', async ()=>{
   document.getElementById('authLoading').style.display = 'none';
 });
 
+// ---------- HESAPLAR ARASI HIZLI GEÇİŞ ----------
+// Güvenlik notu: sadece E-POSTA saklanır, şifre KESİNLİKLE hiçbir yerde tutulmaz.
+// Tek yaptığı şey, daha önce bu cihazda giriş yapılmış hesapları hatırlayıp
+// e-posta kutusunu tek dokunuşla doldurmak — şifreyi yine de yazman gerekir.
+const SAVED_ACCOUNTS_KEY = 'sd_saved_accounts';
+function getSavedAccounts(){
+  try{ return JSON.parse(localStorage.getItem(SAVED_ACCOUNTS_KEY) || '[]'); }catch(e){ return []; }
+}
+function saveAccountForQuickSwitch(email){
+  try{
+    let list = getSavedAccounts().filter(e => e.toLowerCase() !== email.toLowerCase());
+    list.unshift(email);
+    list = list.slice(0, 5); // en fazla 5 hesap hatırlansın
+    localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(list));
+  }catch(e){}
+}
+function forgetSavedAccount(email){
+  try{
+    const list = getSavedAccounts().filter(e => e.toLowerCase() !== email.toLowerCase());
+    localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(list));
+  }catch(e){}
+  renderSavedAccountChips();
+}
+function renderSavedAccountChips(){
+  const wrap = document.getElementById('savedAccountsWrap');
+  const list = document.getElementById('savedAccountsList');
+  if(!wrap || !list) return;
+  const accounts = getSavedAccounts();
+  if(accounts.length === 0){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = accounts.map(email => {
+    const name = email.split('@')[0];
+    return `<button type="button" class="quick-switch-chip" data-email="${escapeHtml(email)}" style="display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.3); border-radius:20px; padding:7px 8px 7px 12px; color:#fff; font-size:12.5px; font-weight:700; cursor:pointer;">
+        <span>👤 ${escapeHtml(name)}</span>
+        <span data-forget-email="${escapeHtml(email)}" style="width:18px;height:18px;border-radius:50%; background:rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1;">✕</span>
+      </button>`;
+  }).join('');
+  list.querySelectorAll('.quick-switch-chip').forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      const forgetTarget = e.target.closest('[data-forget-email]');
+      if(forgetTarget){
+        e.stopPropagation();
+        forgetSavedAccount(forgetTarget.dataset.forgetEmail);
+        return;
+      }
+      document.getElementById('authEmail').value = chip.dataset.email;
+      document.getElementById('authPassword').focus();
+      if(authMode !== 'login') document.getElementById('authTabLogin').click();
+    });
+  });
+}
+
 document.getElementById('btnForgotPassword').addEventListener('click', async ()=>{
   if(!firebaseReady){ return; }
   const email = document.getElementById('authEmail').value.trim();
@@ -8908,6 +8965,7 @@ if(firebaseReady){
       document.getElementById('authSplashLoading').style.display = 'none';
       document.getElementById('authFormWrap').style.display = 'block';
       document.getElementById('appRoot').style.display = 'none';
+      renderSavedAccountChips();
     }
   });
 } else {
