@@ -2803,8 +2803,8 @@ function getTenureBadge(createdAt){
 function tenureBadgeHtml(createdAt, extraStyle, clickable){
   const r = getTenureBadge(createdAt);
   if(!r) return '';
-  if(!clickable) return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
-  return `<span class="rank-badge-clickable" data-rank-name="${escapeHtml(r.name)}" data-rank-icon="${escapeHtml(r.icon)}" data-rank-min="${r.minDays}" data-rank-max="${r.maxDays==null?'':r.maxDays}" style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); cursor:pointer; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  if(!clickable) return `<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); white-space:nowrap; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  return `<span class="rank-badge-clickable" data-rank-name="${escapeHtml(r.name)}" data-rank-icon="${escapeHtml(r.icon)}" data-rank-min="${r.minDays}" data-rank-max="${r.maxDays==null?'':r.maxDays}" style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); cursor:pointer; white-space:nowrap; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
 
 // ---------- SORU ÇÖZ PUAN RÜTBELERİ ----------
@@ -2853,7 +2853,7 @@ function renderQuizRankProgress(score, totalAnswered){
 function quizRankBadgeHtml(score, extraStyle, totalAnswered){
   if((totalAnswered||0) < 5) return ''; // 5 soru çözülmeden rütbe rozeti gösterilmez
   const r = getQuizRank(score);
-  return `<span class="quiz-rank-badge-glow" style="--rank-aura-color:${r.aura}; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
+  return `<span class="quiz-rank-badge-glow" style="--rank-aura-color:${r.aura}; font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); white-space:nowrap; ${extraStyle||''}">${r.icon} ${escapeHtml(r.name)}</span>`;
 }
 // Herkes için: admin/mod ise yetki rozeti, değilse kıdem rozeti — her durumda yanında puan rütbesi (5 soru çözülünce)
 function roleOrTenureBadgeHtml(u, extraStyle){
