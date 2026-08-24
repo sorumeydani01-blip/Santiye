@@ -196,6 +196,7 @@
           <button id="btnHeaderMenuQuiz" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🧠 Soru Çöz</button>
           <button id="btnHeaderMenuOyunlar" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🎮 Oyunlar</button>
           <button id="btnHeaderMenuSettings" class="hdr-dropdown-item" style="display:flex; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">⚙️ Ayarlar</button>
+          <button id="btnHeaderMenuSwitchAccount" class="hdr-dropdown-item" style="display:none; align-items:center; gap:9px; width:100%; padding:11px 12px; border:none; background:none; border-radius:9px; font-size:13.5px; text-align:left; cursor:pointer; color:var(--ink);">🔄 Hesap Değiştir</button>
         </div>
       </div>
 
@@ -1350,6 +1351,12 @@
       <div id="pwChangeForm">
         <button class="submit-btn secondary" id="pwSave">📧 Şifremi Sıfırlama Linki Gönder</button>
       </div>
+      <div id="pwSetForm" style="display:none;">
+        <div class="field"><label>Yeni Şifre (en az 6 karakter)</label><input type="password" id="pwSetNew" placeholder="Yeni şifreni yaz"></div>
+        <div class="field"><label>Yeni Şifre (tekrar)</label><input type="password" id="pwSetConfirm" placeholder="Yeni şifreni tekrar yaz"></div>
+        <button class="submit-btn" id="pwSetSave">🔑 Şifre Belirle</button>
+        <div class="hint" style="margin-top:8px;">Bunu yaptıktan sonra hem Google ile hem e-posta + bu şifreyle giriş yapabilirsin.</div>
+      </div>
     </div>
   </section>
 
@@ -2356,6 +2363,14 @@
 <!-- YENİ GRUP OLUŞTUR -->
 <!-- SOHBET HIZLI İŞLEM (basılı tutunca) -->
 <!-- MESAJ EYLEM MENÜSÜ (basılı tutunca) -->
+<div class="modal-overlay" id="switchAccountOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title"><span>🔄 Hesap Değiştir</span><button class="close" id="switchAccountClose">✕</button></div>
+    <div id="switchAccountList" style="display:flex; flex-direction:column; gap:8px;"></div>
+    <div class="hint" id="switchAccountEmptyHint" style="display:none; text-align:center; padding:20px 0;">Henüz kayıtlı başka hesap yok.</div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="msgActionOverlay">
   <div class="modal-sheet">
     <div class="modal-title"><span>Mesaj</span><button class="close" id="msgActionClose">✕</button></div>
@@ -7112,22 +7127,40 @@ document.getElementById('btnGoToStaff').addEventListener('click', openStaffPage)
   if(el) el.addEventListener('click', openStaffPage);
 });
 
-// ---------- ŞİFRE DEĞİŞTİRME ----------
+// ---------- ŞİFRE DEĞİŞTİRME / BELİRLEME ----------
 function hasPasswordProvider(){
   return !!(currentUser && currentUser.providerData && currentUser.providerData.some(p=>p.providerId==='password'));
 }
 function renderPasswordChangeCard(){
   const hasPw = hasPasswordProvider();
   document.getElementById('pwChangeForm').style.display = hasPw ? 'block' : 'none';
+  document.getElementById('pwSetForm').style.display = hasPw ? 'none' : 'block';
   document.getElementById('pwChangeHint').textContent = hasPw
     ? 'Şifreni değiştirmek için mailine bir sıfırlama linki gönderelim.'
-    : 'Google hesabıyla giriş yaptığın için şifre burada değiştirilmiyor — şifreni Google hesap ayarlarından yönetebilirsin.';
+    : 'Google hesabıyla giriş yapıyorsun — aşağıdan bir şifre belirlersen, hem Google ile hem e-posta+şifre ile giriş yapabilirsin.';
 }
 document.getElementById('pwSave').addEventListener('click', async ()=>{
   if(!currentUser || !currentUser.email){ showToast('E-posta bulunamadı'); return; }
   try{
     await auth.sendPasswordResetEmail(currentUser.email);
     showToast('Sıfırlama linki ' + currentUser.email + ' adresine gönderildi');
+  }catch(err){
+    showToast(translateAuthError(err.code));
+  }
+});
+document.getElementById('pwSetSave').addEventListener('click', async ()=>{
+  if(!currentUser || !currentUser.email){ showToast('E-posta bulunamadı'); return; }
+  const pw1 = document.getElementById('pwSetNew').value;
+  const pw2 = document.getElementById('pwSetConfirm').value;
+  if(!pw1 || pw1.length < 6){ showToast('Şifre en az 6 karakter olmalı'); return; }
+  if(pw1 !== pw2){ showToast('Şifreler eşleşmiyor'); return; }
+  try{
+    const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, pw1);
+    await currentUser.linkWithCredential(credential);
+    showToast('🔑 Şifre belirlendi! Artık e-posta + şifreyle de giriş yapabilirsin.');
+    document.getElementById('pwSetNew').value = '';
+    document.getElementById('pwSetConfirm').value = '';
+    renderPasswordChangeCard(); // artık "password" sağlayıcısı olduğu için form değişsin
   }catch(err){
     showToast(translateAuthError(err.code));
   }
@@ -8589,7 +8622,10 @@ function translateAuthError(code){
     'auth/user-not-found':'Bu e-postayla kayıtlı hesap bulunamadı, "Kayıt Ol" sekmesini kullan.',
     'auth/wrong-password':'Şifre hatalı.',
     'auth/invalid-credential':'E-posta veya şifre hatalı.',
-    'auth/too-many-requests':'Çok fazla deneme yapıldı, biraz sonra tekrar dene.'
+    'auth/too-many-requests':'Çok fazla deneme yapıldı, biraz sonra tekrar dene.',
+    'auth/provider-already-linked':'Bu hesap için zaten bir şifre belirlenmiş.',
+    'auth/credential-already-in-use':'Bu e-posta/şifre başka bir hesaba bağlı, farklı bir şifre dene.',
+    'auth/requires-recent-login':'Bu işlem için güvenlik amacıyla tekrar giriş yapman gerekiyor — çıkış yapıp Google ile tekrar gir, sonra dene.'
   };
   return map[code] || ('Hata: ' + code);
 }
@@ -8748,6 +8784,68 @@ async function signOutUser(){
   try{ await auth.signOut(); }catch(e){}
 }
 document.getElementById('btnDeactivatedSignOut').addEventListener('click', signOutUser);
+
+// ---------- HESAP DEĞİŞTİR (admin/mod için) ----------
+document.getElementById('btnHeaderMenuSwitchAccount').addEventListener('click', ()=>{
+  document.getElementById('headerProfileMenu').style.display = 'none';
+  renderSwitchAccountList();
+  document.getElementById('switchAccountOverlay').classList.add('show');
+});
+document.getElementById('switchAccountClose').addEventListener('click', ()=>{
+  document.getElementById('switchAccountOverlay').classList.remove('show');
+});
+function renderSwitchAccountList(){
+  const listEl = document.getElementById('switchAccountList');
+  const emptyHint = document.getElementById('switchAccountEmptyHint');
+  const myEmail = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : '';
+  // Şu an giriş yapmış olduğun hesap listede kendine geçiş yapman anlamsız olacağı için gösterilmez.
+  const accounts = getSavedAccounts().filter(e => e.toLowerCase() !== myEmail);
+  if(accounts.length === 0){
+    listEl.innerHTML = '';
+    emptyHint.style.display = 'block';
+    return;
+  }
+  emptyHint.style.display = 'none';
+  listEl.innerHTML = accounts.map(email => {
+    const name = email.split('@')[0];
+    return `<button type="button" class="switch-account-row" data-switch-email="${escapeHtml(email)}" style="display:flex; align-items:center; gap:12px; width:100%; padding:13px; border:1.5px solid var(--line); background:var(--paper); border-radius:14px; cursor:pointer; text-align:left;">
+        <div style="width:38px;height:38px;border-radius:50%; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:14px; flex-shrink:0;">${escapeHtml(name.slice(0,2).toUpperCase())}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:700; font-size:13.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(name)}</div>
+          <div style="font-size:11px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(email)}</div>
+        </div>
+        <div style="color:var(--ink-soft); font-size:16px;">›</div>
+      </button>`;
+  }).join('');
+  listEl.querySelectorAll('.switch-account-row').forEach(row => {
+    row.addEventListener('click', () => switchToAccount(row.dataset.switchEmail));
+  });
+}
+async function switchToAccount(email){
+  document.getElementById('switchAccountOverlay').classList.remove('show');
+  // Tarayıcının şifre yöneticisinden bu hesaba ait şifreyi almayı dene (varsa),
+  // yoksa giriş ekranında sadece e-posta dolu, şifre alanı boş bekler.
+  let cred = null;
+  try{
+    if('credentials' in navigator){
+      cred = await navigator.credentials.get({ password: true, mediation: 'optional' });
+    }
+  }catch(e){}
+  await signOutUser();
+  // signOut sonrası auth ekranı otomatik açılır (onAuthStateChanged üzerinden) — kısa bir
+  // bekleme ile o ekranın DOM'a gelmesini garanti altına alıp e-posta/şifreyi dolduruyoruz.
+  setTimeout(async ()=>{
+    const emailInput = document.getElementById('authEmail');
+    const passInput = document.getElementById('authPassword');
+    if(emailInput) emailInput.value = email;
+    if(passInput && cred && cred.type==='password' && cred.id && cred.id.toLowerCase()===email.toLowerCase()){
+      passInput.value = cred.password;
+    } else if(passInput){
+      passInput.value = '';
+      passInput.focus();
+    }
+  }, 400);
+}
 
 // ---------- İTİRAZ SİSTEMİ ----------
 let hasExistingAppeal = false;

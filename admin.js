@@ -9,18 +9,22 @@ function updateAdminModButtons(){
   const badge = document.getElementById('roleBadgeWrap');
   const letterEl = document.getElementById('roleBadgeLetter');
   const guideBtn = document.getElementById('footerPermGuideAna');
+  const switchAccBtn = document.getElementById('btnHeaderMenuSwitchAccount');
   if(isAdmin){
     badge.style.display = 'flex'; letterEl.textContent = 'A'; badge.title = 'Admin Paneli';
     startPendingAdminCountListener();
     if(guideBtn) guideBtn.style.display = 'block';
+    if(switchAccBtn) switchAccBtn.style.display = 'flex';
   } else if(hasAnyModPerm){
     badge.style.display = 'flex'; letterEl.textContent = 'M'; badge.title = 'Moderatör Paneli';
     startPendingAdminCountListener();
     if(guideBtn) guideBtn.style.display = 'block';
+    if(switchAccBtn) switchAccBtn.style.display = 'flex';
   } else {
     badge.style.display = 'none';
     stopPendingAdminCountListener();
     if(guideBtn) guideBtn.style.display = 'none';
+    if(switchAccBtn) switchAccBtn.style.display = 'none';
   }
   if(document.getElementById('screen-admin').classList.contains('active') && typeof applyAdminPermVisibility === 'function'){
     applyAdminPermVisibility();
