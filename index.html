@@ -6075,7 +6075,7 @@ function renderHome(){
   document.getElementById('homeStats').innerHTML = statGridHtml(all, {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'});
   renderReceivableReminder(all);
   renderAvansCard();
-  renderActiveMembers();
+  if(typeof renderActiveMembers === 'function') renderActiveMembers();
   if(typeof loadLeaderboard === 'function') loadLeaderboard();
   initCollapsibleSections();
 
@@ -8783,7 +8783,7 @@ async function enterApp(){
   startConversationsListener();
   startPresenceHeartbeat();
   startIncomingCallListener();
-  checkIsAdmin();
+  if(typeof checkIsAdmin === 'function') checkIsAdmin();
   loadAppConfig();
   updateFabVisibility();
   try{
@@ -8918,10 +8918,10 @@ if(firebaseReady){
     : 'Firebase yapılandırması eksik olduğu için giriş yapılamıyor. Kod içindeki firebaseConfig alanını doldurup dosyayı yeniden yükle.';
 }
 </script>
-<script src="admin.js" defer></script>
-<script src="quiz.js" defer></script>
-<script src="chess.js" defer></script>
-<script src="wordgame.js" defer></script>
-<script src="duel.js" defer></script>
+<script src="admin.js"></script>
+<script src="quiz.js"></script>
+<script src="chess.js"></script>
+<script src="wordgame.js"></script>
+<script src="duel.js"></script>
 </body>
 </html>
