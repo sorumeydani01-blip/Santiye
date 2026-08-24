@@ -5,8 +5,8 @@ name: QA Bot - Otomatik Site Testi
 # açarak haftalık otomatik çalışmasını da sağlayabilirsiniz (şu an kapalı/yorum satırında).
 on:
   workflow_dispatch: {}
-  # schedule:
-  #   - cron: '0 6 * * 1'   # her Pazartesi sabah 06:00 (UTC)
+  schedule:
+    - cron: '0 6 */10 * *'   # yaklaşık her 10 günde bir, sabah 06:00 (UTC) — GitHub'ın cron sistemi ayın 1'inde sıfırlandığı için aralık bazen 10 gündense biraz daha kısa/uzun olabilir, kesin takvim değil "yaklaşık" bir periyot
 
 jobs:
   qa-test:
@@ -36,6 +36,7 @@ jobs:
           QA_TEST_PASSWORD: 'QaBotTest2026!'
           QA_ADMIN_EMAIL: ${{ secrets.QA_ADMIN_EMAIL }}
           QA_ADMIN_PASSWORD: ${{ secrets.QA_ADMIN_PASSWORD }}
+          QA_ADMIN_UID: ${{ secrets.QA_ADMIN_UID }}
         run: node qa-bot.js
         continue-on-error: true
 
