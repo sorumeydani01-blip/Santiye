@@ -25,10 +25,17 @@ messaging.onBackgroundMessage((payload) => {
     .catch((err) => console.error('[SW] Bildirim gösterilemedi:', err));
 });
 
-const CACHE_NAME = 'santiye-defteri-v5';
+const CACHE_NAME = 'santiye-defteri-v6';
 const CORE_ASSETS = [
   './', './index.html', './stil.css', './manifest.json', './icon-192.png', './icon-512.png',
-  './themes.css', './themes.js', './chess.js', './wordgame.js', './quiz.js', './duel.js'
+  './chess.js', './wordgame.js', './quiz.js', './duel.js', './admin.js'
+];
+// Bu dosyalar sık sık güncellendiği için "önce internetten taze çek" stratejisi
+// kullanılır — böylece her güncellemeden sonra manuel önbellek temizlemeye gerek
+// kalmaz. İkon/manifest gibi neredeyse hiç değişmeyen dosyalar bu listede değil,
+// onlar için hız öncelikli (önbellek öncelikli) strateji korunuyor.
+const NETWORK_FIRST_ASSETS = [
+  '/index.html', '/stil.css', '/admin.js', '/quiz.js', '/chess.js', '/wordgame.js', '/duel.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -61,12 +68,29 @@ self.addEventListener('fetch', (event) => {
       event.request.url.includes('ipify.org')) {
     return;
   }
-  // STALE-WHILE-REVALIDATE: önbellekte varsa HEMEN onu göster (hızlı açılış),
-  // aynı anda arka planda internetten taze kopyayı çek ve önbelleği güncelle
-  // (bir sonraki açılışta güncel içerik zaten hazır olur). Önbellekte hiç
-  // yoksa (ilk ziyaret), internete gitmeyi bekle.
-  // { cache: 'no-store' } burada da önemli: arka plan güncellemesinin GERÇEKTEN
-  // taze veri çekmesini sağlar, ara HTTP önbelleğine takılmaz.
+
+  const url = new URL(event.request.url);
+  const isNetworkFirst = NETWORK_FIRST_ASSETS.some(path => url.pathname.endsWith(path)) || url.pathname === '/' || url.pathname.endsWith('/');
+
+  if (isNetworkFirst) {
+    // NETWORK-FIRST: index.html, stil.css ve tüm .js dosyaları için — bunlar sık
+    // güncelleniyor, kullanıcı HER ZAMAN en güncel hâli görsün istiyoruz. Önce
+    // internetten taze kopyayı çekmeyi dener; internet yoksa (çevrimdışıysa)
+    // önbellekteki en son bilinen kopyaya döner (çevrimdışı çalışma bozulmaz).
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' }).then((response) => {
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone())).catch(()=>{});
+        return response;
+      }).catch(() =>
+        caches.open(CACHE_NAME).then((cache) => cache.match(event.request))
+      )
+    );
+    return;
+  }
+
+  // STALE-WHILE-REVALIDATE: ikon, manifest gibi neredeyse hiç değişmeyen dosyalar
+  // için — önbellekte varsa HEMEN onu göster (hızlı açılış), arka planda taze
+  // kopyayı çekip önbelleği güncelle.
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       const cached = await cache.match(event.request);
