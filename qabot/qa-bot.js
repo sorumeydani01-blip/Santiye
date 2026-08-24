@@ -178,7 +178,14 @@ async function step(page, label, fn) {
   });
 
   await step(page, 'Takvimden yevmiye ekle', async () => {
-    await page.waitForSelector('#calGrid .cal-day:not(.other-month)', { state: 'visible', timeout: 5000 });
+    await clearOverlays(page);
+    let shown = await page.isVisible('#homeCalendarSection').catch(() => false);
+    if (!shown) {
+      // Bir önceki adımda sekme geçişi tam oturmamış olabilir — burada bir kez daha dene.
+      await safeClick(page, '.home-view-tab[data-homeview="calendar"]');
+      await page.waitForTimeout(800);
+    }
+    await page.waitForSelector('#calGrid .cal-day:not(.other-month)', { state: 'visible', timeout: 8000 });
     const dayCell = await page.$('#calGrid .cal-day:not(.other-month)');
     await dayCell.click();
     await page.waitForTimeout(800);
@@ -211,7 +218,9 @@ async function step(page, label, fn) {
     const addNoteBtn = await page.$('#btnAddNote');
     if (!addNoteBtn) throw new Error('"Ekle" (Notlarım) butonu bulunamadı');
     await addNoteBtn.click();
-    await page.waitForTimeout(500);
+    // Kayıt ekleme penceresinin gerçekten AÇILMASINI bekle (sabit süre yerine)
+    await page.waitForSelector('#entryOverlay.show', { state: 'visible', timeout: 8000 });
+    await page.waitForSelector('#entryNote', { state: 'visible', timeout: 5000 });
     const noteInput = await page.$('#entryNote');
     if (noteInput) await noteInput.fill('QA Bot test notu — otomatik oluşturuldu.');
     await safeClick(page, '#entrySave');
@@ -275,8 +284,12 @@ async function step(page, label, fn) {
 
   await step(page, 'PDF rapor indirme', async () => {
     await goScreen(page, null, 'ana');
+    await clearOverlays(page);
     await safeClick(page, '.gear-btn');
-    await page.waitForTimeout(500);
+    // Ayarlar penceresinin gerçekten AÇILMASINI bekle (sabit süre yerine) —
+    // önceki denemede pencere tam açılmadan tıklamaya çalışıldığı için zaman aşımı olmuştu.
+    await page.waitForSelector('#settingsOverlay.show', { state: 'visible', timeout: 8000 });
+    await page.waitForSelector('#btnPdfRangeMonth', { state: 'visible', timeout: 5000 });
     const pdfBtn = await page.$('#btnPdfRangeMonth');
     if (pdfBtn) {
       const downloadPromise = page.waitForEvent('download', { timeout: 8000 }).catch(() => null);
@@ -290,6 +303,13 @@ async function step(page, label, fn) {
   });
 
   await step(page, 'Koyu mod', async () => {
+    // Ayarlar penceresi zaten açık olmalı (bir önceki adımdan) — değilse tekrar açmayı dene.
+    const overlayOpen = await page.isVisible('#settingsOverlay.show').catch(() => false);
+    if (!overlayOpen) {
+      await safeClick(page, '.gear-btn');
+      await page.waitForSelector('#settingsOverlay.show', { state: 'visible', timeout: 8000 });
+    }
+    await page.waitForSelector('#toggleDark', { state: 'visible', timeout: 5000 });
     const darkToggle = await page.$('#toggleDark');
     if (!darkToggle) throw new Error('Koyu mod anahtarı bulunamadı');
     await darkToggle.click();
@@ -386,10 +406,14 @@ async function step(page, label, fn) {
       if (!loggedIn) throw new Error('Admin girişi başarısız');
       logStep('Admin hesabıyla giriş yapıldı', 'ok', ADMIN_EMAIL);
       results[results.length - 1].screenshot = await shot(page, 'admin_giris');
-      await page.waitForTimeout(1500);
+      // isAdmin/modPerms durumu Firestore'dan asenkron geliyor; rozet önce
+      // "display:none" duruyor, GÖRÜNÜR hâle gelene kadar bekliyoruz (sabit
+      // bir süre beklemek yerine) — CI ortamında bu değişken sürebiliyor.
+      await page.waitForSelector('#roleBadgeToggleBtn', { state: 'visible', timeout: 15000 });
     });
 
     await step(page, 'Admin hızlı menüsü', async () => {
+      await page.waitForSelector('#roleBadgeToggleBtn', { state: 'visible', timeout: 10000 });
       const roleBadge = await page.$('#roleBadgeToggleBtn');
       if (!roleBadge) throw new Error('Rütbe rozeti bulunamadı — bu hesap admin olarak tanınmıyor olabilir');
       await roleBadge.click();
@@ -415,6 +439,7 @@ async function step(page, label, fn) {
     ];
     for (const scr of adminScreens) {
       await step(page, `Admin → ${scr.label}`, async () => {
+        await page.waitForSelector('#roleBadgeToggleBtn', { state: 'visible', timeout: 8000 });
         await safeClick(page, '#roleBadgeToggleBtn');
         await page.waitForTimeout(500);
         const link = await page.$(`[data-role-link="${scr.id}"]`);
@@ -428,6 +453,7 @@ async function step(page, label, fn) {
     }
 
     await step(page, 'Admin, test hesabının profilini görüntüledi', async () => {
+      await page.waitForSelector('#roleBadgeToggleBtn', { state: 'visible', timeout: 8000 });
       await safeClick(page, '#roleBadgeToggleBtn');
       await page.waitForTimeout(500);
       const usersLink = await page.$('[data-role-link="adminusers"]');
