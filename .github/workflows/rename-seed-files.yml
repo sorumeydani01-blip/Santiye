@@ -1,0 +1,51 @@
+name: Soru Dosyalarını Yeniden Adlandır (Tek Seferlik)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Dosyaları yeniden adlandır
+        run: |
+          cd scripts
+          # Zaten dogru formatta olan (seed-quiz-bolumN.js) dosyalarin en buyuk numarasini bul
+          next=1
+          for f in seed-quiz-bolum*.js; do
+            if [[ "$f" =~ ^seed-quiz-bolum([0-9]+)\.js$ ]]; then
+              n="${BASH_REMATCH[1]}"
+              if [ "$n" -ge "$next" ]; then next=$((n+1)); fi
+            fi
+          done
+
+          echo "" > ../rename-mapping.txt
+          # "seed" ile baslayan ama zaten bolumN formatinda OLMAYAN tum .js dosyalarini
+          # alfabetik sirayla yeniden adlandir
+          for f in $(ls seed*.js | grep -v -E '^seed-quiz-bolum[0-9]+\.js$' | sort); do
+            newname="seed-quiz-bolum${next}.js"
+            echo "$f -> $newname" | tee -a ../rename-mapping.txt
+            git mv "$f" "$newname"
+            next=$((next+1))
+          done
+
+      - name: Değişiklikleri kaydet (commit + push)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Soru dosyalarını seed-quiz-bolumN formatına yeniden adlandır" || echo "Değişiklik yok, commit atlanıyor"
+          git push
+
+      - name: Eşleme listesini göster
+        run: cat rename-mapping.txt
