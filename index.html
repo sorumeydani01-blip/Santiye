@@ -8010,12 +8010,13 @@ async function fetchRandomQuizSample(){
   const categories = ['genel_kultur', 'islami'];
   const results = [];
   for(const cat of categories){
+    let docs = [];
     try{
       const randomStart = Math.random();
       let snap = await db.collection('quiz_questions')
         .where('category','==',cat).orderBy('randomOrder')
         .startAt(randomStart).limit(SAMPLE_PER_CATEGORY).get();
-      let docs = snap.docs;
+      docs = snap.docs;
       if(docs.length < SAMPLE_PER_CATEGORY){
         // Listenin sonuna geldik — baştan tamamla (dairesel/wrap-around okuma).
         const snap2 = await db.collection('quiz_questions')
@@ -8023,8 +8024,23 @@ async function fetchRandomQuizSample(){
           .limit(SAMPLE_PER_CATEGORY - docs.length).get();
         docs = docs.concat(snap2.docs);
       }
-      docs.forEach(d => results.push({ id: d.id, ...d.data() }));
-    }catch(e){ console.error('Kategori örneklemi çekilemedi:', cat, e); }
+    }catch(e){ console.error('Kategori örneklemi (randomOrder ile) çekilemedi:', cat, e); }
+
+    if(docs.length === 0){
+      // GÜVENLİK AĞI: "randomOrder" alanı henüz hiçbir soruda yoksa (bir kerelik
+      // göç script'i daha çalıştırılmadıysa), orderBy bu alanı olmayan TÜM
+      // dokümanları eleyip sıfır sonuç döndürür — bu da Soru Çöz'ün tamamen boş
+      // görünmesine yol açar. Böyle bir durumda, sıralama olmadan ama YİNE DE
+      // sınırlı (limit'li) bir sorguya düşerek uygulamanın çalışır kalmasını
+      // sağlıyoruz. Göç script'i çalıştırılınca bu yedek yol kendiliğinden
+      // devre dışı kalır (üstteki normal yol artık sonuç döndürmeye başlar).
+      try{
+        const fallbackSnap = await db.collection('quiz_questions')
+          .where('category','==',cat).limit(SAMPLE_PER_CATEGORY).get();
+        docs = fallbackSnap.docs;
+      }catch(e2){ console.error('Yedek sorgu da başarısız:', cat, e2); }
+    }
+    docs.forEach(d => results.push({ id: d.id, ...d.data() }));
   }
   return results;
 }
