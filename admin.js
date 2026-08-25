@@ -806,13 +806,14 @@ function reportRowHtml(r){
   const reporter = profileByUid(r.reporterUid);
   const time = r.createdAt ? new Date(r.createdAt).toLocaleString('tr-TR') : '';
   const statusBadge = r.status==='resolved' ? '✅ İşlem yapıldı' : (r.status==='dismissed' ? '❌ Reddedildi' : '⏳ Bekliyor');
+  const borderColor = r.status==='resolved' ? 'var(--green)' : (r.status==='dismissed' ? 'var(--line)' : 'var(--yellow)');
+  const cardOpacity = r.status==='pending' ? '1' : '0.72';
   const actionsHtml = r.status==='pending' ? `<div class="btn-row" style="flex-wrap:wrap;">
       <button class="submit-btn danger" data-report-deactivate="${escapeHtml(r.id)}" data-report-target="${escapeHtml(r.reportedUid)}" data-report-reporter="${escapeHtml(r.reporterUid)}" style="flex:1; font-size:12px; padding:10px 4px;">🚫 Hesabı Devre Dışı Bırak</button>
       ${canManageWarnings() ? `<button class="submit-btn secondary" data-report-warn="${escapeHtml(r.id)}" data-report-target="${escapeHtml(r.reportedUid)}" style="flex:1; font-size:12px; padding:10px 4px; border-color:var(--danger); color:var(--danger);">⚠️ Uyarı Ver</button>` : ''}
       <button class="submit-btn secondary" data-report-dismiss="${escapeHtml(r.id)}" data-report-reporter="${escapeHtml(r.reporterUid)}" style="flex:1; font-size:12px; padding:10px 4px;">Reddet</button>
     </div>` : '';
-  return `<div class="card" style="padding:14px;">
-    <div style="font-size:12px; color:var(--ink-soft); margin-bottom:6px;">
+  return `<div class="card" style="padding:14px; border-left:4px solid ${borderColor}; opacity:${cardOpacity};">    <div style="font-size:12px; color:var(--ink-soft); margin-bottom:6px;">
       <span style="font-weight:700; color:var(--asphalt); cursor:pointer; text-decoration:underline;" data-view-report-user="${escapeHtml(r.reportedUid)}">${escapeHtml(usernameLabel(reported))}${rankSuffixHtml(reported)}</span> şikayet edildi ·
       Şikayet eden: <span style="font-weight:700; color:var(--asphalt); cursor:pointer; text-decoration:underline;" data-view-report-user="${escapeHtml(r.reporterUid)}">${escapeHtml(usernameLabel(reporter))}${rankSuffixHtml(reporter)}</span>
     </div>
@@ -902,10 +903,14 @@ function attachLoadMoreButton(containerEl, state, onLoadMore){
   if(existing) existing.remove();
   if(state.reachedEnd) return;
   const btn = document.createElement('button');
-  btn.className = 'submit-btn secondary admin-load-more-btn';
-  btn.style.cssText = 'width:100%; margin-top:10px;';
-  btn.textContent = '⬇️ Daha Fazla Göster (20 tane daha)';
-  btn.addEventListener('click', onLoadMore);
+  btn.className = 'submit-btn admin-load-more-btn';
+  btn.style.cssText = 'width:100%; margin-top:12px; background:linear-gradient(120deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center; gap:8px;';
+  btn.innerHTML = '<span>⬇️</span><span>Daha Fazla Göster</span>';
+  btn.addEventListener('click', async ()=>{
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite;"></span><span>Yükleniyor…</span>';
+    await onLoadMore();
+  });
   containerEl.appendChild(btn);
 }
 
@@ -1192,12 +1197,14 @@ function appealRowHtml(a){
   const name = escapeHtml(usernameLabel(p)) + rankSuffixHtml(p);
   const time = a.createdAt ? new Date(a.createdAt).toLocaleDateString('tr-TR') : '';
   const statusBadge = a.status==='approved' ? '✅ Onaylandı' : (a.status==='rejected' ? '❌ Reddedildi' : '⏳ Bekliyor');
+  const borderColor = a.status==='approved' ? 'var(--green)' : (a.status==='rejected' ? 'var(--line)' : 'var(--yellow)');
+  const cardOpacity = a.status==='pending' ? '1' : '0.72';
   const actionsHtml = a.status==='pending' ? `<div class="btn-row" style="flex-wrap:wrap;">
       <button class="submit-btn" data-appeal-approve="${escapeHtml(a.id)}" data-appeal-uid="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px;">✅ Aktifleştir</button>
       <button class="submit-btn danger" data-appeal-reject="${escapeHtml(a.id)}" data-appeal-uid="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px;">❌ Reddet</button>
       ${canManageWarnings() ? `<button class="submit-btn secondary" data-appeal-warn="${escapeHtml(a.uid)}" style="flex:1; font-size:12px; padding:10px 4px; border-color:var(--danger); color:var(--danger);">⚠️ Uyarı Ver</button>` : ''}
     </div>` : '';
-  return `<div class="card" style="padding:14px;">
+  return `<div class="card" style="padding:14px; border-left:4px solid ${borderColor}; opacity:${cardOpacity};">
     <div style="font-weight:700; font-size:13.5px; cursor:pointer;" data-view-appeal-user="${escapeHtml(a.uid)}">${name} ›</div>
     <div style="font-size:11px; color:var(--ink-soft); margin:4px 0 8px;">Devre dışı sebebi: ${escapeHtml(a.deactivatedReason||'-')} · ${time} · ${statusBadge}</div>
     <div style="font-size:13px; background:var(--concrete); border-radius:10px; padding:10px; margin-bottom:12px; white-space:pre-wrap;">${escapeHtml(a.appealText||'')}</div>

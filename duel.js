@@ -124,6 +124,14 @@ let lastTestQuestionIds = []; // bir önceki testte çıkan sorular — yeni tes
 async function startQuizSession(){
   const navTabsEl = document.querySelector('nav.tabs');
   if(navTabsEl) navTabsEl.style.display = 'none';
+  // Kullanıcı beklerken sıkılmasın diye şirin bir "sorular seçiliyor" ekranı
+  // gösteriyoruz — gerçek yükleme çok hızlı bitse bile en az ~3-4 saniye tutuyoruz
+  // (rastgele, robotik hissettirmesin diye) böylece animasyon anlamlı hissettiriyor.
+  const pickingStartedAt = Date.now();
+  const minPickingMs = 3000 + Math.floor(Math.random()*1000); // 3.0-4.0 sn arası
+  document.getElementById('quizCategoryStep').style.display = 'none';
+  document.getElementById('quizPickingOverlay').style.display = 'flex';
+
   // Önbellekteki (sayfa açılışında çekilmiş) örneklemi DEĞİL, her test başlangıcında
   // TAZE bir rastgele örneklem çekiyoruz — böylece art arda testler hep farklı gelir.
   const freshSample = await fetchRandomQuizSample();
@@ -134,6 +142,8 @@ async function startQuizSession(){
     pool = freshSample.filter(q => q.category===quizSelectedCategory);
   }
   if(pool.length === 0){
+    document.getElementById('quizPickingOverlay').style.display = 'none';
+    document.getElementById('quizCategoryStep').style.display = 'block';
     showToast('Bu kategoride henüz soru eklenmemiş');
     return;
   }
@@ -157,7 +167,14 @@ async function startQuizSession(){
   quizSessionWrong = 0;
   quizJokersRemainingThisTest = 1 + quizPendingBonusJokers;
   quizPendingBonusJokers = 0;
-  document.getElementById('quizCategoryStep').style.display = 'none';
+
+  // Gerçek işlem, hedeflenen minimum süreden erken bittiyse aradaki farkı bekle.
+  const elapsed = Date.now() - pickingStartedAt;
+  if(elapsed < minPickingMs){
+    await new Promise(resolve => setTimeout(resolve, minPickingMs - elapsed));
+  }
+
+  document.getElementById('quizPickingOverlay').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'none';
   document.getElementById('quizPlayStep').style.display = 'block';
   renderQuizQuestion();
