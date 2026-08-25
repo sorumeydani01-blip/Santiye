@@ -388,6 +388,7 @@ document.getElementById('deactivateConfirm').addEventListener('click', async ()=
 
 // ---------- PROFİLDEN YÖNETİCİ ARAÇLARI ----------
 document.getElementById('vpDeactivateBtn').addEventListener('click', ()=>{
+  if(typeof TEST_BOT_UID !== 'undefined' && currentViewedUid === TEST_BOT_UID){ showToast('🔒 Bu hesap dokunulmazdır'); return; }
   const targetP = profileByUid(currentViewedUid);
   if(targetP && targetP.role==='admin'){ showToast('Admin hesapları devre dışı bırakılamaz — önce admin yetkisini kaldır.'); return; }
   pendingDeactivateUid = currentViewedUid;
@@ -397,6 +398,7 @@ document.getElementById('vpDeactivateBtn').addEventListener('click', ()=>{
 });
 document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async ()=>{
   const uid = currentViewedUid;
+  if(typeof TEST_BOT_UID !== 'undefined' && uid === TEST_BOT_UID){ showToast('🔒 Bu hesap dokunulmazdır'); return; }
   const p = profileByUid(uid);
   if(p && p.role==='admin'){ showToast('Admin hesapları kalıcı olarak silinemez — önce admin yetkisini kaldır.'); return; }
   const targetName = usernameLabel(p);
@@ -455,6 +457,7 @@ document.getElementById('vpDeletePhoto').addEventListener('click', async ()=>{
   }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
 });
 document.getElementById('vpResetAccount').addEventListener('click', async ()=>{
+  if(typeof TEST_BOT_UID !== 'undefined' && currentViewedUid === TEST_BOT_UID){ showToast('🔒 Bu hesap dokunulmazdır'); return; }
   if(!confirm('Bu kullanıcının TÜM kayıtları ve notları silinecek (hesap kalacak). Emin misin?')) return;
   try{
     await db.collection('users').doc(currentViewedUid).set({entries:[], notes:[]}, {merge:true});
@@ -582,6 +585,7 @@ document.getElementById('vpWarningClear').addEventListener('click', async ()=>{
 });
 document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>{
   if(currentViewedUid === MAIN_ADMIN_UID){ showToast('Bu hesaba işlem yapılamaz'); return; }
+  if(typeof TEST_BOT_UID !== 'undefined' && currentViewedUid === TEST_BOT_UID){ showToast('🔒 Bu hesap dokunulmazdır'); return; }
   const p = profileByUid(currentViewedUid);
   const alreadyAdmin = p && p.role==='admin';
   if(alreadyAdmin){
@@ -610,6 +614,7 @@ document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>
   }
 });
 document.getElementById('vpEditSave').addEventListener('click', async ()=>{
+  if(typeof TEST_BOT_UID !== 'undefined' && currentViewedUid === TEST_BOT_UID){ showToast('🔒 Bu hesap dokunulmazdır'); return; }
   const onlyUsernamePerm = !canEditProfile() && canChangeUsername();
   const username = document.getElementById('vpEditUsername').value.trim();
   if(!username){ showToast('Kullanıcı adı boş olamaz'); return; }
@@ -1329,7 +1334,7 @@ document.getElementById('adminBroadcastSpecificSearch').addEventListener('input'
   const q = e.target.value.trim().toLowerCase();
   const box = document.getElementById('adminBroadcastSpecificResults');
   if(!q){ box.innerHTML = ''; return; }
-  const matches = allPublicProfiles.filter(u=> !u.deactivated &&
+  const matches = allPublicProfiles.filter(u=> !u.deactivated && u.uid !== TEST_BOT_UID &&
     ((u.fullName||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q))
   ).slice(0, 8);
   box.innerHTML = matches.map(u=>`<div class="toggle-row" data-pick-uid="${escapeHtml(u.uid)}" style="cursor:pointer; padding:8px 10px;">
@@ -1365,6 +1370,7 @@ document.getElementById('adminBroadcastSend').addEventListener('click', async ()
   if(target==='all'){ recipients = allPublicProfiles; targetLabel = 'herkese'; }
   else if(target==='staff'){ recipients = allPublicProfiles.filter(u=> u.role==='admin' || u.role==='moderator'); targetLabel = 'yönetim ekibine'; }
   else { recipients = Object.values(broadcastSpecificSelected); targetLabel = 'seçilen ' + recipients.length + ' kullanıcıya'; }
+  recipients = recipients.filter(u=> u.uid !== TEST_BOT_UID); // test botu hiçbir bildirimi almasın
   if(recipients.length===0){ showToast('Gönderilecek kimse seçilmedi'); return; }
   if(!confirm(recipients.length + ' kullanıcıya (' + targetLabel + ') bu bildirim gönderilecek. Emin misin?')) return;
   try{
@@ -1644,7 +1650,7 @@ document.getElementById('adminBulkDeactivate').addEventListener('click', async (
   if(confirmText !== 'HEPSINI DEVRE DISI BIRAK'){ showToast('İşlem iptal edildi'); return; }
   try{
     const meta = { deactivated:true, deactivatedReason:'Toplu işlem', deactivatedBy:currentUser.uid, deactivatedAt:new Date().toISOString() };
-    const targets = allPublicProfiles.filter(u=> u.uid!==currentUser.uid && u.role!=='admin' && u.role!=='moderator');
+    const targets = allPublicProfiles.filter(u=> u.uid!==currentUser.uid && u.uid!==TEST_BOT_UID && u.role!=='admin' && u.role!=='moderator');
     const batch = db.batch();
     targets.forEach(u=> batch.set(db.collection('public_profiles').doc(u.uid), meta, {merge:true}));
     await batch.commit();
@@ -1662,6 +1668,7 @@ document.getElementById('adminBulkDeletePhotos').addEventListener('click', async
   if(confirmText !== 'TUM FOTOGRAFLARI SIL'){ showToast('İşlem iptal edildi'); return; }
   try{
     for(const u of allPublicProfiles){
+      if(u.uid===TEST_BOT_UID) continue;
       try{ await db.collection('users').doc(u.uid).set({profile:{photoData: firebase.firestore.FieldValue.delete()}}, {merge:true}); }catch(e){}
     }
     await logModAction('bulkDeletePhotos', null, allPublicProfiles.length + ' kullanıcı');
@@ -1696,6 +1703,7 @@ document.getElementById('adminWipeAllData').addEventListener('click', async ()=>
   try{
     let count = 0;
     for(const u of allPublicProfiles){
+      if(u.uid===TEST_BOT_UID) continue;
       try{ await db.collection('users').doc(u.uid).set({entries:[], notes:[]}, {merge:true}); count++; }catch(e){}
     }
     await logModAction('wipeAllData', null, count + ' kullanıcının verileri temizlendi');
