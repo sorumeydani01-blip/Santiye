@@ -92,6 +92,22 @@ async function renderAdminQuickStats(){
     <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">✉️</div><div class="val">${pendingAppeals}</div><div class="lbl">Bekleyen İtiraz</div></div>
     <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">💡</div><div class="val">${pendingSuggestions}</div><div class="lbl">Bekleyen Öneri</div></div>`;
 }
+// Her admin alt ekranının SADECE kendi verisini çeken haritası — böylece bir
+// ekrana girmek, alakasız 11 başka listeyi de tetiklemiyor.
+const ADMIN_SECTION_LOADERS = {
+  adminusers: () => { if(canManageUsers()) renderAdminUserList(); },
+  admindeactivated: () => { if(canReactivateAccount()) renderDeactivatedUserList(); },
+  adminappeals: () => { if(canViewAppeals()) renderAppealsList(); },
+  adminreports: () => { if(canViewReports()) renderReportsList(); },
+  adminsuggestions: () => { if(canViewSuggestions()) renderAdminSuggestionsList(); if(canViewSuggestionHistory()) renderSuggestionHistoryList(); },
+  adminmodlog: () => { if(canViewModLog()) renderModLog(); },
+  adminbasemod: () => { if(canEditAnnouncements() || canEditQuotes() || canEditProfessions()) loadAdminContentConfig(); },
+  adminmoderators: () => { if(isAdmin){ renderModeratorsList(); loadRankConfig(); } },
+  admintenureranks: () => { if(isAdmin) loadTenureRankConfig(); },
+  adminipban: () => { if(canBanIp()) renderBannedIpList(); },
+  adminquiz: () => { if(canManageQuizQuestions()) renderQuizAdminList(); },
+  adminquizreports: () => { if(canManageQuizReports()) renderQuizReportsList(); },
+};
 function navigateToAdminSection(sid){
   if(sid==='adminbulk'){
     if(!canBulkActions()) return;
@@ -101,9 +117,15 @@ function navigateToAdminSection(sid){
       dangerZoneUnlocked = true;
     }
   }
-  loadAllAdminData();
   switchScreen(sid);
-  if(sid==='adminstats'){ renderAdminQuickStats(); const btn = document.getElementById('adminCalcStats'); if(btn) btn.click(); }
+  if(sid==='adminstats'){
+    renderAdminQuickStats();
+    const btn = document.getElementById('adminCalcStats');
+    if(btn) btn.click();
+    if(typeof renderQuotaEstimateCard === 'function') renderQuotaEstimateCard();
+  } else if(ADMIN_SECTION_LOADERS[sid]){
+    ADMIN_SECTION_LOADERS[sid]();
+  }
 }
 document.addEventListener('click', (e)=>{
   const navBtn = e.target.closest('[data-admin-nav]');
@@ -274,7 +296,7 @@ function openAdminPanel(){
   document.getElementById('screen-admin').classList.add('active');
   updateFabVisibility();
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.screen==='admin'));
-  loadAllAdminData();
+  applyAdminPermVisibility(); // sadece hangi menü satırlarının görüneceğini ayarlar, veri ÇEKMEZ
 }
 
 document.getElementById('btnBackFromAdmin').addEventListener('click', ()=>{

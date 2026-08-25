@@ -1880,6 +1880,21 @@
         <button class="submit-btn secondary" id="adminCalcStats" style="margin-top:10px;">🔄 Tüm Kullanıcı Verilerini Yeniden Hesapla</button>
       </div>
     </div>
+
+    <div class="section-title">📈 Firestore Kullanımı (Bugün)</div>
+    <div class="card">
+      <div class="hint" style="margin-top:0; margin-bottom:12px;">
+        ⚠️ Bu, sadece <strong>uygulama içinden</strong> yapılan büyük okumaların yaklaşık tahminidir — GitHub'daki soru ekleme script'leri gibi uygulama dışı işlemleri kapsamaz. Kesin/resmi sayı için Firebase Console'a bakın.
+      </div>
+      <div style="display:flex; align-items:center; gap:14px; background:var(--concrete); border-radius:14px; padding:16px;">
+        <div style="font-family:'Manrope'; font-weight:800; font-size:28px; color:var(--asphalt);" id="quotaEstimateCount">–</div>
+        <div style="flex:1;">
+          <div style="font-size:12.5px; font-weight:700; color:var(--ink);">tahmini okuma (bugün)</div>
+          <div class="hint" style="margin:2px 0 0;" id="quotaEstimateBreakdown">Yükleniyor…</div>
+        </div>
+      </div>
+      <a href="https://console.firebase.google.com" target="_blank" rel="noopener" class="submit-btn secondary" style="display:block; text-align:center; margin-top:12px; text-decoration:none;">🔗 Firebase Console'da Kesin Sayıyı Gör</a>
+    </div>
   </section>
 
   <section class="screen" id="screen-adminusers">
@@ -4055,7 +4070,10 @@ async function refreshCurrentScreenData(){
     else if(name==='notlarim') renderNotes();
     else if(name==='mesajlar') await renderConversationList();
     else if(name==='view-profile' && currentViewedUid) openViewProfile(currentViewedUid);
-    else if(name.startsWith('admin') && name!=='admin') loadAllAdminData();
+    else if(name.startsWith('admin') && name!=='admin'){
+      if(name==='adminstats' && typeof renderAdminQuickStats==='function') renderAdminQuickStats();
+      else if(typeof ADMIN_SECTION_LOADERS!=='undefined' && ADMIN_SECTION_LOADERS[name]) ADMIN_SECTION_LOADERS[name]();
+    }
   }catch(e){ showToast('Yenilenemedi'); }
   indicator.style.height = '0px';
 }
@@ -5239,6 +5257,7 @@ async function runMessageSearch(q){
     msgMatches = sentSnap.docs.map(d=>({id:d.id, ...d.data()}))
       .filter(m=> (m.text||'').toLowerCase().includes(ql))
       .slice(0, 20);
+    trackFirestoreReads('Mesaj Arama', sentSnap.docs.length);
   }catch(e){ console.error('mesaj arama hatasi', e); }
 
   let html = '';
@@ -5730,6 +5749,7 @@ async function loadPublicProfiles(forceRefresh){
   try{
     const snap = await db.collection('public_profiles').get();
     allPublicProfiles = snap.docs.map(d=>({uid:d.id, ...d.data()}));
+    trackFirestoreReads('Tüm Kullanıcı Profilleri', snap.docs.length);
     try{ localStorage.setItem(CACHE_KEY, JSON.stringify({fetchedAt: Date.now(), data: allPublicProfiles})); }catch(e){ /* önbellek boyutu aşılmışsa sessizce geç, uygulama yine çalışır */ }
   }catch(e){ console.error('public_profiles okunamadi', e); allPublicProfiles = []; }
   allPublicProfilesLoaded = true;
@@ -5806,6 +5826,50 @@ function showSaveCheckAnimation(){
   }, 550);
 }
 function escapeHtml(str){ const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+// ---------- YAKLAŞIK FIRESTORE OKUMA SAYACI (sadece uygulama içi, kaynak bazlı) ----------
+// Not: Bu, GERÇEK/resmi Firebase sayısı değil — sadece uygulamanın kendi büyük
+// sorgularını, hangi ekrandan geldiğini de belirterek, kabaca izlemek için.
+async function trackFirestoreReads(sourceLabel, count){
+  if(!count || count <= 0) return;
+  try{
+    const today = todayStr();
+    const ref = db.collection('app_config').doc('dailyReadEstimate');
+    const doc = await ref.get();
+    let data = (doc.exists && doc.data().date === today) ? doc.data() : { date: today, total: 0, bySource: {} };
+    data.total = (data.total || 0) + count;
+    data.bySource = data.bySource || {};
+    data.bySource[sourceLabel] = (data.bySource[sourceLabel] || 0) + count;
+    await ref.set(data);
+  }catch(e){ /* sayaç başarısız olsa bile uygulamanın geri kalanını etkilemesin */ }
+}
+async function renderQuotaEstimateCard(){
+  const countEl = document.getElementById('quotaEstimateCount');
+  const breakdownEl = document.getElementById('quotaEstimateBreakdown');
+  if(!countEl || !breakdownEl) return;
+  try{
+    const doc = await db.collection('app_config').doc('dailyReadEstimate').get();
+    const today = todayStr();
+    if(!doc.exists || doc.data().date !== today){
+      countEl.textContent = '0';
+      breakdownEl.textContent = 'Bugün için henüz kayıt yok.';
+      return;
+    }
+    const data = doc.data();
+    countEl.textContent = (data.total || 0).toLocaleString('tr-TR');
+    const bySource = data.bySource || {};
+    const sorted = Object.entries(bySource).sort((a,b) => b[1] - a[1]); // en çoktan en aza
+    if(sorted.length === 0){
+      breakdownEl.textContent = 'Detay yok.';
+      return;
+    }
+    breakdownEl.innerHTML = sorted.map(([label, cnt], i) =>
+      `${i===0 ? '🔴' : '•'} ${escapeHtml(label)}: <strong>${cnt.toLocaleString('tr-TR')}</strong>${i===0 ? ' (en çok)' : ''}`
+    ).join('<br>');
+  }catch(e){
+    countEl.textContent = '–';
+    breakdownEl.textContent = 'Yüklenemedi.';
+  }
+}
 function skeletonRowsHtml(count){
   // Veriler gelene kadar gösterilen "hayalet" satırlar (avatar + iki çizgi) — kullanıcıya
   // düz "Yükleniyor…" yazısından daha hızlı/canlı bir his verir.
@@ -7994,6 +8058,7 @@ async function loadQuizQuestions(force){
       // Sadece admin "Soru Bankası" ekranı tüm havuzu görmek zorunda (listeleme/düzenleme için).
       const snap = await db.collection('quiz_questions').get();
       quizQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      trackFirestoreReads('Admin: Soru Bankası (tam liste)', snap.docs.length);
     } else {
       // Normal soru çözme akışı: TÜM havuzu değil, sınırlı, rastgele bir örneklem
       // çekiyoruz — Firestore okuma kotasını büyük ölçüde azaltır. Bir testte 10
@@ -8042,6 +8107,7 @@ async function fetchRandomQuizSample(){
     }
     docs.forEach(d => results.push({ id: d.id, ...d.data() }));
   }
+  trackFirestoreReads('Soru Havuzu (Soru Çöz)', results.length);
   return results;
 }
 async function updateQuizCategoryCounts(){
