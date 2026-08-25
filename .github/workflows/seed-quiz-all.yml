@@ -18,122 +18,134 @@ jobs:
       - name: Bagimliligi kur (firebase-admin)
         run: npm install firebase-admin@12
 
-      - name: 'Paket: seed-islami-batch-yeni.js'
+      - name: 'Paket: seed-quiz-bolum1.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-islami-batch-yeni.js
+        run: node scripts/seed-quiz-bolum1.js
         continue-on-error: true
 
-      - name: 'Paket: seed-islami-cami-ibadet.js'
+      - name: 'Paket: seed-quiz-bolum2.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-islami-cami-ibadet.js
+        run: node scripts/seed-quiz-bolum2.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-batc1h-yeni.js'
+      - name: 'Paket: seed-quiz-bolum3.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-batc1h-yeni.js
+        run: node scripts/seed-quiz-bolum3.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-buyuk-parti.js'
+      - name: 'Paket: seed-quiz-bolum4.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-buyuk-parti.js
+        run: node scripts/seed-quiz-bolum4.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-genel-batch2.js'
+      - name: 'Paket: seed-quiz-bolum5.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-genel-batch2.js
+        run: node scripts/seed-quiz-bolum5.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-genel-batch3.js'
+      - name: 'Paket: seed-quiz-bolum6.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-genel-batch3.js
+        run: node scripts/seed-quiz-bolum6.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-iman-esaslari.js'
+      - name: 'Paket: seed-quiz-bolum7.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-iman-esaslari.js
+        run: node scripts/seed-quiz-bolum7.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-islami-100.js'
+      - name: 'Paket: seed-quiz-bolum8.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-islami-100.js
+        run: node scripts/seed-quiz-bolum8.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-islami-5opt.js'
+      - name: 'Paket: seed-quiz-bolum9.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-islami-5opt.js
+        run: node scripts/seed-quiz-bolum9.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-islami-batch2.js'
+      - name: 'Paket: seed-quiz-bolum10.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-islami-batch2.js
+        run: node scripts/seed-quiz-bolum10.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part1-1000.js'
+      - name: 'Paket: seed-quiz-bolum11.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part1-1000.js
+        run: node scripts/seed-quiz-bolum11.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part2-1000.js'
+      - name: 'Paket: seed-quiz-bolum12.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part2-1000.js
+        run: node scripts/seed-quiz-bolum12.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part3-1000.js'
+      - name: 'Paket: seed-quiz-bolum13.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part3-1000.js
+        run: node scripts/seed-quiz-bolum13.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part4-1000.js'
+      - name: 'Paket: seed-quiz-bolum14.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part4-1000.js
+        run: node scripts/seed-quiz-bolum14.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part5-1000.js'
+      - name: 'Paket: seed-quiz-bolum15.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part5-1000.js
+        run: node scripts/seed-quiz-bolum15.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part6-1000.js'
+      - name: 'Paket: seed-quiz-bolum16.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part6-1000.js
+        run: node scripts/seed-quiz-bolum16.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part7.js'
+      - name: 'Paket: seed-quiz-bolum17.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part7.js
+        run: node scripts/seed-quiz-bolum17.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part8.js'
+      - name: 'Paket: seed-quiz-bolum18.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part8.js
+        run: node scripts/seed-quiz-bolum18.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-part9.js'
+      - name: 'Paket: seed-quiz-bolum19.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-part9.js
+        run: node scripts/seed-quiz-bolum19.js
         continue-on-error: true
 
-      - name: 'Paket: seed-quiz-questions.js'
+      - name: 'Paket: seed-quiz-bolum20.js'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/seed-quiz-questions.js
+        run: node scripts/seed-quiz-bolum20.js
+        continue-on-error: true
+
+      - name: 'Paket: seed-quiz-bolum21.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-bolum21.js
+        continue-on-error: true
+
+      - name: 'Paket: seed-quiz-bolum22.js'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/seed-quiz-bolum22.js
         continue-on-error: true
