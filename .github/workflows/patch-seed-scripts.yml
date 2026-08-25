@@ -1,0 +1,35 @@
+name: Soru Script'lerini Yamala (Tekrar Çalıştırınca Atlasın)
+
+on:
+  workflow_dispatch: {}
+
+# Repo'ya otomatik commit atabilmek için yazma izni gerekiyor.
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Yamalama script'ini scripts/ klasörüne kopyala ve çalıştır
+        run: |
+          cp patchbot/patch-seed-scripts.js scripts/patch-seed-scripts.js
+          cd scripts
+          node patch-seed-scripts.js
+          rm patch-seed-scripts.js
+
+      - name: Değişiklikleri commit'le
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/
+          git diff --staged --quiet && echo "Değişiklik yok, commit atlanıyor" || git commit -m "seed script'lerine 'zaten tamamlandıysa atla' mantığı eklendi"
+          git push
