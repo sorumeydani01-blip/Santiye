@@ -74,8 +74,23 @@ async function renderQuizBookmarksList(){
   if(!box) return;
   box.innerHTML = '<div class="hint">Yükleniyor…</div>';
   const bookmarkedIds = await getBookmarkedQuestionIds();
-  await loadQuizQuestions();
-  const items = quizQuestions.filter(q => bookmarkedIds.includes(q.id));
+  if(bookmarkedIds.length === 0){
+    box.innerHTML = '<div class="empty"><div class="icon">⭐</div><div class="msg">Henüz kaydettiğin soru yok. Soru çözerken ☆ ikonuna dokunarak kaydedebilirsin.</div></div>';
+    return;
+  }
+  // ÖNEMLİ: Kayıtlı sorular, normal test akışındaki KÜÇÜK rastgele örneklemin
+  // içinde olmayabilir — bu yüzden tüm havuzu taramak yerine, sadece bu belirli
+  // ID'leri doğrudan çekiyoruz (Firestore'un 'in' sorgusu en fazla 30 ID kabul
+  // ettiği için 30'arlık gruplar hâlinde).
+  const items = [];
+  try{
+    for(let i=0; i<bookmarkedIds.length; i+=30){
+      const chunk = bookmarkedIds.slice(i, i+30);
+      const snap = await db.collection('quiz_questions')
+        .where(firebase.firestore.FieldPath.documentId(), 'in', chunk).get();
+      snap.docs.forEach(d => items.push({ id: d.id, ...d.data() }));
+    }
+  }catch(e){ console.error('Kayıtlı sorular çekilemedi', e); }
   if(items.length === 0){
     box.innerHTML = '<div class="empty"><div class="icon">⭐</div><div class="msg">Henüz kaydettiğin soru yok. Soru çözerken ☆ ikonuna dokunarak kaydedebilirsin.</div></div>';
     return;

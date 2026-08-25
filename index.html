@@ -4047,7 +4047,7 @@ async function refreshCurrentScreenData(){
   const name = active ? active.id.replace('screen-','') : 'ana';
   try{
     await loadCloudData();
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     if(name==='ana') renderHome();
     else if(name==='kayitlar') renderKayitlar();
     else if(name==='istatistik') renderLifetimeStats();
@@ -5224,22 +5224,20 @@ async function runMessageSearch(q){
     (u.fullName||'').toLowerCase().includes(ql) || (u.username||'').toLowerCase().includes(ql)
   )).slice(0, 15);
 
-  // Mesaj içeriğinde arama (sadece kendi gönderdiğim/aldığım mesajlar)
+  // Mesaj içeriğinde arama (sadece kendi gönderdiğim mesajlar — mesajlarda ayrı bir
+  // "receiverUid" alanı yok, katılımcı bilgisi conversations üzerinden tutuluyor,
+  // o yüzden "alınan mesajlar" için ayrı bir sorguya gerek/imkan yok). Ayrıca
+  // limitsiz okumak yerine son 300 mesajla sınırlıyoruz — Firestore kota kullanımını
+  // ciddi şekilde azaltır.
   let msgMatches = [];
   try{
-    const [sentSnap, recvSnap] = await Promise.all([
-      db.collection('messages').where('senderUid','==',currentUser.uid).get(),
-      db.collection('messages').where('receiverUid','==',currentUser.uid).get()
-    ]);
-    const seen = new Set();
-    const all = [];
-    [...sentSnap.docs, ...recvSnap.docs].forEach(d=>{
-      if(seen.has(d.id)) return;
-      seen.add(d.id);
-      all.push({id:d.id, ...d.data()});
-    });
-    msgMatches = all.filter(m=> (m.text||'').toLowerCase().includes(ql))
-      .sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''))
+    const sentSnap = await db.collection('messages')
+      .where('senderUid','==',currentUser.uid)
+      .orderBy('createdAt','desc')
+      .limit(300)
+      .get();
+    msgMatches = sentSnap.docs.map(d=>({id:d.id, ...d.data()}))
+      .filter(m=> (m.text||'').toLowerCase().includes(ql))
       .slice(0, 20);
   }catch(e){ console.error('mesaj arama hatasi', e); }
 
@@ -5671,7 +5669,7 @@ function wireModRows(box){
         await db.collection('public_profiles').doc(btn.dataset.removeMod).set({role: firebase.firestore.FieldValue.delete(), rank: firebase.firestore.FieldValue.delete()}, {merge:true});
         await logModAction('removeModerator', btn.dataset.removeMod, '');
         await db.collection('notifications').add({toUid:btn.dataset.removeMod, fromUid:currentUser.uid, type:'mod_update', message:'🛡️ Moderatörlük yetkin sonlandırıldı.', read:false, createdAt:new Date().toISOString()});
-        await loadPublicProfiles();
+        await loadPublicProfiles(true);
         showToast('Moderatörlük kaldırıldı');
         renderModeratorsList();
         document.getElementById('adminListOverlay').classList.remove('show');
@@ -5710,10 +5708,29 @@ async function renderModeratorsList(){
   }catch(e){ box.innerHTML = `<div class="hint">Liste yüklenemedi.</div>`; }
 }
 
-async function loadPublicProfiles(){
+async function loadPublicProfiles(forceRefresh){
+  // Kullanıcı tabanı büyüdükçe bu sorgu (TÜM kullanıcı profilleri) en pahalı
+  // sorgulardan biri hâline geliyor — her uygulama açılışında tekrar tekrar
+  // okunmasını önlemek için 10 dakikalık yerel (bu cihaza özel) önbellek kullanıyoruz.
+  // Bir şey değiştirdikten hemen sonra (mod ekleme/çıkarma gibi) taze veri
+  // gerekiyorsa loadPublicProfiles(true) çağrılarak önbellek atlanabilir.
+  const CACHE_KEY = 'sd_public_profiles_cache';
+  const CACHE_TTL_MS = 10 * 60 * 1000;
+  if(!forceRefresh){
+    try{
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if(cached && Array.isArray(cached.data) && (Date.now() - cached.fetchedAt) < CACHE_TTL_MS){
+        allPublicProfiles = cached.data;
+        allPublicProfilesLoaded = true;
+        if(document.getElementById('screen-ana').classList.contains('active')) renderActiveMembers();
+        return;
+      }
+    }catch(e){}
+  }
   try{
     const snap = await db.collection('public_profiles').get();
     allPublicProfiles = snap.docs.map(d=>({uid:d.id, ...d.data()}));
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({fetchedAt: Date.now(), data: allPublicProfiles})); }catch(e){ /* önbellek boyutu aşılmışsa sessizce geç, uygulama yine çalışır */ }
   }catch(e){ console.error('public_profiles okunamadi', e); allPublicProfiles = []; }
   allPublicProfilesLoaded = true;
   if(document.getElementById('screen-ana').classList.contains('active')) renderActiveMembers();
@@ -7104,7 +7121,9 @@ async function openStaffPage(){
   updateFabVisibility();
   const box = document.getElementById('staffList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
-  await loadPublicProfiles();
+  // Veri zaten önbellekte varsa (uygulama açılışında bir kez yüklenmiş olabilir)
+  // tekrar Firestore'dan okuma yapma — gereksiz kota tüketimini önler.
+  if(!allPublicProfilesLoaded) await loadPublicProfiles();
   const staff = allPublicProfiles.filter(u=>u.role==='admin' || u.role==='moderator').filter(u=>!u.deactivated);
   staff.sort((a,b)=> (a.role==='admin'?0:1) - (b.role==='admin'?0:1));
   if(staff.length===0){
@@ -7971,20 +7990,65 @@ function shuffleArr(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-
 async function loadQuizQuestions(force){
   if(quizQuestions.length > 0 && !force) return quizQuestions;
   try{
-    const snap = await db.collection('quiz_questions').get();
-    quizQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if(force){
+      // Sadece admin "Soru Bankası" ekranı tüm havuzu görmek zorunda (listeleme/düzenleme için).
+      const snap = await db.collection('quiz_questions').get();
+      quizQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } else {
+      // Normal soru çözme akışı: TÜM havuzu değil, sınırlı, rastgele bir örneklem
+      // çekiyoruz — Firestore okuma kotasını büyük ölçüde azaltır. Bir testte 10
+      // soru gerekiyor, "daha önce görülmeyeni tercih et" mantığına da yetecek
+      // kadar geniş (kategori başına 50) bir örneklem alınıyor.
+      quizQuestions = await fetchRandomQuizSample();
+    }
   }catch(e){ console.error('Sorular yüklenemedi', e); }
   updateQuizCategoryCounts();
   return quizQuestions;
 }
-function updateQuizCategoryCounts(){
+async function fetchRandomQuizSample(){
+  const SAMPLE_PER_CATEGORY = 50;
+  const categories = ['genel_kultur', 'islami'];
+  const results = [];
+  for(const cat of categories){
+    try{
+      const randomStart = Math.random();
+      let snap = await db.collection('quiz_questions')
+        .where('category','==',cat).orderBy('randomOrder')
+        .startAt(randomStart).limit(SAMPLE_PER_CATEGORY).get();
+      let docs = snap.docs;
+      if(docs.length < SAMPLE_PER_CATEGORY){
+        // Listenin sonuna geldik — baştan tamamla (dairesel/wrap-around okuma).
+        const snap2 = await db.collection('quiz_questions')
+          .where('category','==',cat).orderBy('randomOrder')
+          .limit(SAMPLE_PER_CATEGORY - docs.length).get();
+        docs = docs.concat(snap2.docs);
+      }
+      docs.forEach(d => results.push({ id: d.id, ...d.data() }));
+    }catch(e){ console.error('Kategori örneklemi çekilemedi:', cat, e); }
+  }
+  return results;
+}
+async function updateQuizCategoryCounts(){
   const genelEl = document.getElementById('quizCategoryGenelCount');
   const islamiEl = document.getElementById('quizCategoryIslamiCount');
   if(!genelEl || !islamiEl) return;
-  const genelCount = quizQuestions.filter(q => q.category === 'genel_kultur').length;
-  const islamiCount = quizQuestions.filter(q => q.category === 'islami').length;
-  genelEl.textContent = genelCount + ' Soru';
-  islamiEl.textContent = islamiCount + ' Soru';
+  // Doğru toplam sayıyı göstermek için TÜM dokümanları okumak yerine Firestore'un
+  // ucuz "count()" toplama sorgusunu kullanıyoruz — havuz büyüklüğünden bağımsız
+  // olarak sabit, çok düşük maliyetli bir okuma.
+  try{
+    const [genelSnap, islamiSnap] = await Promise.all([
+      db.collection('quiz_questions').where('category','==','genel_kultur').count().get(),
+      db.collection('quiz_questions').where('category','==','islami').count().get()
+    ]);
+    genelEl.textContent = genelSnap.data().count + ' Soru';
+    islamiEl.textContent = islamiSnap.data().count + ' Soru';
+  }catch(e){
+    // count() desteklenmiyorsa (eski SDK) örneklemdeki sayıyı kaba tahmin olarak göster.
+    const genelCount = quizQuestions.filter(q => q.category === 'genel_kultur').length;
+    const islamiCount = quizQuestions.filter(q => q.category === 'islami').length;
+    genelEl.textContent = genelCount + '+ Soru';
+    islamiEl.textContent = islamiCount + '+ Soru';
+  }
 }
 
 </script>
@@ -8195,6 +8259,7 @@ document.getElementById('quizAdminSaveBtn').addEventListener('click', async ()=>
     } else {
       data.createdAt = Date.now();
       data.createdBy = currentUser ? currentUser.uid : null;
+      data.randomOrder = Math.random(); // rastgele örneklem sorgusu için gerekli
       await db.collection('quiz_questions').add(data);
       showToast('Soru eklendi');
     }

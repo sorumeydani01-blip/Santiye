@@ -346,7 +346,7 @@ document.getElementById('deactivateConfirm').addEventListener('click', async ()=
     showToast('Hesap devre dışı bırakıldı');
     document.getElementById('deactivateOverlay').classList.remove('show');
     pendingDeactivateUid = null;
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     if(document.getElementById('adminUserSearch')) renderAdminUserList(document.getElementById('adminUserSearch').value);
     renderDeactivatedUserList();
     if(document.getElementById('screen-view-profile').classList.contains('active') && currentViewedUid===uid) openViewProfile(uid);
@@ -382,7 +382,7 @@ document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async 
     receivedReqs.docs.forEach(d=> batch.delete(d.ref));
     await batch.commit();
     showToast('Hesap kalıcı olarak silindi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     switchScreen('profil');
   }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
 });
@@ -400,7 +400,7 @@ document.getElementById('vpReactivateBtn').addEventListener('click', async ()=>{
     await db.collection('public_profiles').doc(uid).set(clearMeta, {merge:true});
     await logModAction('reactivateAccount', uid, '');
     showToast('Hesap yeniden aktifleştirildi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     renderDeactivatedUserList();
     openViewProfile(uid);
   }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
@@ -417,7 +417,7 @@ document.getElementById('vpDeletePhoto').addEventListener('click', async ()=>{
     }, {merge:true});
     await logModAction('deletePhoto', currentViewedUid, '');
     showToast('Fotoğraf silindi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     openViewProfile(currentViewedUid);
   }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
 });
@@ -510,7 +510,7 @@ document.getElementById('quickWarningIssue').addEventListener('click', async ()=
     await logModAction('issueWarning', uid, `${days} gün — ${reason}`);
     await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'mod_update', message:`⚠️ Hesabına ${days} günlük uyarı verildi. Sebep: ${reason}. Bu süre içinde mesaj gönderemez/yeni sohbet başlatamazsın.`, read:false, createdAt:new Date().toISOString()});
     showToast('Uyarı verildi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     document.getElementById('quickWarningOverlay').classList.remove('show');
   }catch(e){ showToast('Uyarı verilemedi: '+(e.message||'')); }
 });
@@ -531,7 +531,7 @@ document.getElementById('vpWarningIssue').addEventListener('click', async ()=>{
     await logModAction('issueWarning', uid, `${days} gün — ${reason}`);
     await db.collection('notifications').add({toUid:uid, fromUid:currentUser.uid, type:'mod_update', message:`⚠️ Hesabına ${days} günlük uyarı verildi. Sebep: ${reason}. Bu süre içinde mesaj gönderemez/yeni sohbet başlatamazsın.`, read:false, createdAt:new Date().toISOString()});
     showToast('Uyarı verildi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     document.getElementById('vpWarningReason').value = '';
     renderWarningTool(profileByUid(uid), uid);
   }catch(e){ showToast('Uyarı verilemedi: '+(e.message||'')); }
@@ -543,7 +543,7 @@ document.getElementById('vpWarningClear').addEventListener('click', async ()=>{
     await db.collection('public_profiles').doc(uid).set({activeWarningUntil: firebase.firestore.FieldValue.delete(), activeWarningReason: firebase.firestore.FieldValue.delete()}, {merge:true});
     await logModAction('clearWarning', uid, '');
     showToast('Uyarı kaldırıldı');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     renderWarningTool(profileByUid(uid), uid);
   }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
 });
@@ -559,7 +559,7 @@ document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>
       await logModAction('removeAdmin', currentViewedUid, '');
       await db.collection('notifications').add({toUid:currentViewedUid, fromUid:currentUser.uid, type:'mod_update', message:'👑 Admin yetkin kaldırıldı.', read:false, createdAt:new Date().toISOString()});
       showToast('Admin yetkisi kaldırıldı');
-      await loadPublicProfiles();
+      await loadPublicProfiles(true);
       openViewProfile(currentViewedUid);
     }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
   } else {
@@ -571,7 +571,7 @@ document.getElementById('vpAssignAdminBtn').addEventListener('click', async ()=>
       await logModAction('assignAdmin', currentViewedUid, '');
       await db.collection('notifications').add({toUid:currentViewedUid, fromUid:currentUser.uid, type:'mod_update', message:'👑 Tebrikler, admin yetkisi verildi!', read:false, createdAt:new Date().toISOString()});
       showToast('Admin yetkisi verildi');
-      await loadPublicProfiles();
+      await loadPublicProfiles(true);
       openViewProfile(currentViewedUid);
     }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
   }
@@ -595,7 +595,7 @@ document.getElementById('vpEditSave').addEventListener('click', async ()=>{
       await logModAction('editProfile', currentViewedUid, `Ad: ${fullName}, Kullanıcı adı: ${username}, Meslek: ${profession}, Şehir: ${city}`);
     }
     showToast('Bilgiler güncellendi');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     openViewProfile(currentViewedUid);
   }catch(e){ showToast('Güncellenemedi: '+(e.message||'')); }
 });
@@ -661,7 +661,7 @@ document.getElementById('vpModSave').addEventListener('click', async ()=>{
     await db.collection('moderators').doc(currentViewedUid).set(perms);
     await db.collection('public_profiles').doc(currentViewedUid).set({role:'moderator', rank}, {merge:true});
     await logModAction('assignModerator', currentViewedUid, `Rütbe: ${rank}`);
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     let notifMsg;
     if(!wasAlreadyMod){
       notifMsg = `🎉 Tebrikler, "${rank}" rütbesiyle moderatör oldun!`;
@@ -688,7 +688,7 @@ document.getElementById('vpModRemove').addEventListener('click', async ()=>{
     await db.collection('public_profiles').doc(currentViewedUid).set({role: firebase.firestore.FieldValue.delete(), rank: firebase.firestore.FieldValue.delete()}, {merge:true});
     await logModAction('removeModerator', currentViewedUid, '');
     await db.collection('notifications').add({toUid:currentViewedUid, fromUid:currentUser.uid, type:'mod_update', message:'🛡️ Moderatörlük yetkin sonlandırıldı.', read:false, createdAt:new Date().toISOString()});
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     showToast('Moderatörlük kaldırıldı');
     openViewProfile(currentViewedUid);
   }catch(e){ showToast('Kaldırılamadı: '+(e.message||'')); }
@@ -723,7 +723,7 @@ function wireDeactivatedRows(box){
         await db.collection('public_profiles').doc(btn.dataset.finalizeDelete).set({fullName:'[Hesap Silindi]', deleted:true, pendingDeletion:false}, {merge:true});
         await logModAction('permanentDelete', btn.dataset.finalizeDelete, '30 gün dolduğu için otomatik onaylı kalıcı silme');
         showToast('Hesap kalıcı olarak silindi');
-        await loadPublicProfiles();
+        await loadPublicProfiles(true);
         renderDeactivatedUserList();
       }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
     });
@@ -743,7 +743,7 @@ function wireDeactivatedRows(box){
         await db.collection('public_profiles').doc(uid).set(clearMeta, {merge:true});
         await logModAction('reactivateAccount', uid, '');
         showToast('Hesap yeniden aktifleştirildi');
-        await loadPublicProfiles();
+        await loadPublicProfiles(true);
         renderAdminUserList(document.getElementById('adminUserSearch').value);
         renderDeactivatedUserList();
         document.getElementById('adminListOverlay').classList.remove('show');
@@ -812,7 +812,7 @@ function wireReportRows(box){
         await logModAction('reportResolved', uid, 'Mesaj şikayeti nedeniyle devre dışı bırakıldı');
         await db.collection('notifications').add({toUid:btn.dataset.reportReporter, fromUid:currentUser.uid, type:'report_result', message:'🚩 Şikayetiniz incelendi: ilgili hesap kurallar gereği devre dışı bırakıldı (olumlu sonuçlandı).', read:false, createdAt:new Date().toISOString()});
         showToast('Hesap devre dışı bırakıldı');
-        await loadPublicProfiles();
+        await loadPublicProfiles(true);
         renderReportsList();
         document.getElementById('adminListOverlay').classList.remove('show');
       }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
@@ -1134,7 +1134,7 @@ function wireAppealRows(box){
         await db.collection('appeals').doc(btn.dataset.appealApprove).set({status:'approved', resolvedBy:currentUser.uid, resolvedAt:new Date().toISOString()}, {merge:true});
         await logModAction('appealApproved', uid, '');
         showToast('Hesap aktifleştirildi, itiraz onaylandı');
-        await loadPublicProfiles();
+        await loadPublicProfiles(true);
         renderAppealsList();
         renderDeactivatedUserList();
         document.getElementById('adminListOverlay').classList.remove('show');
@@ -1558,7 +1558,7 @@ document.getElementById('adminBulkDeactivate').addEventListener('click', async (
     }
     await logModAction('bulkDeactivateAll', null, targets.length + ' kullanıcı (yönetim ekibi hariç)');
     showToast(targets.length + ' kullanıcı devre dışı bırakıldı');
-    await loadPublicProfiles();
+    await loadPublicProfiles(true);
     renderAdminUserList(); renderDeactivatedUserList();
   }catch(e){ showToast('İşlem başarısız: '+(e.message||'')); }
 });
