@@ -1,6 +1,10 @@
 // ---------- ADMİN PANELİ ----------
 // NOT: Ana admin dokunulmazlığı (madde 16) ayrı bir turda tam kurulacak; UID buraya girilecek.
 const MAIN_ADMIN_UID = 'VEajLw5Y17eR1UMYxqIwdJnqSRM2';
+// QA test botunun kullandığı hesap — gerçek verilere karışmasın diye herkesten
+// izole edilmiş: kimse mesaj atamaz/silemez/arkadaş ekleyemez, sıralama ve
+// aktif üyelerde görünmez.
+const TEST_BOT_UID = 'cixSC3z8WEfPRbUm18Gae4fi55m2';
 let isAdmin = false;
 let modPerms = {};
 let adminStatusUnsub = null, modStatusUnsub = null;
@@ -1816,7 +1820,7 @@ function renderActiveMembers(){
   }
   const RECENCY_WINDOW_MS = 30*60*1000; // son 30 dakika içinde aktif olmayan "aktif üye" sayılmaz
   const active = allPublicProfiles
-    .filter(u=> u.uid!==currentUser.uid && !u.deactivated && !u.selfPaused && u.lastActive &&
+    .filter(u=> u.uid!==currentUser.uid && u.uid!==TEST_BOT_UID && !u.deactivated && !u.selfPaused && u.lastActive &&
       (Date.now() - new Date(u.lastActive).getTime()) < RECENCY_WINDOW_MS)
     .sort((a,b)=> new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime());
   if(active.length===0){

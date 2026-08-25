@@ -3429,6 +3429,11 @@ async function setupAdminToolsForProfile(uid, p, targetModDoc){
       <div class="card"><div class="hint" style="margin:0;">🔒 Bu, sistemin ana yönetici hesabıdır ve dokunulamaz.</div></div>`;
     return;
   }
+  if(typeof TEST_BOT_UID !== 'undefined' && TEST_BOT_UID && uid === TEST_BOT_UID){
+    section.innerHTML = `<div class="section-title" style="border-left-color:var(--ink-soft); color:var(--ink-soft);">🛠️ Yönetici Araçları</div>
+      <div class="card"><div class="hint" style="margin:0;">🔒 Bu, otomatik test botunun kullandığı hesaptır ve dokunulamaz.</div></div>`;
+    return;
+  }
 
   // Düzenle
   document.getElementById('vpToolEdit').style.display = (canEditProfile() || canChangeUsername()) ? 'block' : 'none';
@@ -3621,6 +3626,10 @@ document.getElementById('vpFriendBtn').addEventListener('click', async ()=>{
   const uid = btn.dataset.uid;
   const status = btn.dataset.friendStatus;
   if(!uid) return;
+  if(typeof TEST_BOT_UID !== 'undefined' && TEST_BOT_UID && uid === TEST_BOT_UID){
+    showToast('Bu hesap otomatik test botu içindir, arkadaş eklenemez');
+    return;
+  }
   try{
     if(status==='none'){
       await db.collection('friend_requests').doc(friendReqDocId(currentUser.uid, uid)).set({
@@ -3812,6 +3821,10 @@ async function canMessageUser(targetUid){
 }
 async function openOrCreateConversation(targetUid){
   if(targetUid===currentUser.uid) return;
+  if(typeof TEST_BOT_UID !== 'undefined' && TEST_BOT_UID && targetUid === TEST_BOT_UID && currentUser.uid !== MAIN_ADMIN_UID){
+    showToast('Bu hesap otomatik test botu içindir, mesaj gönderilemez');
+    return;
+  }
   const warnedUntil = isCurrentUserWarned();
   if(warnedUntil && !hasAnyAdminTool()){ showToast('⚠️ Uyarılısın, ' + new Date(warnedUntil).toLocaleString('tr-TR') + ' tarihine kadar yeni sohbet başlatamazsın'); return; }
   if(!hasAnyAdminTool()){

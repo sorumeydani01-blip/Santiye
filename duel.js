@@ -781,6 +781,10 @@ async function loadLeaderboard(){
       ranked = Object.keys(totals).map(uid=>({uid, score: totals[uid]})).sort((a,b)=>b.score-a.score).slice(0,14);
     }
   }catch(e){ console.error('Sıralama yüklenemedi', e); }
+  // Test botu (varsa) sıralamada hiç görünmesin.
+  if(typeof TEST_BOT_UID !== 'undefined' && TEST_BOT_UID){
+    ranked = ranked.filter(r => r.uid !== TEST_BOT_UID);
+  }
   // Sıralamadaki kullanıcılardan önbellekte olmayanları tamamla (isimler eksik gelmesin diye)
   const missingUids = ranked.map(r=>r.uid).filter(uid => !allPublicProfiles.some(p=>p.uid===uid));
   if(missingUids.length > 0){
