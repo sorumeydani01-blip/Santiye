@@ -1,0 +1,23 @@
+
+seed-islami-batch-yeni.js -> seed-quiz-bolum1.js
+seed-islami-cami-ibadet.js -> seed-quiz-bolum2.js
+seed-islami-cesitli-konular.js -> seed-quiz-bolum3.js
+seed-islami-ek-fikih-tarih.js -> seed-quiz-bolum4.js
+seed-quiz-batc1h-yeni.js -> seed-quiz-bolum5.js
+seed-quiz-buyuk-parti.js -> seed-quiz-bolum6.js
+seed-quiz-genel-batch2.js -> seed-quiz-bolum7.js
+seed-quiz-genel-batch3.js -> seed-quiz-bolum8.js
+seed-quiz-iman-esaslari.js -> seed-quiz-bolum9.js
+seed-quiz-islami-100.js -> seed-quiz-bolum10.js
+seed-quiz-islami-5opt.js -> seed-quiz-bolum11.js
+seed-quiz-islami-batch2.js -> seed-quiz-bolum12.js
+seed-quiz-part1-1000.js -> seed-quiz-bolum13.js
+seed-quiz-part2-1000.js -> seed-quiz-bolum14.js
+seed-quiz-part3-1000.js -> seed-quiz-bolum15.js
+seed-quiz-part4-1000.js -> seed-quiz-bolum16.js
+seed-quiz-part5-1000.js -> seed-quiz-bolum17.js
+seed-quiz-part6-1000.js -> seed-quiz-bolum18.js
+seed-quiz-part7.js -> seed-quiz-bolum19.js
+seed-quiz-part8.js -> seed-quiz-bolum20.js
+seed-quiz-part9.js -> seed-quiz-bolum21.js
+seed-quiz-questions.js -> seed-quiz-bolum22.js
