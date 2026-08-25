@@ -7932,13 +7932,24 @@ const dailyCheckOverlay = document.getElementById('dailyCheckOverlay');
 // true/false döndürür ki çağıran taraf token kurulumunu SIRAYLA (izin sonuçlanmadan
 // token istemeden) yapabilsin — önceki hata tam olarak buradaki yarış durumuydu.
 async function requestNotificationPermissionOnce(){
-  if(typeof Notification === 'undefined') return false;
+  if(typeof Notification === 'undefined'){
+    console.error('Notification API bu ortamda tanımlı değil (WebView bunu desteklemiyor olabilir)');
+    return false;
+  }
+  console.log('Bildirim izni kontrolü — mevcut durum:', Notification.permission);
   if(Notification.permission === 'granted') return true;
   if(Notification.permission === 'denied') return false;
   try{
     const perm = await Notification.requestPermission();
-    return perm === 'granted';
-  }catch(e){ console.error('Bildirim izni istenirken hata', e); return false; }
+    console.log('Bildirim izni istendi, sonuç:', perm);
+    // Bazı WebView'lerde requestPermission() geri dönüş değeri güvenilir olmuyor —
+    // istekten hemen sonra Notification.permission'ı TEKRAR okuyup asıl gerçek
+    // durumu (WebView'in kendi kaydettiği hâli) esas alıyoruz.
+    return perm === 'granted' || Notification.permission === 'granted';
+  }catch(e){
+    console.error('Bildirim izni istenirken hata', e);
+    return false;
+  }
 }
 // Geriye dönük uyumluluk için (kodun başka yerlerinde hâlâ kullanılıyor).
 async function ensureNotificationPermission(){ return requestNotificationPermissionOnce(); }
@@ -8024,8 +8035,15 @@ function fireLocalNotification(title, body){
   }catch(e){}
 }
 document.getElementById('btnTestNotification').addEventListener('click', async ()=>{
+  if(typeof Notification === 'undefined'){
+    showToast('⚠️ Bu ortam (muhtemelen APK sarmalayıcısı) bildirim API\'sini hiç desteklemiyor');
+    return;
+  }
   const granted = await requestNotificationPermissionOnce();
-  if(!granted){ showToast('Bildirim izni verilmedi, telefon ayarlarından açman gerekebilir'); return; }
+  if(!granted){
+    showToast(`Bildirim izni alınamadı (durum: ${Notification.permission}). Bu APK sarmalayıcısının Android izinlerine köprü kurmasıyla ilgili bir sorun olabilir.`);
+    return;
+  }
   await setupFcmToken();
   fireLocalNotification('📋 Şantiye Defteri', 'Bugünkü yevmiyenizi henüz girmediniz. Kaydı tamamlamak için dokunun.');
   showToast('Test bildirimi gönderildi');
