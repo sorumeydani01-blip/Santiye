@@ -520,9 +520,10 @@ function friendlyErrorReason(detail) {
       const chatOpen = await page.isVisible('#screen-chat.active').catch(() => false);
       if (!chatOpen) throw new Error('Sohbet ekranı açılmadı');
 
-      // ---- Önceki QA Bot rapor mesajlarını (varsa) sil — sohbet şişmesin ----
-      // "Herkesten Sil" ile aynı işlemi, uzun basma taklidi yapmadan doğrudan
-      // Firestore üzerinden yapıyoruz (uygulamanın kendi silme mantığıyla birebir aynı).
+      // ---- Önceki QA Bot mesajlarının TAMAMINI sil (metin + hata ekran görüntüleri) ----
+      // Bu sohbet SADECE bot raporları için kullanıldığı için, botun kendi
+      // gönderdiği her şeyi (görsel eklerin metni olmadığı için önceki sürümde
+      // sadece metin özeti siliniyordu, ekran görüntüleri kalıyordu — artık ikisi de siliniyor).
       try {
         const deletedCount = await page.evaluate(async () => {
           if (typeof currentConvId === 'undefined' || !currentConvId || typeof db === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return 0;
@@ -534,15 +535,13 @@ function friendlyErrorReason(detail) {
           for (const doc of snap.docs) {
             const data = doc.data();
             if (data.deletedForEveryone) continue;
-            if (typeof data.text === 'string' && data.text.includes('QA Bot Raporu')) {
-              await doc.ref.update({
-                deletedForEveryone: true,
-                text: '',
-                imageData: firebase.firestore.FieldValue.delete(),
-                audioData: firebase.firestore.FieldValue.delete(),
-              });
-              count++;
-            }
+            await doc.ref.update({
+              deletedForEveryone: true,
+              text: '',
+              imageData: firebase.firestore.FieldValue.delete(),
+              audioData: firebase.firestore.FieldValue.delete(),
+            });
+            count++;
           }
           return count;
         });
