@@ -106,6 +106,7 @@ const ADMIN_SECTION_LOADERS = {
   adminannouncements: () => { if(canEditAnnouncements()) loadAdminContentConfig(); },
   adminquotes: () => { if(canEditQuotes()) loadAdminContentConfig(); },
   adminprofessions: () => { if(canEditProfessions()) loadAdminContentConfig(); },
+  adminbasemod: () => { renderBaseModPermList(); }, // veri zaten açılışta yüklü, sadece çizim gerekiyor
   adminbroadcast: () => {}, // sadece gönderme formu, önceden yüklenecek liste yok
   adminmoderators: () => { if(isAdmin) renderModeratorsList(); },
   adminranks: () => { if(isAdmin) loadRankConfig(); },

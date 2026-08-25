@@ -119,12 +119,20 @@ document.getElementById('btnQuizQuit').addEventListener('click', ()=>{
 });
 document.getElementById('btnQuizBackHome').addEventListener('click', ()=>{ quizResetToCategory(); switchScreen('ana'); });
 
-// ---------- Test başlat: rastgele, tekrarsız 10 soru seç ----------
+// ---------- Test başlat: HER SEFERİNDE TAZE, bir önceki testle çakışmayan 10 soru ----------
+let lastTestQuestionIds = []; // bir önceki testte çıkan sorular — yeni testte hariç tutulur
 async function startQuizSession(){
-  await loadQuizQuestions();
   const navTabsEl = document.querySelector('nav.tabs');
   if(navTabsEl) navTabsEl.style.display = 'none';
-  const pool = quizQuestions.filter(q => q.category===quizSelectedCategory);
+  // Önbellekteki (sayfa açılışında çekilmiş) örneklemi DEĞİL, her test başlangıcında
+  // TAZE bir rastgele örneklem çekiyoruz — böylece art arda testler hep farklı gelir.
+  const freshSample = await fetchRandomQuizSample();
+  let pool = freshSample.filter(q => q.category===quizSelectedCategory && !lastTestQuestionIds.includes(q.id));
+  if(pool.length === 0){
+    // Kategori gerçekten boşsa değil, sadece örneklem tamamen bir önceki testle
+    // çakıştıysa buraya düşebiliriz — o durumda dışlamayı esnetip devam edelim.
+    pool = freshSample.filter(q => q.category===quizSelectedCategory);
+  }
   if(pool.length === 0){
     showToast('Bu kategoride henüz soru eklenmemiş');
     return;
@@ -141,6 +149,7 @@ async function startQuizSession(){
     // Havuzdaki tüm sorular daha önce görülmüş — baştan başlıyoruz.
     selected = shuffleArr(pool).slice(0, Math.min(QUIZ_QUESTIONS_PER_TEST, pool.length));
   }
+  lastTestQuestionIds = selected.map(q => q.id); // bir sonraki testte bunlar hariç tutulacak
   quizSessionQuestions = selected;
   quizCurrentIndex = 0;
   quizSessionScore = 0;

@@ -515,13 +515,13 @@
       <div class="card" id="quizCategoryGenel" style="cursor:pointer; display:flex; align-items:center; gap:14px; margin-bottom:12px;">
         <div style="width:52px;height:52px;border-radius:20px; background:var(--tint-slate); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🌍</div>
         <div style="flex:1;"><div style="font-weight:800; font-size:15px;">Genel Kültür</div><div class="hint" style="margin:2px 0 0;">Tarih, coğrafya, bilim, spor ve daha fazlası</div></div>
-        <span id="quizCategoryGenelCount" style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); white-space:nowrap; flex-shrink:0;"></span>
+        <span style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-slate); color:var(--text-slate); white-space:nowrap; flex-shrink:0;">🔥 Başla</span>
         <div style="color:var(--ink-soft); font-size:18px;">›</div>
       </div>
       <div class="card" id="quizCategoryIslami" style="cursor:pointer; display:flex; align-items:center; gap:14px;">
         <div style="width:52px;height:52px;border-radius:20px; background:var(--tint-brass); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">🕌</div>
         <div style="flex:1;"><div style="font-weight:800; font-size:15px;">İslami Bilgiler</div><div class="hint" style="margin:2px 0 0;">İbadetler, siyer, temel dini bilgiler</div></div>
-        <span id="quizCategoryIslamiCount" style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); white-space:nowrap; flex-shrink:0;"></span>
+        <span style="font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; background:var(--tint-brass); color:var(--text-brass); white-space:nowrap; flex-shrink:0;">🔥 Başla</span>
         <div style="color:var(--ink-soft); font-size:18px;">›</div>
       </div>
     </div>
@@ -8067,7 +8067,6 @@ async function loadQuizQuestions(force){
       quizQuestions = await fetchRandomQuizSample();
     }
   }catch(e){ console.error('Sorular yüklenemedi', e); }
-  updateQuizCategoryCounts();
   return quizQuestions;
 }
 async function fetchRandomQuizSample(){
@@ -8109,28 +8108,6 @@ async function fetchRandomQuizSample(){
   }
   trackFirestoreReads('Soru Havuzu (Soru Çöz)', results.length);
   return results;
-}
-async function updateQuizCategoryCounts(){
-  const genelEl = document.getElementById('quizCategoryGenelCount');
-  const islamiEl = document.getElementById('quizCategoryIslamiCount');
-  if(!genelEl || !islamiEl) return;
-  // Doğru toplam sayıyı göstermek için TÜM dokümanları okumak yerine Firestore'un
-  // ucuz "count()" toplama sorgusunu kullanıyoruz — havuz büyüklüğünden bağımsız
-  // olarak sabit, çok düşük maliyetli bir okuma.
-  try{
-    const [genelSnap, islamiSnap] = await Promise.all([
-      db.collection('quiz_questions').where('category','==','genel_kultur').count().get(),
-      db.collection('quiz_questions').where('category','==','islami').count().get()
-    ]);
-    genelEl.textContent = genelSnap.data().count + ' Soru';
-    islamiEl.textContent = islamiSnap.data().count + ' Soru';
-  }catch(e){
-    // count() desteklenmiyorsa (eski SDK) örneklemdeki sayıyı kaba tahmin olarak göster.
-    const genelCount = quizQuestions.filter(q => q.category === 'genel_kultur').length;
-    const islamiCount = quizQuestions.filter(q => q.category === 'islami').length;
-    genelEl.textContent = genelCount + '+ Soru';
-    islamiEl.textContent = islamiCount + '+ Soru';
-  }
 }
 
 </script>
