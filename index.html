@@ -8265,7 +8265,10 @@ async function renderQuizReportsList(){
   const box = document.getElementById('adminQuizReportsList');
   box.innerHTML = '<div class="hint">Yükleniyor…</div>';
   try{
-    const snap = await db.collection('question_reports').where('status','==','pending').get();
+    // Bu liste zaten "bekleyen" olarak sunucu tarafında filtreleniyor (doğal
+    // olarak küçük kalır) — yine de aşırı büyümeye karşı bir güvenlik sınırı.
+    const snap = await db.collection('question_reports').where('status','==','pending').limit(150).get();
+    if(typeof trackFirestoreReads==='function') trackFirestoreReads('Admin: Soru Şikayetleri', snap.docs.length);
     const reports = snap.docs.map(d=>({id:d.id, ...d.data()}));
     if(reports.length === 0){
       box.innerHTML = '<div class="empty"><div class="icon">🚩</div><div class="msg">Bekleyen şikayet yok.</div></div>';

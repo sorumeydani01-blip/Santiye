@@ -871,8 +871,10 @@ const PAGE_SIZE_ADMIN_LISTS = 20;
 function createPagedListState(){
   return { lastDoc: null, reachedEnd: false, cache: [], loadedIds: new Set() };
 }
-async function fetchNextPage(state, collectionName, orderField, trackLabel){
-  let q = db.collection(collectionName).orderBy(orderField, 'desc').limit(PAGE_SIZE_ADMIN_LISTS);
+async function fetchNextPage(state, collectionName, orderField, trackLabel, whereClause){
+  let q = db.collection(collectionName);
+  if(whereClause) q = q.where(whereClause[0], whereClause[1], whereClause[2]);
+  q = q.orderBy(orderField, 'desc').limit(PAGE_SIZE_ADMIN_LISTS);
   if(state.lastDoc) q = q.startAfter(state.lastDoc);
   const snap = await q.get();
   if(typeof trackFirestoreReads==='function') trackFirestoreReads(trackLabel, snap.docs.length);
@@ -990,48 +992,58 @@ function wireSuggestionRows(box){
   });
 }
 let allSuggestionsCache = [];
+let suggestionsPageState = createPagedListState();
 async function renderAdminSuggestionsList(){
   const box = document.getElementById('adminSuggestionsList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  suggestionsPageState = createPagedListState();
   try{
-    const snap = await db.collection('suggestions').get();
-    allSuggestionsCache = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
-    const pending = allSuggestionsCache.filter(s=>s.status!=='responded');
-    document.getElementById('suggestionsCount').textContent = pending.length ? `(${pending.length} bekleyen)` : '';
-    if(pending.length===0){
-      box.innerHTML = `<div class="empty"><div class="icon">💡</div><div class="msg">Bekleyen öneri yok.</div></div>`;
-      return;
-    }
-    box.innerHTML = pending.slice(0,3).map(suggestionRowHtml).join('') + (pending.length>3 ? seeAllBtnHtml('btnSeeAllSuggestions') : '');
-    wireSuggestionRows(box);
-    const seeAllBtn = document.getElementById('btnSeeAllSuggestions');
-    if(seeAllBtn){
-      seeAllBtn.addEventListener('click', ()=>{
-        openAdminList('Bekleyen Öneriler', pending, {
-          searchFn: (s,q)=>{ const p=profileByUid(s.uid); return (p&&p.fullName||'').toLowerCase().includes(q) || (s.text||'').toLowerCase().includes(q); },
-          renderRowFn: suggestionRowHtml,
-          wireRows: wireSuggestionRows
-        });
-      });
-    }
+    await fetchNextPage(suggestionsPageState, 'suggestions', 'createdAt', 'Admin: Öneriler');
+    allSuggestionsCache = suggestionsPageState.cache;
+    renderSuggestionsFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
 }
+async function loadMoreSuggestions(){
+  await fetchNextPage(suggestionsPageState, 'suggestions', 'createdAt', 'Admin: Öneriler');
+  allSuggestionsCache = suggestionsPageState.cache;
+  renderSuggestionsFiltered();
+}
+function renderSuggestionsFiltered(){
+  const box = document.getElementById('adminSuggestionsList');
+  const pending = allSuggestionsCache.filter(s=>s.status!=='responded');
+  document.getElementById('suggestionsCount').textContent = pending.length ? `(${pending.length}${suggestionsPageState.reachedEnd?'':'+'} bekleyen)` : '';
+  if(pending.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">💡</div><div class="msg">Bekleyen öneri yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = pending.map(suggestionRowHtml).join('');
+  wireSuggestionRows(box);
+  attachLoadMoreButton(box, suggestionsPageState, loadMoreSuggestions);
+}
+let suggestionHistoryPageState = createPagedListState();
 async function renderSuggestionHistoryList(){
   const box = document.getElementById('adminSuggestionHistoryList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  suggestionHistoryPageState = createPagedListState();
   try{
-    if(!allSuggestionsCache.length){
-      const snap = await db.collection('suggestions').get();
-      allSuggestionsCache = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
-    }
-    const responded = allSuggestionsCache.filter(s=>s.status==='responded');
-    if(responded.length===0){
-      box.innerHTML = `<div class="empty"><div class="icon">📜</div><div class="msg">Henüz yanıtlanan öneri yok.</div></div>`;
-      return;
-    }
-    box.innerHTML = responded.map(suggestionRowHtml).join('');
-    wireSuggestionRows(box);
-  }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; }
+    await fetchNextPage(suggestionHistoryPageState, 'suggestions', 'respondedAt', 'Admin: Öneri Geçmişi', ['status','==','responded']);
+    renderSuggestionHistoryFiltered();
+  }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
+}
+async function loadMoreSuggestionHistory(){
+  await fetchNextPage(suggestionHistoryPageState, 'suggestions', 'respondedAt', 'Admin: Öneri Geçmişi', ['status','==','responded']);
+  renderSuggestionHistoryFiltered();
+}
+function renderSuggestionHistoryFiltered(){
+  const box = document.getElementById('adminSuggestionHistoryList');
+  const responded = suggestionHistoryPageState.cache;
+  if(responded.length===0){
+    box.innerHTML = `<div class="empty"><div class="icon">📜</div><div class="msg">Henüz yanıtlanan öneri yok.</div></div>`;
+    return;
+  }
+  box.innerHTML = responded.map(suggestionRowHtml).join('');
+  wireSuggestionRows(box);
+  attachLoadMoreButton(box, suggestionHistoryPageState, loadMoreSuggestionHistory);
 }
 
 // ---------- ORTAK "TÜMÜNÜ GÖR" LİSTESİ (arama + filtre) ----------
