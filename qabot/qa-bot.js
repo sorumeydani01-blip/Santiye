@@ -29,6 +29,7 @@ const path = require('path');
 const SITE_URL = process.env.QA_SITE_URL || 'https://sorumeydani01-blip.github.io/Santiye/index.html';
 const TEST_EMAIL = process.env.QA_TEST_EMAIL || 'qa.bot.test@santiyedefteri-test.com';
 const TEST_PASSWORD = process.env.QA_TEST_PASSWORD || 'QaBotTest2026!';
+const TEST_UID = process.env.QA_TEST_UID || ''; // test hesabının UID'si — admin panelinde onu bulmak için kullanıcı adı yerine bunu kullanıyoruz (kullanıcı adı değişse bile bozulmaz)
 const ADMIN_EMAIL = process.env.QA_ADMIN_EMAIL || '';
 const ADMIN_PASSWORD = process.env.QA_ADMIN_PASSWORD || '';
 const ADMIN_UID = process.env.QA_ADMIN_UID || '';
@@ -462,20 +463,21 @@ function friendlyErrorReason(detail) {
     }
 
     await step(page, 'Admin, test hesabının profilini görüntüledi', async () => {
-      await page.waitForSelector('#roleBadgeToggleBtn', { state: 'visible', timeout: 8000 });
-      await safeClick(page, '#roleBadgeToggleBtn');
-      await page.waitForTimeout(500);
-      const usersLink = await page.$('[data-role-link="adminusers"]');
-      if (usersLink) { await usersLink.click(); await page.waitForTimeout(1000); }
-      const testUserRow = await page.$(`text=${TEST_EMAIL.split('@')[0]}`);
-      if (testUserRow) {
-        await testUserRow.click();
-        await page.waitForTimeout(1000);
-        logStep('Admin, test hesabının profilini açtı', 'ok');
-        results[results.length - 1].screenshot = await shot(page, 'admin_test_hesabi_profili');
-      } else {
-        logStep('Admin listesinde test hesabı bulunamadı', 'warn', 'Arama/listeleme farklı çalışıyor olabilir');
+      if (!TEST_UID) {
+        logStep('Admin, test hesabının profilini açtı', 'warn', 'QA_TEST_UID tanımlanmamış, adım atlandı');
+        return;
       }
+      // Kullanıcı adına göre listede arama yapmak yerine (kullanıcı adı değişirse
+      // bozulur), UID ile doğrudan profili açıyoruz — daha sağlam.
+      const navigated = await page.evaluate((uid) => {
+        if (typeof openViewProfile === 'function') { openViewProfile(uid); return true; }
+        return false;
+      }, TEST_UID);
+      if (!navigated) throw new Error('openViewProfile fonksiyonu bulunamadı');
+      await page.waitForTimeout(1000);
+      const profileOpen = await page.isVisible('#screen-view-profile.active').catch(() => false);
+      logStep('Admin, test hesabının profilini açtı', profileOpen ? 'ok' : 'fail');
+      results[results.length - 1].screenshot = await shot(page, 'admin_test_hesabi_profili');
     });
 
   } else {
