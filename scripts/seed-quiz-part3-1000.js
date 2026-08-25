@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const genelKulturBatch6 = [
   { question:"'Termometre' hangi fiziksel büyüklüğü ölçmek için kullanılır?", options:["Basınç","Sıcaklık","Nem","Hız"], correctIndex:1, hint:"Hasta olduğumuzda ateşimizi ölçmek için kullanılır.", explanation:"Termometre, sıcaklığı ölçmek için kullanılan bir alettir." },
   { question:"Dünyanın en büyük ikinci en kalabalık ülkesi olan Endonezya'nın başkenti neresidir?", options:["Cakarta","Bali","Surabaya","Bandung"], correctIndex:0, hint:"Java adasındadır.", explanation:"Cakarta, Endonezya'nın (2024 itibarıyla resmi olarak değişim sürecinde olsa da tarihsel) başkentidir." },
@@ -158,4 +171,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

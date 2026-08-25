@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const genelKulturBatch4 = [
   { question:"İnsan vücudunda en fazla bulunan element hangisidir (ağırlıkça)?", options:["Karbon","Oksijen","Hidrojen","Azot"], correctIndex:1, hint:"Su molekülünün de temel bileşenidir.", explanation:"Oksijen, vücut ağırlığının yaklaşık %65'ini oluşturarak insan vücudundaki en bol elementtir." },
   { question:"Dünyanın en uzun nehri olan Nil, hangi denize dökülür?", options:["Kızıldeniz","Akdeniz","Hint Okyanusu","Basra Körfezi"], correctIndex:1, hint:"Mısır'ın kuzey kıyısındaki denizdir.", explanation:"Nil Nehri, Mısır'ın kuzeyinde Akdeniz'e dökülür." },
@@ -167,4 +180,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

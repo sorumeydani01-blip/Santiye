@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const islamiBatch2 = [
   { question:"Hz. Nuh'un (a.s.) kavmine gönderdiği en temel çağrı neydi?", options:["Zekât vermek","Sadece Allah'a ibadet etmek, putlardan vazgeçmek","Savaşmayı bırakmak","Göç etmek"], correctIndex:1, hint:"Tüm peygamberlerin ortak mesajıdır.", explanation:"Hz. Nuh, kavmini putperestlikten vazgeçip yalnızca Allah'a ibadet etmeye çağırmıştır." },
   { question:"Hz. Yusuf (a.s.) kıssası Kur'an-ı Kerim'in hangi suresinde ayrıntılı olarak anlatılır?", options:["Yusuf Suresi","Nur Suresi","Kehf Suresi","Meryem Suresi"], correctIndex:0, hint:"Sure adı doğrudan peygamberin adını taşır.", explanation:"Hz. Yusuf'un hayatı, Kur'an'da adını taşıyan Yusuf Suresi'nde bütünüyle anlatılır." },
@@ -87,4 +100,10 @@ async function main(){
   console.log(toAdd.length + ' soru başarıyla eklendi.');
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

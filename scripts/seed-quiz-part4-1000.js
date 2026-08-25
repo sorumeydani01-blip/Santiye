@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const islamiBatch6 = [
   { question:"'Hz. Ömer'in halifeliği hangi olayla sona ermiştir?", options:["Suikast sonucu şehit edilmesi","Doğal ölüm","Savaşta ölmesi","Görevi bırakması"], correctIndex:0, hint:"İranlı bir köle tarafından hançerlenmiştir.", explanation:"Hz. Ömer, namaz kıldırırken Ebu Lü'lü adlı bir köle tarafından hançerlenerek şehit edilmiştir." },
   { question:"'Hz. Osman'ın halifeliği döneminde gerçekleştirilen en önemli işlerden biri nedir?", options:["Kur'an'ın çoğaltılıp tek bir mushaf haline getirilmesi","İlk caminin inşası","İlk hicret","İlk savaş"], correctIndex:0, hint:"'Mushaf-ı Osmani' olarak bilinir.", explanation:"Hz. Osman döneminde Kur'an nüshaları standartlaştırılarak çoğaltılmış ve İslam coğrafyasına gönderilmiştir." },
@@ -132,4 +145,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

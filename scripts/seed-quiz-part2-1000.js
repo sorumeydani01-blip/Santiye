@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const genelKulturBatch5 = [
   { question:"'Newton'un Hareket Yasaları' kaç maddeden oluşur?", options:["2","3","4","5"], correctIndex:1, hint:"Eylemsizlik, F=ma ve etki-tepki yasalarıdır.", explanation:"Newton'un Hareket Yasaları üç temel yasadan oluşur: eylemsizlik, F=ma ve etki-tepki yasası." },
   { question:"Dünyanın en büyük yarımadası hangisidir?", options:["Arabistan Yarımadası","Anadolu Yarımadası","Skandinav Yarımadası","Hindistan Yarımadası"], correctIndex:0, hint:"Ortadoğu'nun büyük bölümünü kapsar.", explanation:"Arabistan Yarımadası, yüzölçümü bakımından dünyanın en büyük yarımadasıdır." },
@@ -168,4 +181,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

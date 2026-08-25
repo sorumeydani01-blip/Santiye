@@ -12,6 +12,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const genelKulturQuestions = [
   { question:"Türkiye'nin başkenti neresidir?", options:["İstanbul","Ankara","İzmir","Bursa"], correctIndex:1, hint:"Cumhuriyet ilan edildikten sonra başkent oldu.", explanation:"Ankara, 13 Ekim 1923'te Türkiye Cumhuriyeti'nin başkenti ilan edilmiştir." },
   { question:"Dünyanın en uzun nehri hangisidir?", options:["Amazon","Nil","Mississippi","Yangtze"], correctIndex:1, hint:"Afrika kıtasından geçer.", explanation:"Nil Nehri, yaklaşık 6.650 km uzunluğuyla dünyanın en uzun nehri kabul edilir." },
@@ -109,4 +122,10 @@ async function main(){
   console.log(toAdd.length + ' soru başarıyla eklendi.');
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

@@ -14,6 +14,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const newIslamiQuestions = [
   { question:"İslâm'ın beş şartından biri aşağıdakilerden hangisidir?", options:["Soy üstünlüğü","Beş vakit namazı kılmak","Ticaret yapmak","Arapça bilmek"], correctIndex:1, hint:"Günlük olarak belirli vakitlerde yerine getirilen temel ibadeti düşünün.", explanation:"Namaz, İslâm'ın temel ibadetlerinden ve beş esasından biridir. Kur'an'da namazın dosdoğru kılınması birçok yerde emredilir. (Kaynak: Mâide 5/6; Buhârî, Îmân, 1.)" },
   { question:"Abdestin farzları Kur'an'da açıkça hangi sûrede sayılır?", options:["Fâtiha","Mâide","Yâsîn","İhlâs"], correctIndex:1, hint:"Ayette yüz, kollar, baş ve ayaklardan söz edilir.", explanation:"Mâide 6. ayette namaza kalkarken yüzün, dirseklere kadar kolların yıkanması, başın mesh edilmesi ve ayakların yıkanması bildirilir. (Kaynak: Mâide 5/6.)" },
@@ -139,4 +152,10 @@ async function main(){
   console.log(toAdd.length + ' soru başarıyla eklendi.');
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

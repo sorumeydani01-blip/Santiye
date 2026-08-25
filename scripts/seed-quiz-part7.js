@@ -15,6 +15,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const islamiBatch9 = [
   { question:"İslam'da 'Endülüs Emevi Devleti' hangi kıtada kurulmuştur?", options:["Avrupa (İber Yarımadası)","Afrika","Asya","Avustralya"], correctIndex:0, hint:"Günümüz İspanya ve Portekiz topraklarındadır.", explanation:"Endülüs Emevi Devleti, İber Yarımadası'nda (günümüz İspanya-Portekiz) kurulmuş bir İslam devletidir." },
   { question:"'Endülüs'te İslam medeniyetinin en parlak dönemlerinden birinde bilim, sanat ve mimari alanında önemli gelişmeler yaşanmıştır. Bu döneme ne ad verilir?", options:["Endülüs'ün Altın Çağı","Cahiliye Dönemi","Selçuklu Rönesansı","Osmanlı Klasik Dönemi"], correctIndex:0, hint:"Kurtuba (Cordoba) bu dönemde önemli bir ilim merkeziydi.", explanation:"Endülüs'ün Altın Çağı, İslam medeniyetinin bilim, sanat ve mimaride büyük gelişmeler kaydettiği parlak bir dönemi ifade eder." },
@@ -118,4 +131,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

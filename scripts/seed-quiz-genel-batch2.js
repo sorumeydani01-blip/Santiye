@@ -12,6 +12,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const genelKulturBatch2 = [
   { question:"Türkiye'de kullanılan para birimi nedir?", options:["Euro","Türk Lirası","Dolar","Sterlin"], correctIndex:1, hint:"Kısaltması TL veya ₺'dir.", explanation:"Türkiye'nin resmi para birimi Türk Lirası'dır." },
   { question:"Dünyanın en yüksek dağı hangisidir?", options:["K2","Everest","Kilimanjaro","Mont Blanc"], correctIndex:1, hint:"Himalayalar'da, Nepal-Çin sınırındadır.", explanation:"Everest, 8.849 metre yüksekliğiyle dünyanın en yüksek dağıdır." },
@@ -73,4 +86,10 @@ async function main(){
   console.log(toAdd.length + ' soru başarıyla eklendi.');
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

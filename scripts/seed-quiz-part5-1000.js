@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const islamiBatch7 = [
   { question:"'Minare' bir caminin hangi bölümüdür?", options:["Ezan okunan yüksek kule","Namaz kılınan ana bölüm","İmamın vaaz verdiği yer","Abdest alınan bölüm"], correctIndex:0, hint:"Camilerin en dikkat çekici, yüksek yapısıdır.", explanation:"Minare, ezanın okunduğu, camiye bitişik yüksek kule şeklindeki mimari yapıdır." },
   { question:"'Mihrab' camide neyi belirtir?", options:["Kıble yönünü gösteren oyuk bölüm","Minarenin üst kısmını","Şadırvanın yerini","Kürsünün yerini"], correctIndex:0, hint:"İmam namaz kıldırırken burada durur.", explanation:"Mihrab, camide kıble yönünü gösteren, genellikle duvarda oyuk şeklinde yapılan bölümdür." },
@@ -126,4 +139,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });

@@ -13,6 +13,19 @@ const serviceAccount = JSON.parse(serviceAccountRaw);
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
+// --- ZATEN TAMAMLANDIYSA ATLA (otomatik eklendi) ---
+async function __checkAlreadySeeded() {
+  const __scriptName = require('path').basename(__filename);
+  try {
+    const __marker = await db.collection('app_config').doc('seedScriptStatus').get();
+    return !!(__marker.exists && __marker.data()[__scriptName]);
+  } catch (e) {
+    console.error('Tamamlanma kontrolü yapılamadı, script normal devam edecek:', e.message);
+    return false;
+  }
+}
+
+
 const islamiBatch8 = [
   { question:"İslam'da 'ilim öğrenmenin' değeri en çok hangi hadisle vurgulanır?", options:["'İlim öğrenmek her Müslümana farzdır' mealindeki hadisle","Sadece bir ayetle","Sadece bir sahabe sözüyle","Hiçbir kaynakla vurgulanmaz"], correctIndex:0, hint:"Bilgiye verilen önemi gösteren meşhur bir rivayettir.", explanation:"Hz. Peygamber'e atfedilen 'İlim öğrenmek her Müslüman erkek ve kadına farzdır' mealindeki rivayet, İslam'da ilme verilen önemi gösterir." },
   { question:"'Kur'an-ı Kerim'de ilk inen ayetlerin konusu nedir?", options:["Okumak ve öğrenmek (Alak Suresi)","Namaz kılmak","Oruç tutmak","Zekât vermek"], correctIndex:0, hint:"'Oku' emriyle başlar.", explanation:"Kur'an'da ilk inen ayetler, Alak Suresi'nin ilk beş ayeti olup 'Oku' emriyle başlar ve öğrenmenin önemine işaret eder." },
@@ -136,4 +149,10 @@ async function main(){
   console.log('Yeni toplam (tahmini):', existingTexts.size + toAdd.length);
 }
 
-main().then(()=>process.exit(0)).catch(e=>{ console.error('Hata:', e); process.exit(1); });
+__checkAlreadySeeded().then(async (alreadyDone) => {
+  const __scriptName = require('path').basename(__filename);
+  if (alreadyDone) { console.log(`${__scriptName} zaten daha önce tamamlanmış, atlanıyor.`); process.exit(0); return; }
+  await main();
+  await db.collection('app_config').doc('seedScriptStatus').set({ [require('path').basename(__filename)]: true }, { merge: true }).catch(()=>{});
+  process.exit(0);
+}).catch(e=>{ console.error('Hata:', e); process.exit(1); });
