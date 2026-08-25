@@ -93,16 +93,22 @@ async function renderAdminQuickStats(){
     <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">💡</div><div class="val">${pendingSuggestions}</div><div class="lbl">Bekleyen Öneri</div></div>`;
 }
 // Her admin alt ekranının SADECE kendi verisini çeken haritası — böylece bir
-// ekrana girmek, alakasız 11 başka listeyi de tetiklemiyor.
+// ekrana girmek, alakasız başka listeleri de tetiklemiyor. 19 gerçek admin
+// ekranının (data-admin-nav değerlerinin) HER BİRİ tek tek doğrulanarak eşlendi.
 const ADMIN_SECTION_LOADERS = {
   adminusers: () => { if(canManageUsers()) renderAdminUserList(); },
   admindeactivated: () => { if(canReactivateAccount()) renderDeactivatedUserList(); },
   adminappeals: () => { if(canViewAppeals()) renderAppealsList(); },
   adminreports: () => { if(canViewReports()) renderReportsList(); },
-  adminsuggestions: () => { if(canViewSuggestions()) renderAdminSuggestionsList(); if(canViewSuggestionHistory()) renderSuggestionHistoryList(); },
+  adminsuggestions: () => { if(canViewSuggestions()) renderAdminSuggestionsList(); },
+  adminsuggesthist: () => { if(canViewSuggestionHistory()) renderSuggestionHistoryList(); },
   adminmodlog: () => { if(canViewModLog()) renderModLog(); },
-  adminbasemod: () => { if(canEditAnnouncements() || canEditQuotes() || canEditProfessions()) loadAdminContentConfig(); },
-  adminmoderators: () => { if(isAdmin){ renderModeratorsList(); loadRankConfig(); } },
+  adminannouncements: () => { if(canEditAnnouncements()) loadAdminContentConfig(); },
+  adminquotes: () => { if(canEditQuotes()) loadAdminContentConfig(); },
+  adminprofessions: () => { if(canEditProfessions()) loadAdminContentConfig(); },
+  adminbroadcast: () => {}, // sadece gönderme formu, önceden yüklenecek liste yok
+  adminmoderators: () => { if(isAdmin) renderModeratorsList(); },
+  adminranks: () => { if(isAdmin) loadRankConfig(); },
   admintenureranks: () => { if(isAdmin) loadTenureRankConfig(); },
   adminipban: () => { if(canBanIp()) renderBannedIpList(); },
   adminquiz: () => { if(canManageQuizQuestions()) renderQuizAdminList(); },
@@ -856,17 +862,59 @@ function wireReportRows(box){
 let allReportsCache = [];
 let reportsCurrentFilter = 'pending';
 let reportsSearchQuery = '';
+// ---------- ORTAK SAYFALAMA YARDIMCISI (20'şer 20'şer) ----------
+// Şikayetler, İtirazlar, Öneriler gibi uzun listelerin TAMAMINI tek seferde
+// çekmek yerine, bu yardımcı 20'şer 20'şer çeker — "Daha Fazla Göster" ile
+// devam edilir. Her liste kendi cursor/cache durumunu ayrı tutar (state objesi).
+const PAGE_SIZE_ADMIN_LISTS = 20;
+function createPagedListState(){
+  return { lastDoc: null, reachedEnd: false, cache: [], loadedIds: new Set() };
+}
+async function fetchNextPage(state, collectionName, orderField, trackLabel){
+  let q = db.collection(collectionName).orderBy(orderField, 'desc').limit(PAGE_SIZE_ADMIN_LISTS);
+  if(state.lastDoc) q = q.startAfter(state.lastDoc);
+  const snap = await q.get();
+  if(typeof trackFirestoreReads==='function') trackFirestoreReads(trackLabel, snap.docs.length);
+  if(snap.docs.length > 0) state.lastDoc = snap.docs[snap.docs.length - 1];
+  if(snap.docs.length < PAGE_SIZE_ADMIN_LISTS) state.reachedEnd = true;
+  snap.docs.forEach(d=>{
+    if(state.loadedIds.has(d.id)) return;
+    state.loadedIds.add(d.id);
+    state.cache.push({ id: d.id, ...d.data() });
+  });
+  return state;
+}
+// Listenin altına (varsa) "Daha Fazla Göster" butonunu ekler/yeniler.
+function attachLoadMoreButton(containerEl, state, onLoadMore){
+  const existing = containerEl.querySelector('.admin-load-more-btn');
+  if(existing) existing.remove();
+  if(state.reachedEnd) return;
+  const btn = document.createElement('button');
+  btn.className = 'submit-btn secondary admin-load-more-btn';
+  btn.style.cssText = 'width:100%; margin-top:10px;';
+  btn.textContent = '⬇️ Daha Fazla Göster (20 tane daha)';
+  btn.addEventListener('click', onLoadMore);
+  containerEl.appendChild(btn);
+}
+
+
+let reportsPageState = createPagedListState();
 async function renderReportsList(){
   const box = document.getElementById('adminReportsList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  reportsPageState = createPagedListState();
   try{
-    const snap = await db.collection('reports').get();
-    allReportsCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    allReportsCache.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
+    await fetchNextPage(reportsPageState, 'reports', 'createdAt', 'Admin: Şikayetler');
+    allReportsCache = reportsPageState.cache;
     const pendingCount = allReportsCache.filter(r=>r.status==='pending').length;
     document.getElementById('reportsCount').textContent = pendingCount ? `(${pendingCount} bekleyen)` : '';
     renderReportsFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
+}
+async function loadMoreReports(){
+  await fetchNextPage(reportsPageState, 'reports', 'createdAt', 'Admin: Şikayetler');
+  allReportsCache = reportsPageState.cache;
+  renderReportsFiltered();
 }
 function renderReportsFiltered(){
   const box = document.getElementById('adminReportsList');
@@ -884,6 +932,7 @@ function renderReportsFiltered(){
   }
   box.innerHTML = list.map(reportRowHtml).join('');
   wireReportRows(box);
+  attachLoadMoreButton(box, reportsPageState, loadMoreReports);
 }
 document.getElementById('reportsSearchInput').addEventListener('input', (e)=>{
   reportsSearchQuery = e.target.value.trim().toLowerCase();
@@ -1179,17 +1228,23 @@ function wireAppealRows(box){
 let allAppealsCache = [];
 let appealsCurrentFilter = 'pending';
 let appealsSearchQuery = '';
+let appealsPageState = createPagedListState();
 async function renderAppealsList(){
   const box = document.getElementById('adminAppealsList');
   box.innerHTML = `<div class="hint">Yükleniyor...</div>`;
+  appealsPageState = createPagedListState();
   try{
-    const snap = await db.collection('appeals').get();
-    allAppealsCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
-    allAppealsCache.sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
+    await fetchNextPage(appealsPageState, 'appeals', 'createdAt', 'Admin: İtirazlar');
+    allAppealsCache = appealsPageState.cache;
     const pendingCount = allAppealsCache.filter(a=>a.status==='pending').length;
     document.getElementById('appealsCount').textContent = pendingCount ? `(${pendingCount} bekleyen)` : '';
     renderAppealsFiltered();
   }catch(e){ box.innerHTML = `<div class="hint">Yüklenemedi.</div>`; console.error(e); }
+}
+async function loadMoreAppeals(){
+  await fetchNextPage(appealsPageState, 'appeals', 'createdAt', 'Admin: İtirazlar');
+  allAppealsCache = appealsPageState.cache;
+  renderAppealsFiltered();
 }
 function renderAppealsFiltered(){
   const box = document.getElementById('adminAppealsList');
@@ -1207,6 +1262,7 @@ function renderAppealsFiltered(){
   }
   box.innerHTML = list.map(appealRowHtml).join('');
   wireAppealRows(box);
+  attachLoadMoreButton(box, appealsPageState, loadMoreAppeals);
 }
 document.getElementById('appealsSearchInput').addEventListener('input', (e)=>{
   appealsSearchQuery = e.target.value.trim().toLowerCase();

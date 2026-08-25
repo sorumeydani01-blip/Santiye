@@ -8156,21 +8156,57 @@ function quizAdminClearForm(){
   document.getElementById('quizAdminCancelEditBtn').style.display = 'none';
 }
 
+// ---------- ADMİN SORU BANKASI — SAYFALAMA (20'şer 20'şer) ----------
+// Eskiden bu ekran açılır açılmaz TÜM soru havuzunu (binlerce doküman) çekiyordu
+// — kota takip kartında bunun tek başına en büyük kaynak olduğu görüldü. Artık
+// sadece ilk 20 çekiliyor, "Daha Fazla Göster" ile her tıklamada 20 tane daha.
+let quizAdminLastDoc = null;
+let quizAdminReachedEnd = false;
+let quizAdminLoadedIds = new Set(); // aynı sorunun listede iki kez görünmesini engeller
+const QUIZ_ADMIN_PAGE_SIZE = 20;
+
 async function renderQuizAdminList(){
   const listEl = document.getElementById('quizAdminList');
   if(!listEl) return;
+  // Filtre değiştiğinde (ya da ekrana ilk girişte) sayfalamayı sıfırla, baştan başla.
+  quizAdminLastDoc = null;
+  quizAdminReachedEnd = false;
+  quizAdminLoadedIds = new Set();
+  quizQuestions = [];
   listEl.innerHTML = '<div class="hint">Yükleniyor…</div>';
-  await loadQuizQuestions(true);
+  document.getElementById('quizAdminCount').textContent = '…';
+  await loadMoreQuizAdminQuestions(true);
+}
+
+async function loadMoreQuizAdminQuestions(isFirstPage){
+  const listEl = document.getElementById('quizAdminList');
   const catFilter = document.getElementById('quizAdminFilterCategory').value;
-  let list = quizQuestions.slice();
-  if(catFilter) list = list.filter(q=>q.category===catFilter);
-  document.getElementById('quizAdminCount').textContent = list.length + ' / ' + quizQuestions.length + ' soru';
-  if(list.length===0){
+  let q = db.collection('quiz_questions').orderBy(firebase.firestore.FieldPath.documentId()).limit(QUIZ_ADMIN_PAGE_SIZE);
+  if(catFilter) q = db.collection('quiz_questions').where('category','==',catFilter).orderBy(firebase.firestore.FieldPath.documentId()).limit(QUIZ_ADMIN_PAGE_SIZE);
+  if(quizAdminLastDoc) q = q.startAfter(quizAdminLastDoc);
+
+  const snap = await q.get();
+  trackFirestoreReads('Admin: Soru Bankası (sayfalı)', snap.docs.length);
+  if(snap.docs.length > 0) quizAdminLastDoc = snap.docs[snap.docs.length - 1];
+  if(snap.docs.length < QUIZ_ADMIN_PAGE_SIZE) quizAdminReachedEnd = true;
+
+  snap.docs.forEach(d=>{
+    if(quizAdminLoadedIds.has(d.id)) return;
+    quizAdminLoadedIds.add(d.id);
+    quizQuestions.push({ id: d.id, ...d.data() });
+  });
+
+  if(isFirstPage && quizQuestions.length === 0){
     listEl.innerHTML = '<div class="hint">Bu filtrede soru yok.</div>';
+    document.getElementById('quizAdminCount').textContent = '0 soru';
     return;
   }
-  listEl.innerHTML = list.map(q=>
-    '<div class="entry" style="align-items:flex-start; cursor:default;">'
+
+  document.getElementById('quizAdminCount').textContent = quizQuestions.length + (quizAdminReachedEnd ? ' soru (tümü)' : '+ soru (devam ediyor)');
+
+  const rowsHtml = snap.docs.filter(d => quizAdminLoadedIds.has(d.id)).map(d=>{
+    const q = { id: d.id, ...d.data() };
+    return '<div class="entry" style="align-items:flex-start; cursor:default;">'
       + '<div class="info" style="width:100%;">'
         + '<div class="ttype" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px;">'
           + '<span style="font-size:10.5px; font-weight:800; padding:2px 9px; border-radius:20px; background:var(--tint-slate); color:var(--asphalt);">'+(QUIZ_CATEGORY_LABELS[q.category]||q.category)+'</span>'
@@ -8181,8 +8217,23 @@ async function renderQuizAdminList(){
         + '<button data-quiz-edit="'+escapeHtml(q.id)+'" style="border:1.5px solid var(--line); background:var(--paper); border-radius:10px; width:32px;height:32px; cursor:pointer;">✏️</button>'
         + '<button data-quiz-delete="'+escapeHtml(q.id)+'" style="border:1.5px solid var(--tint-rust); background:var(--tint-rust); color:var(--danger); border-radius:10px; width:32px;height:32px; cursor:pointer;">🗑️</button>'
       + '</div>'
-    + '</div>'
-  ).join('');
+    + '</div>';
+  }).join('');
+
+  if(isFirstPage){
+    listEl.innerHTML = rowsHtml;
+  } else {
+    // "Daha Fazla Göster" butonunu kaldırıp yeni satırları ekle, sonra butonu (gerekirse) tekrar koy.
+    const existingBtn = document.getElementById('quizAdminLoadMoreBtn');
+    if(existingBtn) existingBtn.remove();
+    listEl.insertAdjacentHTML('beforeend', rowsHtml);
+  }
+
+  if(!quizAdminReachedEnd){
+    listEl.insertAdjacentHTML('beforeend', '<button id="quizAdminLoadMoreBtn" class="submit-btn secondary" style="width:100%; margin-top:10px;">⬇️ Daha Fazla Göster (20 tane daha)</button>');
+    document.getElementById('quizAdminLoadMoreBtn').addEventListener('click', ()=> loadMoreQuizAdminQuestions(false));
+  }
+
   listEl.querySelectorAll('[data-quiz-edit]').forEach(btn=>{
     btn.addEventListener('click', ()=> quizAdminStartEdit(btn.dataset.quizEdit));
   });
