@@ -34,6 +34,7 @@ jobs:
           QA_SITE_URL: 'https://sorumeydani01-blip.github.io/Santiye/index.html'
           QA_TEST_EMAIL: 'qa.bot.test@santiyedefteri-test.com'
           QA_TEST_PASSWORD: 'QaBotTest2026!'
+          QA_TEST_UID: 'cixSC3z8WEfPRbUm18Gae4fi55m2'
           QA_ADMIN_EMAIL: ${{ secrets.QA_ADMIN_EMAIL }}
           QA_ADMIN_PASSWORD: ${{ secrets.QA_ADMIN_PASSWORD }}
           QA_ADMIN_UID: ${{ secrets.QA_ADMIN_UID }}
