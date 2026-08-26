@@ -51,19 +51,26 @@
 </div>
 
 <div id="authScreen" style="position:fixed; inset:0; z-index:100; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
-  <div id="authSplashLoading" style="text-align:center; color:#fff;">
+  <div id="authBgDecor" aria-hidden="true" style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+    <span style="position:absolute; top:8%; left:6%; font-size:34px; opacity:0.07; animation:authDecorFloat1 14s ease-in-out infinite;">🏗️</span>
+    <span style="position:absolute; top:65%; left:12%; font-size:26px; opacity:0.06; animation:authDecorFloat2 17s ease-in-out infinite;">📐</span>
+    <span style="position:absolute; top:20%; right:8%; font-size:30px; opacity:0.06; animation:authDecorFloat1 16s ease-in-out infinite reverse;">🔨</span>
+    <span style="position:absolute; top:78%; right:14%; font-size:24px; opacity:0.07; animation:authDecorFloat2 12s ease-in-out infinite reverse;">🧱</span>
+    <span style="position:absolute; top:45%; left:50%; font-size:22px; opacity:0.05; animation:authDecorFloat1 20s ease-in-out infinite;">⛑️</span>
+  </div>
+  <div id="authSplashLoading" style="text-align:center; color:#fff; position:relative;">
     <div style="width:64px;height:64px;border-radius:18px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15); font-size:28px;">🏗️</div>
     <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:18px;">Şantiye Defteri</div>
     <div style="font-size:13px; opacity:0.75; margin-top:10px;">Yükleniyor...</div>
   </div>
-  <div id="authFormWrap" style="display:none; max-width:360px; width:100%; text-align:center; color:#fff; padding:20px 0;">
+  <div id="authFormWrap" style="display:none; max-width:360px; width:100%; text-align:center; color:#fff; padding:20px 0; position:relative;">
     <img id="authLogoImg" style="width:64px;height:64px;border-radius:18px; margin:0 auto 20px; display:block; object-fit:cover;">
     <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:22px; margin-bottom:8px;">Şantiye Defteri</div>
     <div id="authSubtitle" style="font-size:14px; opacity:0.85; margin-bottom:24px; line-height:1.5;">Kayıtların hesabınla senkronize kalsın — hangi telefondan girersen gir verilerin seninle gelir.</div>
 
     <div id="savedAccountsWrap" style="display:none; margin-bottom:14px;">
       <div style="font-size:11.5px; font-weight:700; opacity:0.8; margin-bottom:8px; text-align:left;">Hızlı Giriş</div>
-      <div id="savedAccountsList" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      <div id="savedAccountsList" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
 
     <div style="display:flex; background:rgba(255,255,255,0.15); border-radius:12px; padding:4px; margin-bottom:18px;">
@@ -72,8 +79,14 @@
     </div>
 
     <div style="text-align:left;">
-      <input type="email" id="authEmail" placeholder="E-posta adresin" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:10px; background:rgba(255,255,255,0.95); color:#111827;">
-      <input type="password" id="authPassword" placeholder="Şifre (en az 6 karakter)" style="width:100%; padding:14px; border-radius:12px; border:none; font-size:15px; margin-bottom:14px; background:rgba(255,255,255,0.95); color:#111827;">
+      <div style="position:relative; margin-bottom:10px;">
+        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:15px; opacity:0.55; pointer-events:none;">✉️</span>
+        <input type="email" id="authEmail" placeholder="E-posta adresin" style="width:100%; padding:14px 14px 14px 40px; border-radius:12px; border:none; font-size:15px; background:rgba(255,255,255,0.95); color:#111827;">
+      </div>
+      <div style="position:relative; margin-bottom:14px;">
+        <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:15px; opacity:0.55; pointer-events:none;">🔒</span>
+        <input type="password" id="authPassword" placeholder="Şifre (en az 6 karakter)" style="width:100%; padding:14px 14px 14px 40px; border-radius:12px; border:none; font-size:15px; background:rgba(255,255,255,0.95); color:#111827;">
+      </div>
     </div>
     <button id="btnEmailAuth" style="width:100%; padding:15px; border:none; border-radius:14px; background:#fff; color:var(--asphalt-2); font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; cursor:pointer;">Giriş Yap</button>
     <button id="btnForgotPassword" style="width:100%; background:none; border:none; color:#fff; font-size:12.5px; font-weight:600; opacity:0.85; padding:12px 4px 0; cursor:pointer; text-decoration:underline;">Şifremi Unuttum</button>
@@ -217,8 +230,6 @@
     </div>
   </div>
 </header>
-<div class="hazard"></div>
-
 <main>
 
   <!-- ANA SAYFA -->
@@ -273,7 +284,7 @@
     </div>
 
     <!-- Veriler/Takvim seçimine bakılmaksızın HER ZAMAN görünür kalan bölüm -->
-    <div class="section-title" id="calMonthTitle">Bu Ay Özeti</div>
+    <div class="section-title" id="calMonthTitle">📅 Bu Ay Özeti</div>
     <div class="stat-grid3" id="calMonthStats"></div>
 
     <div class="section-title">Notlarım <button class="mini-btn" id="btnAddNote">Ekle</button></div>
@@ -305,7 +316,8 @@
     <div id="activeMembersList"></div>
     </div>
 
-    <div class="section-title">Uygulama</div>
+    <div class="section-title collapsible-title" data-collapse-key="appinfo" style="cursor:pointer;">Uygulama <span class="collapse-arrow">▾</span></div>
+    <div class="collapsible-body" id="collapseBody-appinfo">
     <div class="card">
       <button class="submit-btn secondary" id="footerPermGuideAna" style="display:none; margin-bottom:10px;">🔑 Yetkilerim</button>
       <button class="submit-btn secondary" id="footerHelpAna" style="margin-bottom:10px;">❓ Nasıl Kullanılır?</button>
@@ -316,6 +328,7 @@
       </div>
       <button class="submit-btn secondary" id="footerSuggestAna" style="margin-bottom:10px; width:100%;">💡 Öneri Gönder</button>
       <div class="hint" style="text-align:center; margin-top:6px;">Sürüm: 24 Ağustos 2026 · Oyunlar, Mesajlaşma Yenilemesi ve Performans İyileştirmeleri</div>
+    </div>
     </div>
   </section>
 
@@ -1204,7 +1217,7 @@
 
     <div class="section-title">🤝 Arkadaşlarım <span id="ownFriendReqBadge" style="display:none; background:var(--danger); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 7px; margin-left:4px;">0</span> <button class="see-all-btn" id="ownSeeAllFriends">Tümünü Gör</button></div>
     <div class="card">
-      <div id="ownFriendAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"><div class="hint" style="margin:0;">Henüz arkadaşın yok.</div></div>
+      <div id="ownFriendAvatars" style="display:flex; gap:8px; flex-wrap:wrap;"><div class="empty" style="padding:20px 10px;"><div class="icon" style="font-size:32px;">🤝</div><div class="msg">Henüz arkadaşın yok. Ara'dan insanları bulup arkadaş ekleyebilirsin.</div></div></div>
     </div>
 
     <div class="section-title">Kişisel Bilgiler</div>
@@ -3130,7 +3143,7 @@ function renderFollowerAvatarsInto(containerId, followerUids, max){
   const box = document.getElementById(containerId);
   if(!box) return;
   if(followerUids.length===0){
-    box.innerHTML = `<div class="hint" style="margin:0;">Henüz arkadaşın yok.</div>`;
+    box.innerHTML = `<div class="empty" style="padding:20px 10px;"><div class="icon" style="font-size:32px;">🤝</div><div class="msg">Henüz arkadaşın yok. Ara'dan insanları bulup arkadaş ekleyebilirsin.</div></div>`;
     return;
   }
   const shown = followerUids.slice(0, max||9);
@@ -8947,10 +8960,12 @@ function renderSavedAccountChips(){
   wrap.style.display = 'block';
   list.innerHTML = accounts.map(email => {
     const name = email.split('@')[0];
-    return `<button type="button" class="quick-switch-chip" data-email="${escapeHtml(email)}" style="display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.3); border-radius:20px; padding:7px 8px 7px 12px; color:#fff; font-size:12.5px; font-weight:700; cursor:pointer;">
-        <span>👤 ${escapeHtml(name)}</span>
-        <span data-forget-email="${escapeHtml(email)}" style="width:18px;height:18px;border-radius:50%; background:rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; font-size:11px; line-height:1;">✕</span>
-      </button>`;
+    const initials = name.slice(0,2).toUpperCase();
+    return `<div class="quick-switch-chip" data-email="${escapeHtml(email)}" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:14px; padding:10px 12px; cursor:pointer;">
+        <div style="width:34px;height:34px;border-radius:50%; background:rgba(255,255,255,0.22); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Manrope'; font-weight:800; font-size:12.5px; flex-shrink:0;">${escapeHtml(initials)}</div>
+        <div style="flex:1; min-width:0; font-size:12.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left;">${escapeHtml(email)}</div>
+        <span data-forget-email="${escapeHtml(email)}" style="width:24px;height:24px;border-radius:50%; background:rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; flex-shrink:0;">✕</span>
+      </div>`;
   }).join('');
   list.querySelectorAll('.quick-switch-chip').forEach(chip => {
     chip.addEventListener('click', (e) => {

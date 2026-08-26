@@ -250,6 +250,19 @@
 
   /* ---------- SORU SEÇME BEKLEME EKRANI ---------- */
   @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- GİRİŞ EKRANI ARKA PLAN DEKORASYONU ---------- */
+  @keyframes authDecorFloat1{
+    0%,100%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(10px,-16px) rotate(6deg); }
+  }
+  @keyframes authDecorFloat2{
+    0%,100%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(-12px,14px) rotate(-8deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #authBgDecor span{ animation:none !important; }
+  }
   @keyframes quizPickBounce{
     0%,100%{ transform:translateY(0) scale(1); }
     50%{ transform:translateY(-10px) scale(1.06); }
