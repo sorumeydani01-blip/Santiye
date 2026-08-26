@@ -601,11 +601,12 @@
       </div>
     </div>
 
-    <div id="quizResultStep" style="display:none; text-align:center; padding-top:20px;">
-      <div style="font-size:44px; margin-bottom:10px;">🏁</div>
-      <div style="font-weight:800; font-size:20px; margin-bottom:6px;">Tamamlandı!</div>
+    <div id="quizResultStep" style="display:none; text-align:center; padding-top:20px; position:relative; overflow:hidden;">
+      <div id="quizResultConfetti" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;"></div>
+      <div style="font-size:48px; margin-bottom:10px;" id="quizResultEmoji">🏁</div>
+      <div style="font-weight:800; font-size:20px; margin-bottom:6px;" id="quizResultTitle">Tamamlandı!</div>
       <div class="hint" style="margin-bottom:18px;" id="quizResultDetail">-</div>
-      <div style="font-family:'Manrope'; font-weight:800; font-size:32px; color:var(--asphalt); margin-bottom:24px;" id="quizResultScore">+0 pn</div>
+      <div style="font-family:'Manrope'; font-weight:800; font-size:36px; color:var(--asphalt); margin-bottom:24px;" id="quizResultScore">+0 pn</div>
       <button class="submit-btn" id="btnQuizPlayAgain" style="margin-bottom:10px;">🔁 Diğer Teste Geç</button>
       <button class="submit-btn secondary" id="btnQuizBackHome">Ana Sayfaya Dön</button>
     </div>
@@ -2093,10 +2094,10 @@
     </div>
     <div class="card">
       <div style="margin-top:14px;">
-        <div class="hint" style="margin-top:0;">Ana sayfada rastgele gösterilecek ayet/söz listesi.</div>
+        <div class="hint" style="margin-top:0;">Ana sayfada "Günün Ayeti" başlığı altında rastgele gösterilir — buraya sadece ayet mealleri ekle, atasözü/genel söz ekleme (başlıkla tutarsız olur).</div>
         <div id="quoteListDisplay" style="margin:10px 0;"></div>
         <div>
-          <input type="text" id="adminQuoteAddInput" placeholder="Yeni ayet/söz ekle..." style="margin-bottom:10px;">
+          <input type="text" id="adminQuoteAddInput" placeholder="Yeni ayet meali ekle... (örn: &quot;...&quot; (Sure adı, X. Ayetin meali))" style="margin-bottom:10px;">
           <button class="submit-btn secondary" id="adminQuoteAddBtn">➕ Ekle</button>
         </div>
       </div>
@@ -6049,7 +6050,10 @@ const RESTORABLE_SCREENS = ['ana','kayitlar','istatistik','notlarim','mesajlar',
 
 // ---------- QUOTE ----------
 function renderQuote(){
-  const pool = (dynamicQuotes && dynamicQuotes.length) ? dynamicQuotes : QUOTES;
+  // "Günün Ayeti" başlığı gerçek ayet meali bekliyor — admin özel içerik
+  // girmediyse, karışık (atasözü+ayet) QUOTES yerine SADECE ayetlerden
+  // oluşan HALAL_VERSES kullanılıyor. Başlıkla içerik artık tutarlı.
+  const pool = (dynamicQuotes && dynamicQuotes.length) ? dynamicQuotes : HALAL_VERSES;
   document.getElementById('quoteText').textContent = pool[Math.floor(Math.random()*pool.length)];
 }
 document.getElementById('btnQuoteRefresh').addEventListener('click', renderQuote);

@@ -402,7 +402,47 @@ function finishQuizSession(){
   document.getElementById('quizPlayStep').style.display = 'none';
   document.getElementById('quizResultStep').style.display = 'block';
   document.getElementById('quizResultDetail').textContent = quizSessionCorrect + ' doğru, ' + quizSessionWrong + ' yanlış (' + quizSessionQuestions.length + ' soru)';
-  document.getElementById('quizResultScore').textContent = (quizSessionScore>=0?'+':'') + quizSessionScore + ' pn';
+
+  // Performansa göre emoji + başlık + renk değişsin — hep aynı "Tamamlandı!" yerine.
+  const emojiEl = document.getElementById('quizResultEmoji');
+  const titleEl = document.getElementById('quizResultTitle');
+  const scoreEl = document.getElementById('quizResultScore');
+  let emoji, title, color;
+  if(quizSessionCorrect >= 8){ emoji = '🎉'; title = 'Harika iş!'; color = 'var(--green)'; }
+  else if(quizSessionCorrect >= 5){ emoji = '👍'; title = 'İyi iş!'; color = 'var(--asphalt)'; }
+  else { emoji = '💪'; title = 'Devam et!'; color = 'var(--ink)'; }
+  emojiEl.textContent = emoji;
+  titleEl.textContent = title;
+  scoreEl.style.color = color;
+
+  // Puan sayarak yükselsin (0'dan gerçek değere), statik durmasın.
+  const finalScore = quizSessionScore;
+  const prefix = finalScore >= 0 ? '+' : '';
+  const durationMs = 700;
+  const startTime = performance.now();
+  function animateScore(now){
+    const t = Math.min(1, (now - startTime) / durationMs);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out
+    const current = Math.round(finalScore * eased);
+    scoreEl.textContent = (current >= 0 ? '+' : '') + current + ' pn';
+    if(t < 1) requestAnimationFrame(animateScore);
+    else scoreEl.textContent = prefix + finalScore + ' pn';
+  }
+  requestAnimationFrame(animateScore);
+
+  // Başarılıysa (8+ doğru) hafif bir konfeti patlaması göster.
+  if(quizSessionCorrect >= 8){
+    const confettiBox = document.getElementById('quizResultConfetti');
+    const pieces = ['🎉','✨','⭐','🎊'];
+    confettiBox.innerHTML = Array.from({length:16}).map(()=>{
+      const left = Math.random()*100;
+      const delay = Math.random()*0.3;
+      const duration = 1.4 + Math.random()*0.8;
+      const piece = pieces[Math.floor(Math.random()*pieces.length)];
+      return `<span style="position:absolute; top:-20px; left:${left}%; font-size:${14+Math.random()*10}px; animation:quizConfettiFall ${duration}s ease-in ${delay}s forwards;">${piece}</span>`;
+    }).join('');
+    setTimeout(()=>{ confettiBox.innerHTML = ''; }, 2500);
+  }
 }
 document.getElementById('btnQuizPlayAgain').addEventListener('click', ()=>{
   document.getElementById('quizResultStep').style.display = 'none';

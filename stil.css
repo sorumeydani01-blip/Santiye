@@ -251,6 +251,15 @@
   /* ---------- SORU SEÇME BEKLEME EKRANI ---------- */
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
+  /* ---------- QUIZ SONUÇ KONFETİSİ ---------- */
+  @keyframes quizConfettiFall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(340px) rotate(340deg); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #quizResultConfetti span{ animation:none !important; display:none; }
+  }
+
   /* ---------- GİRİŞ EKRANI ARKA PLAN DEKORASYONU ---------- */
   @keyframes authDecorFloat1{
     0%,100%{ transform:translate(0,0) rotate(0deg); }
