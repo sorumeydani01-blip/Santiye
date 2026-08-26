@@ -878,13 +878,22 @@ function renderLeaderboardList(ranked){
     const rankBadge = quizRankBadgeHtml(realTotalScore, 'font-size:9.5px; padding:1px 7px;', p ? p.quizTotalAnswered : 0);
     const medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':(i+1)));
     const borderStyle = (i < shown.length-1) ? 'border-bottom:1px solid var(--line);' : '';
+    // İlk 3'e (podyum) kendi madalyasına uygun hafif bir arka plan tonu ver —
+    // göze ilk çarpan onlar olsun, düz listeye gömülmesinler.
+    const podiumBg = i===0 ? 'linear-gradient(90deg, rgba(250,204,21,0.16), transparent)'
+      : i===1 ? 'linear-gradient(90deg, rgba(148,163,184,0.16), transparent)'
+      : i===2 ? 'linear-gradient(90deg, rgba(217,119,6,0.14), transparent)'
+      : 'transparent';
+    const podiumRadius = i < 3 ? 'border-radius:10px;' : '';
+    const podiumPad = i < 3 ? 'padding-left:8px; padding-right:8px;' : '';
     const avatarInner = (p && p.photoData)
       ? '<img src="'+safeImageSrc(p.photoData)+'" style="width:100%;height:100%; border-radius:50%; object-fit:cover;">'
       : escapeHtml(initials);
     const avatarBg = (p && p.photoData) ? 'transparent' : avatarGradient(row.uid);
-    return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; '+borderStyle+'">'
-      + '<div style="width:24px; text-align:center; font-weight:800; font-size:13px;">'+medal+'</div>'
-      + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarBg+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden;">'+avatarInner+'</div>'
+    const avatarRing = i===0 ? 'box-shadow:0 0 0 2px #FACC15;' : i===1 ? 'box-shadow:0 0 0 2px #94A3B8;' : i===2 ? 'box-shadow:0 0 0 2px #D97706;' : '';
+    return '<div class="leaderboard-row" data-lb-uid="'+escapeHtml(row.uid)+'" style="display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; background:'+podiumBg+'; '+podiumRadius+' '+podiumPad+' '+borderStyle+'">'
+      + '<div style="width:24px; text-align:center; font-weight:800; font-size:'+(i<3?'16px':'13px')+';">'+medal+'</div>'
+      + '<div style="width:34px;height:34px;border-radius:50%; background:'+avatarBg+'; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0; overflow:hidden; '+avatarRing+'">'+avatarInner+'</div>'
       + '<div style="flex:1; min-width:0;">'
         + '<div style="font-weight:700; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+escapeHtml(username)+'</div>'
         + (rankBadge ? '<div style="margin-top:2px;">'+rankBadge+'</div>' : '')
