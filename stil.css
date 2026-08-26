@@ -74,7 +74,8 @@
   header.top .brand .brand-left{display:flex; align-items:center; gap:11px; min-width:0; flex:1;}
   header.top .brand .badge{width:36px;height:36px;border-radius:11px; background:linear-gradient(150deg,var(--asphalt),var(--asphalt-2)); display:flex;align-items:center;justify-content:center; font-family:'Manrope',sans-serif; font-weight:800; color:#fff; font-size:clamp(15px,4vw,17px);}
   header.top .brand span.title{font-family:'Manrope',sans-serif; font-size:clamp(15px,4vw,17px); font-weight:800; letter-spacing:-0.01em; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; display:inline-block; max-width:100%;}
-  .gear-btn{background:rgba(99,102,241,0.08); backdrop-filter:blur(6px); border:1px solid rgba(99,102,241,0.12); color:var(--ink-soft); font-size:16px; cursor:pointer; padding:9px 11px; border-radius:var(--theme-radius-sm,13px); transition:transform .12s ease, background .12s ease;}
+  .gear-btn{background:rgba(99,102,241,0.08); backdrop-filter:blur(6px); border:1px solid rgba(99,102,241,0.12); color:var(--ink-soft); font-size:16px; cursor:pointer; padding:9px 11px; border-radius:var(--theme-radius-sm,13px); transition:transform .12s ease, background .12s ease; display:inline-flex; align-items:center; justify-content:center;}
+  .gear-btn svg{display:block;}
   .gear-btn:active{transform:scale(0.9); background:rgba(99,102,241,0.16);}
 
 
