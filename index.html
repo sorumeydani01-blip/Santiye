@@ -5856,6 +5856,17 @@ function fmt(n){
 function monthKey(d){ return d.slice(0,7); }
 function monthLabel(mk){ const [y,m]=mk.split('-'); return MONTH_NAMES[parseInt(m,10)-1]+' '+y; }
 function todayStr(){ const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10); }
+// Firestore'un günlük okuma kotası yaklaşık sabah 10:00'da sıfırlanıyor (Pasifik
+// saatiyle gece yarısı) — gece yarısına göre değil. Kota tahmin sayacımızın "gün"
+// sınırını buna göre kaydırıyoruz ki gösterdiğimiz rakam Firestore'un kendi
+// sıfırlama zamanıyla tutarlı olsun. SADECE kota sayacı için kullanılır — uygulamanın
+// diğer "bugün" hesaplamaları (günlük hatırlatma vb.) hâlâ gece yarısını esas alır.
+function quotaDayStr(){
+  const d = new Date();
+  const shifted = new Date(d.getTime() - 10*60*60*1000);
+  const off = shifted.getTimezoneOffset();
+  return new Date(shifted.getTime()-off*60000).toISOString().slice(0,10);
+}
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900); }
 function showSaveCheckAnimation(){
   const el = document.getElementById('saveCheckOverlay');
@@ -5878,7 +5889,7 @@ function escapeHtml(str){ const div=document.createElement('div'); div.textConte
 async function trackFirestoreReads(sourceLabel, count){
   if(!count || count <= 0) return;
   try{
-    const today = todayStr();
+    const today = quotaDayStr();
     const ref = db.collection('app_config').doc('dailyReadEstimate');
     const doc = await ref.get();
     let data = (doc.exists && doc.data().date === today) ? doc.data() : { date: today, total: 0, bySource: {} };
@@ -5906,7 +5917,7 @@ async function renderQuotaEstimateCard(){
   }
   try{
     const doc = await db.collection('app_config').doc('dailyReadEstimate').get();
-    const today = todayStr();
+    const today = quotaDayStr();
     if(!doc.exists || doc.data().date !== today){
       countEl.textContent = '0';
       breakdownEl.textContent = 'Bugün için henüz kayıt yok.';
