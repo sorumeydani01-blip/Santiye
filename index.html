@@ -6184,11 +6184,11 @@ function computeTotals(list){
 function statGridHtml(t, labels){
   labels = labels || {gun:'Çalışılan Gün', kazanc:'Toplam Kazanç', avans:'Alınan Avans'};
   return `
-    <div class="stat-box"><div class="icon" style="background:var(--tint-forest);">📅</div><div class="val">${t.fullDays}</div><div class="lbl">${labels.gun}</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-slate);">🌗</div><div class="val">${t.halfDays}</div><div class="lbl">Yarım Gün</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-brass);">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">${labels.kazanc}</div></div>
-    <div class="stat-box"><div class="icon" style="background:var(--tint-rust);">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">${labels.avans}</div></div>
-    <div class="stat-box balance">
+    <div class="stat-box" style="--accent-color:#10B981;"><div class="icon" style="background:var(--tint-forest);">📅</div><div class="val">${t.fullDays}</div><div class="lbl">${labels.gun}</div></div>
+    <div class="stat-box" style="--accent-color:#0EA5E9;"><div class="icon" style="background:var(--tint-slate);">🌗</div><div class="val">${t.halfDays}</div><div class="lbl">Yarım Gün</div></div>
+    <div class="stat-box" style="--accent-color:#D97706;"><div class="icon" style="background:var(--tint-brass);">💰</div><div class="val">${fmt(t.yevmiye)}</div><div class="lbl">${labels.kazanc}</div></div>
+    <div class="stat-box" style="--accent-color:#E11D48;"><div class="icon" style="background:var(--tint-rust);">📈</div><div class="val">${fmt(t.avans)}</div><div class="lbl">${labels.avans}</div></div>
+    <div class="stat-box balance ${t.net<0?'balance-negative':'balance-positive'}">
       <div class="icon" style="background:${t.net<0?'var(--tint-danger)':'var(--tint-forest)'};">${t.net<0?'⚠️':'✅'}</div>
       <div class="valwrap"><div class="lbl">Kalan Bakiye</div><div class="val ${t.net<0?'neg':'pos'}">${fmt(t.net)}</div></div>
     </div>`;
