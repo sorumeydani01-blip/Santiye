@@ -2862,6 +2862,7 @@ const APP_LOGO_B64 = "icon-192.png"; // Gerçek dosyaya işaret eder, JS içinde
 })();
 let entries=[], notes=[], settings={defaultWage:0, currency:'₺', darkMode:false, reminder:true, monthlyGoal:0};
 let profile = null;
+let cloudDataLoadFailed = false; // loadCloudData() birkaç denemeden sonra hâlâ başarısızsa true olur — bu durumda ASLA onboarding gösterilmez (var olan kullanıcı olabilir, emin değiliz)
 const PROFESSIONS = ['Seramik Ustası','Kalıp Ustası','Boyacı','Sıvacı','Elektrikçi','Tesisatçı','Demirci','Kaynakçı','İnşaat İşçisi','Diğer'];
 let editingId=null;
 let calYear, calMonth;
@@ -2991,7 +2992,9 @@ const HALAL_VERSES=[
   '"Mallarınızı aranızda haksız yollarla değil, karşılıklı rızayla yapılan ticaretle kazanın." (Nisa Suresi, 29. Ayetin meali)'
 ];
 
-async function loadCloudData(){
+async function loadCloudData(retryCount){
+  retryCount = retryCount || 0;
+  if(retryCount === 0) cloudDataLoadFailed = false; // her yeni (ilk) denemede sıfırla
   if(!userDocRef){ entries=[]; notes=[]; profile=null; return; }
   try{
     const doc = await userDocRef.get();
@@ -3019,13 +3022,26 @@ async function loadCloudData(){
         }catch(e){}
       }
     } else {
+      // Firestore doküman VARLIĞINI kesin olarak doğruladı — bu GERÇEKTEN yeni bir
+      // kullanıcı, onboarding göstermek doğru.
       entries = []; notes = []; profile = null;
       await userDocRef.set({entries:[], notes:[], settings, lastAsked:'', createdAt:new Date().toISOString()});
     }
   }catch(e){
     console.error(e);
-    showToast('Veriler yüklenemedi, internet bağlantını kontrol et');
-    entries = []; notes = []; profile = null;
+    // ÖNEMLİ: Buraya düşmek "kullanıcının profili yok" anlamına GELMEZ — sadece
+    // okuma isteği (ağ sorunu, geçici kesinti vb.) başarısız oldu. Eskiden burada
+    // doğrudan profile=null yapılıyordu, bu da var olan kullanıcıların yanlışlıkla
+    // "yeni kullanıcı" sanılıp onboarding'e düşmesine (ve profillerinin üzerine
+    // yazılma riskine) yol açıyordu. Şimdi önce birkaç kez tekrar deniyoruz;
+    // hepsi başarısız olursa profile'ı DEĞİŞTİRMEDEN (önceki değeriyle) bırakıp
+    // kullanıcıyı açıkça bilgilendiriyoruz — sessizce onboarding'e düşürmüyoruz.
+    if(retryCount < 2){
+      await new Promise(r => setTimeout(r, 1200));
+      return loadCloudData(retryCount + 1);
+    }
+    showToast('Veriler yüklenemedi, internet bağlantını kontrol edip tekrar dene');
+    cloudDataLoadFailed = true;
   }
 }
 async function persistProfile(){
@@ -9263,6 +9279,17 @@ async function startApp(){
   // açılır; IP sonucu geldiğinde gerekirse (yasaklıysa) ayrıca devreye girer.
   const ipCheckPromise = captureAndCheckIp();
   await loadCloudData();
+  if(cloudDataLoadFailed){
+    // Verinin GERÇEKTEN yok mu, yoksa sadece okunamadı mı olduğunu bilmiyoruz —
+    // bu belirsizlikte ASLA onboarding'e (ve olası veri üzerine yazmaya) düşmüyoruz.
+    // Kullanıcıya açıkça "tekrar dene" seçeneği sunuyoruz.
+    document.getElementById('authSplashLoading').style.display = 'none';
+    document.getElementById('authFormWrap').style.display = 'block';
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('appRoot').style.display = 'none';
+    showToast('⚠️ Verilerin yüklenemedi (internet sorunu olabilir). Tekrar giriş yapmayı dene.');
+    return;
+  }
   const isStaffAccount = profile && (profile.role==='admin' || profile.role==='moderator');
   ipCheckPromise.then(ipBlocked=>{
     if(ipBlocked && !isStaffAccount){
