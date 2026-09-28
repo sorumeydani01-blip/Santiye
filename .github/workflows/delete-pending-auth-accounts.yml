@@ -1,0 +1,24 @@
+name: Bekleyen Giriş Hesabı Silmelerini Tamamla
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  delete-pending-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bağımlılığı kur (firebase-admin)
+        run: npm install firebase-admin@12
+
+      - name: Script'i çalıştır
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/delete-pending-auth-accounts.js
