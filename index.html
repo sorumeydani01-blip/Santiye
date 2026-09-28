@@ -8037,6 +8037,13 @@ async function initNotificationUI(){
 // Firebase konsolundan alınacak Web Push (VAPID) anahtarını buraya yapıştır:
 // Firebase Console > Proje Ayarları > Cloud Messaging > Web Push sertifikaları > "Anahtar çifti oluştur"
 const FCM_VAPID_KEY = 'BIlkmL0XjsikZsIxJWzkXGBN65ubUptEOjWpw9oCSTwX8bB_fVeHydLqLlzBeaqop8T631qAEi0ChAHODxayIbY';
+// Bu cihazın bildirim adresi (FCM token'ı) — çıkış yaparken bu hesabın
+// fcmTokens listesinden çıkarabilmek için hatırlıyoruz. Aksi halde aynı
+// telefonda birden fazla hesaba girilince (Hesap Değiştir / Hesap Ekle),
+// token TÜM hesaplarda birikip kalıyor — ve o hesaplardan hangisi o gün
+// yevmiye girmemişse, sen başka bir hesaptan yevmiyeni girmiş olsan bile
+// aynı telefona onun hatırlatma bildirimi düşüyordu.
+let currentFcmToken = null;
 async function setupFcmToken(){
   try{
     if(typeof firebase === 'undefined' || !firebase.messaging){ console.warn('[FCM] firebase.messaging mevcut değil'); return; }
@@ -8053,6 +8060,7 @@ async function setupFcmToken(){
     const messaging = firebase.messaging();
     const token = await messaging.getToken({vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: reg});
     if(token){
+      currentFcmToken = token;
       await userDocRef.set({fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)}, {merge:true});
     } else {
       console.warn('[FCM] getToken() boş döndü — VAPID anahtarını ve tarayıcı iznini kontrol et');
@@ -9139,6 +9147,16 @@ document.getElementById('btnGoogleSignIn').addEventListener('click', ()=>{
 });
 
 async function signOutUser(){
+  // Çıkış yapmadan ÖNCE, bu cihazın bildirim adresini (varsa) bu hesaptan
+  // temizle — yoksa bu hesap bildirim göndermeye devam eder (sen başka bir
+  // hesaba geçmiş olsan bile), çünkü fcmTokens'a sadece EKLEME yapılıyordu,
+  // hiç ÇIKARILMIYORDU.
+  try{
+    if(currentFcmToken && userDocRef){
+      await userDocRef.set({fcmTokens: firebase.firestore.FieldValue.arrayRemove(currentFcmToken)}, {merge:true});
+    }
+  }catch(e){ console.error('[FCM] Çıkışta token temizlenemedi', e); }
+  currentFcmToken = null;
   try{ await auth.signOut(); }catch(e){}
 }
 document.getElementById('btnDeactivatedSignOut').addEventListener('click', signOutUser);

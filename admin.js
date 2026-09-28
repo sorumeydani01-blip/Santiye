@@ -403,11 +403,21 @@ document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async 
   if(p && p.role==='admin'){ showToast('Admin hesapları kalıcı olarak silinemez — önce admin yetkisini kaldır.'); return; }
   const targetName = usernameLabel(p);
   if(!confirm(`"${targetName}" adlı hesabı KALICI OLARAK silmek istediğine emin misin? Bu işlem GERİ ALINAMAZ.`)) return;
+
+  // Her adım kendi try/catch'i içinde: hangi adımda takılırsa takılsın, tam
+  // olarak HANGİ veri türünün silinemediğini gösteren net bir mesaj çıkar
+  // (eskiden tek bir genel "Silinemedi: ..." mesajı vardı, teşhis zordu).
   try{
-    await logModAction('permanentDelete', uid, `Silinen hesap: ${targetName} (${p?p.username:'-'})`);
     await db.collection('users').doc(uid).delete();
+  }catch(e){ showToast('Kullanıcı verisi silinemedi (yetki sorunu olabilir): '+(e.message||e.code||'')); return; }
+
+  try{
     await db.collection('public_profiles').doc(uid).delete();
-    await db.collection('moderators').doc(uid).delete().catch(()=>{});
+  }catch(e){ showToast('Genel profil silinemedi: '+(e.message||e.code||'')+' — kullanıcı verisi silindi ama profil kaldı, tekrar dene.'); return; }
+
+  await db.collection('moderators').doc(uid).delete().catch(()=>{});
+
+  try{
     const asFriendA = await db.collection('friends').where('members','array-contains',uid).get();
     const sentReqs = await db.collection('friend_requests').where('fromUid','==',uid).get();
     const receivedReqs = await db.collection('friend_requests').where('toUid','==',uid).get();
@@ -416,10 +426,25 @@ document.getElementById('vpPermanentDeleteBtn').addEventListener('click', async 
     sentReqs.docs.forEach(d=> batch.delete(d.ref));
     receivedReqs.docs.forEach(d=> batch.delete(d.ref));
     await batch.commit();
-    showToast('Hesap kalıcı olarak silindi');
-    await loadPublicProfiles(true);
-    switchScreen('profil');
-  }catch(e){ showToast('Silinemedi: '+(e.message||'')); }
+  }catch(e){ console.error('Arkadaşlık kayıtları temizlenemedi', e); /* ana silme işlemi tamamlandı, bunu engellemesin */ }
+
+  // Firestore verisi silindi ama GİRİŞ HESABI (e-posta/şifre, Firebase
+  // Authentication kaydı) tarayıcıdan silinemez — bunu ancak sunucu tarafı
+  // (Admin SDK) yapabilir. Bu yüzden bir "silme kuyruğu" kaydı bırakıyoruz;
+  // scripts/delete-pending-auth-accounts.js bu kuyruğu okuyup gerçek giriş
+  // hesabını da siliyor (GitHub Actions'tan elle tetiklenir, tıpkı
+  // add-random-order.js gibi). Bu adım başarısız olsa bile ana silme
+  // işlemini engellemesin.
+  try{
+    await db.collection('pending_auth_deletions').doc(uid).set({
+      uid, username: p?p.username:null, requestedBy: currentUser.uid, requestedAt: new Date().toISOString()
+    });
+  }catch(e){ console.error('Silme kuyruğuna eklenemedi', e); }
+
+  await logModAction('permanentDelete', uid, `Silinen hesap: ${targetName} (${p?p.username:'-'})`);
+  showToast('Hesap kalıcı olarak silindi (giriş hesabının tamamen kapanması için "Bekleyen Giriş Hesabı Silmeleri" script\'ini GitHub\'dan çalıştırman gerekiyor)');
+  await loadPublicProfiles(true);
+  switchScreen('profil');
 });
 document.getElementById('vpReactivateBtn').addEventListener('click', async ()=>{
   const uid = currentViewedUid;

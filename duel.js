@@ -600,7 +600,15 @@ function renderDuelRoom(d){
     document.getElementById('duelMeProgressLbl').textContent = myProgress + '/' + d.questionCount;
     document.getElementById('duelOppProgressLbl').textContent = oppProgress + '/' + d.questionCount;
 
-    if(duelLocalQuestions.length === 0 && Array.isArray(d.questionIds) && d.questionIds.length){
+    if(duelLocalQuestions.length === 0 && Array.isArray(d.questions) && d.questions.length){
+      // Yeni yol: sorular doğrudan düello kaydına gömülü — her iki oyuncu da
+      // birebir aynı, doğru kategorideki soruları görür (yerel önbelleğe bağlı değil).
+      duelLocalQuestions = d.questions;
+      duelLocalIndex = 0; duelLocalScore = 0;
+      renderDuelQuestion(d);
+    } else if(duelLocalQuestions.length === 0 && Array.isArray(d.questionIds) && d.questionIds.length){
+      // Eski yol (geriye dönük uyumluluk): daha önce başlamış, henüz "questions"
+      // alanı olmayan düellolar için yedek.
       duelLocalQuestions = d.questionIds.map(qid => quizQuestions.find(q=>q.id===qid)).filter(Boolean);
       duelLocalIndex = 0; duelLocalScore = 0;
       renderDuelQuestion(d);
@@ -632,12 +640,30 @@ document.getElementById('duelAcceptBtn').addEventListener('click', async ()=>{
   try{
     const doc = await db.collection('duels').doc(currentDuelId).get();
     const d = doc.data();
-    await loadQuizQuestions();
-    const pool = quizQuestions.filter(q => !d.category || q.category === d.category);
+    // ÖNEMLİ: Düello soruları, oyuncunun kendi cihazındaki rastgele önbellekten
+    // (quizQuestions) DEĞİL, doğrudan Firestore'dan SEÇİLEN KATEGORİYE göre
+    // çekilir. Önbellek her oyuncuda farklı (bağımsız rastgele bir örneklem)
+    // olduğu için, önbellekten seçim yapmak yanlış/eksik kategori sorununa
+    // yol açıyordu — biri "İslami" seçse bile karşı tarafın önbelleğinde o
+    // sorular hiç olmayabiliyordu.
+    let snap;
+    try{
+      snap = await db.collection('quiz_questions').where('category','==', d.category).get();
+    }catch(e){ snap = { docs: [] }; }
+    let docs = snap.docs || [];
+    if(typeof trackFirestoreReads === 'function') trackFirestoreReads('Düello: Soru Seçimi', docs.length);
+    const pool = docs.map(dc => ({ id: dc.id, ...dc.data() }));
     for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-    const selected = pool.slice(0, d.questionCount).map(q=>q.id);
-    if(selected.length === 0){ showToast('Bu kategoride yeterli soru bulunamadı'); return; }
-    await db.collection('duels').doc(currentDuelId).update({ status:'active', questionIds: selected, startedAt: new Date().toISOString() });
+    const selectedQuestions = pool.slice(0, d.questionCount).map(q => ({
+      id: q.id, question: q.question, options: q.options, correctIndex: q.correctIndex, hint: q.hint || null
+    }));
+    if(selectedQuestions.length === 0){ showToast('Bu kategoride yeterli soru bulunamadı'); return; }
+    await db.collection('duels').doc(currentDuelId).update({
+      status:'active',
+      questions: selectedQuestions,
+      questionIds: selectedQuestions.map(q=>q.id),
+      startedAt: new Date().toISOString()
+    });
   }catch(e){ showToast('Kabul edilemedi: '+(e.message||'')); }
 });
 document.getElementById('duelDeclineBtn').addEventListener('click', async ()=>{
